@@ -17,7 +17,9 @@
         {% endif %}
         <a href="{% url 'patient_database' %}" class="btn btn-primary ms-2">My Patients</a>
         {% if user.userprofile.role == 'HCP' %}
-            <a href="{% url 'add_patient' %}" class="btn btn-success ms-2">+ Add Patient</a>
+            <a href="{% url 'add_patient' %}" class="btn btn-success ms-2">
+                <i class="fas fa-plus"></i> Add Patient / Upload EMR
+            </a>
         {% endif %}
     </div>
 </div>

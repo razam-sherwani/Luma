@@ -9,6 +9,14 @@
         <p class="text-muted mb-0">{{ patient.primary_diagnosis }}</p>
     </div>
     <div class="text-end">
+        {% if user_role == 'HCP' %}
+            <button type="button" class="btn btn-primary me-2" id="editPatientBtn">
+                <i class="fas fa-edit"></i> Edit Patient
+            </button>
+            <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deletePatientModal">
+                <i class="fas fa-trash"></i> Delete Patient
+            </button>
+        {% endif %}
         <a href="{% url 'patient_database' %}" class="btn btn-outline-secondary">← Back to Patients</a>
     </div>
 </div>
@@ -21,32 +29,90 @@
                 <h5 class="mb-0">Demographics</h5>
             </div>
             <div class="card-body">
-                <table class="table table-sm">
-                    <tr>
-                        <td><strong>Patient ID:</strong></td>
-                        <td>{{ patient.patient_id }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Age Group:</strong></td>
-                        <td>{{ patient.age_group }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Gender:</strong></td>
-                        <td>{{ patient.get_gender_display }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Race:</strong></td>
-                        <td>{{ patient.get_race_display }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Ethnicity:</strong></td>
-                        <td>{{ patient.get_ethnicity_display }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Zip Code:</strong></td>
-                        <td>{{ patient.zip_code_prefix }}</td>
-                    </tr>
-                </table>
+                <!-- View Mode -->
+                <div id="demographics-view" class="view-mode">
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>Patient ID:</strong></td>
+                            <td>{{ patient.patient_id }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Age Group:</strong></td>
+                            <td>{{ patient.age_group }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gender:</strong></td>
+                            <td>{{ patient.get_gender_display }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Race:</strong></td>
+                            <td>{{ patient.get_race_display }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ethnicity:</strong></td>
+                            <td>{{ patient.get_ethnicity_display }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Zip Code:</strong></td>
+                            <td>{{ patient.zip_code_prefix }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Edit Mode -->
+                <div id="demographics-edit" class="edit-mode" style="display: none;">
+                    <form id="patientForm" method="post" action="{% url 'update_patient' patient.patient_id %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Patient ID:</strong></label>
+                            <input type="text" class="form-control" value="{{ patient.patient_id }}" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Age Group:</strong></label>
+                            <select name="age_group" class="form-select">
+                                <option value="18-25" {% if patient.age_group == "18-25" %}selected{% endif %}>18-25</option>
+                                <option value="26-35" {% if patient.age_group == "26-35" %}selected{% endif %}>26-35</option>
+                                <option value="36-45" {% if patient.age_group == "36-45" %}selected{% endif %}>36-45</option>
+                                <option value="46-55" {% if patient.age_group == "46-55" %}selected{% endif %}>46-55</option>
+                                <option value="56-65" {% if patient.age_group == "56-65" %}selected{% endif %}>56-65</option>
+                                <option value="66-75" {% if patient.age_group == "66-75" %}selected{% endif %}>66-75</option>
+                                <option value="76+" {% if patient.age_group == "76+" %}selected{% endif %}>76+</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Gender:</strong></label>
+                            <select name="gender" class="form-select">
+                                <option value="M" {% if patient.gender == "M" %}selected{% endif %}>Male</option>
+                                <option value="F" {% if patient.gender == "F" %}selected{% endif %}>Female</option>
+                                <option value="U" {% if patient.gender == "U" %}selected{% endif %}>Unknown</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Race:</strong></label>
+                            <select name="race" class="form-select">
+                                <option value="WHITE" {% if patient.race == "WHITE" %}selected{% endif %}>White</option>
+                                <option value="BLACK" {% if patient.race == "BLACK" %}selected{% endif %}>Black/African American</option>
+                                <option value="ASIAN" {% if patient.race == "ASIAN" %}selected{% endif %}>Asian</option>
+                                <option value="HISPANIC" {% if patient.race == "HISPANIC" %}selected{% endif %}>Hispanic/Latino</option>
+                                <option value="NATIVE" {% if patient.race == "NATIVE" %}selected{% endif %}>Native American</option>
+                                <option value="PACIFIC" {% if patient.race == "PACIFIC" %}selected{% endif %}>Pacific Islander</option>
+                                <option value="OTHER" {% if patient.race == "OTHER" %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Ethnicity:</strong></label>
+                            <select name="ethnicity" class="form-select">
+                                <option value="HISPANIC" {% if patient.ethnicity == "HISPANIC" %}selected{% endif %}>Hispanic/Latino</option>
+                                <option value="NON_HISPANIC" {% if patient.ethnicity == "NON_HISPANIC" %}selected{% endif %}>Non-Hispanic/Latino</option>
+                                <option value="UNKNOWN" {% if patient.ethnicity == "UNKNOWN" %}selected{% endif %}>Unknown</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Zip Code:</strong></label>
+                            <input type="text" name="zip_code_prefix" class="form-control" value="{{ patient.zip_code_prefix }}" maxlength="5">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -58,30 +124,73 @@
                 <h5 class="mb-0">Medical Information</h5>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6>Primary Diagnosis</h6>
-                        <p>{{ patient.primary_diagnosis }}</p>
-                        
-                        {% if patient.secondary_diagnoses %}
-                        <h6>Secondary Diagnoses</h6>
-                        <p>{{ patient.secondary_diagnoses }}</p>
-                        {% endif %}
-                        
-                        {% if patient.comorbidities %}
-                        <h6>Comorbidities</h6>
-                        <p>{{ patient.comorbidities }}</p>
-                        {% endif %}
+                <!-- View Mode -->
+                <div id="medical-view" class="view-mode">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Primary Diagnosis</h6>
+                            <p>{{ patient.primary_diagnosis }}</p>
+
+                            {% if patient.secondary_diagnoses %}
+                            <h6>Secondary Diagnoses</h6>
+                            <p>{{ patient.secondary_diagnoses }}</p>
+                            {% endif %}
+
+                            {% if patient.comorbidities %}
+                            <h6>Comorbidities</h6>
+                            <p>{{ patient.comorbidities }}</p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Current Treatments</h6>
+                            <p>{{ patient.current_treatments|default:"None recorded" }}</p>
+
+                            <h6>Treatment History</h6>
+                            <p>{{ patient.treatment_history|default:"None recorded" }}</p>
+
+                            <h6>Medication Adherence</h6>
+                            <p>{{ patient.medication_adherence|default:"Not specified" }}</p>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <h6>Current Treatments</h6>
-                        <p>{{ patient.current_treatments|default:"None recorded" }}</p>
-                        
-                        <h6>Treatment History</h6>
-                        <p>{{ patient.treatment_history|default:"None recorded" }}</p>
-                        
-                        <h6>Medication Adherence</h6>
-                        <p>{{ patient.medication_adherence|default:"Not specified" }}</p>
+                </div>
+
+                <!-- Edit Mode -->
+                <div id="medical-edit" class="edit-mode" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Primary Diagnosis:</strong></label>
+                                <input type="text" name="primary_diagnosis" class="form-control" value="{{ patient.primary_diagnosis }}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Secondary Diagnoses:</strong></label>
+                                <textarea name="secondary_diagnoses" class="form-control" rows="3">{{ patient.secondary_diagnoses }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Comorbidities:</strong></label>
+                                <textarea name="comorbidities" class="form-control" rows="3">{{ patient.comorbidities }}</textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Current Treatments:</strong></label>
+                                <textarea name="current_treatments" class="form-control" rows="3">{{ patient.current_treatments }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Treatment History:</strong></label>
+                                <textarea name="treatment_history" class="form-control" rows="3">{{ patient.treatment_history }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Medication Adherence:</strong></label>
+                                <select name="medication_adherence" class="form-select">
+                                    <option value="Excellent" {% if patient.medication_adherence == "Excellent" %}selected{% endif %}>Excellent</option>
+                                    <option value="Good" {% if patient.medication_adherence == "Good" %}selected{% endif %}>Good</option>
+                                    <option value="Fair" {% if patient.medication_adherence == "Fair" %}selected{% endif %}>Fair</option>
+                                    <option value="Poor" {% if patient.medication_adherence == "Poor" %}selected{% endif %}>Poor</option>
+                                    <option value="Unknown" {% if patient.medication_adherence == "Unknown" %}selected{% endif %}>Unknown</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -97,24 +206,54 @@
                 <h5 class="mb-0">Visit Information</h5>
             </div>
             <div class="card-body">
-                <table class="table table-sm">
-                    <tr>
-                        <td><strong>Last Visit:</strong></td>
-                        <td>{{ patient.last_visit_date }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Visit Frequency:</strong></td>
-                        <td>{{ patient.visit_frequency }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Emergency Visits (6m):</strong></td>
-                        <td>{{ patient.emergency_visits_6m }}</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Hospitalizations (6m):</strong></td>
-                        <td>{{ patient.hospitalizations_6m }}</td>
-                    </tr>
-                </table>
+                <!-- View Mode -->
+                <div id="visit-view" class="view-mode">
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>Last Visit:</strong></td>
+                            <td>{{ patient.last_visit_date }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Visit Frequency:</strong></td>
+                            <td>{{ patient.visit_frequency }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Emergency Visits (6m):</strong></td>
+                            <td>{{ patient.emergency_visits_6m }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Hospitalizations (6m):</strong></td>
+                            <td>{{ patient.hospitalizations_6m }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Edit Mode -->
+                <div id="visit-edit" class="edit-mode" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Last Visit:</strong></label>
+                        <input type="date" name="last_visit_date" class="form-control" value="{{ patient.last_visit_date|date:'Y-m-d' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Visit Frequency:</strong></label>
+                        <select name="visit_frequency" class="form-select">
+                            <option value="Weekly" {% if patient.visit_frequency == "Weekly" %}selected{% endif %}>Weekly</option>
+                            <option value="Monthly" {% if patient.visit_frequency == "Monthly" %}selected{% endif %}>Monthly</option>
+                            <option value="Quarterly" {% if patient.visit_frequency == "Quarterly" %}selected{% endif %}>Quarterly</option>
+                            <option value="Semi-annually" {% if patient.visit_frequency == "Semi-annually" %}selected{% endif %}>Semi-annually</option>
+                            <option value="Annually" {% if patient.visit_frequency == "Annually" %}selected{% endif %}>Annually</option>
+                            <option value="As needed" {% if patient.visit_frequency == "As needed" %}selected{% endif %}>As needed</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Emergency Visits (6m):</strong></label>
+                        <input type="number" name="emergency_visits_6m" class="form-control" value="{{ patient.emergency_visits_6m }}" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Hospitalizations (6m):</strong></label>
+                        <input type="number" name="hospitalizations_6m" class="form-control" value="{{ patient.hospitalizations_6m }}" min="0">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -126,21 +265,55 @@
                 <h5 class="mb-0">Risk Factors & History</h5>
             </div>
             <div class="card-body">
-                {% if patient.risk_factors %}
-                <h6>Risk Factors</h6>
-                <p>{{ patient.risk_factors }}</p>
-                {% endif %}
-                
-                {% if patient.family_history %}
-                <h6>Family History</h6>
-                <p>{{ patient.family_history }}</p>
-                {% endif %}
-                
-                <h6>Insurance Type</h6>
-                <p>{{ patient.insurance_type|default:"Not specified" }}</p>
-                
-                <h6>Medication Access</h6>
-                <p>{{ patient.medication_access|default:"Not specified" }}</p>
+                <!-- View Mode -->
+                <div id="risk-view" class="view-mode">
+                    {% if patient.risk_factors %}
+                    <h6>Risk Factors</h6>
+                    <p>{{ patient.risk_factors }}</p>
+                    {% endif %}
+
+                    {% if patient.family_history %}
+                    <h6>Family History</h6>
+                    <p>{{ patient.family_history }}</p>
+                    {% endif %}
+
+                    <h6>Insurance Type</h6>
+                    <p>{{ patient.insurance_type|default:"Not specified" }}</p>
+
+                    <h6>Medication Access</h6>
+                    <p>{{ patient.medication_access|default:"Not specified" }}</p>
+                </div>
+
+                <!-- Edit Mode -->
+                <div id="risk-edit" class="edit-mode" style="display: none;">
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Risk Factors:</strong></label>
+                        <textarea name="risk_factors" class="form-control" rows="3">{{ patient.risk_factors }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Family History:</strong></label>
+                        <textarea name="family_history" class="form-control" rows="3">{{ patient.family_history }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Insurance Type:</strong></label>
+                        <select name="insurance_type" class="form-select">
+                            <option value="Medicare" {% if patient.insurance_type == "Medicare" %}selected{% endif %}>Medicare</option>
+                            <option value="Medicaid" {% if patient.insurance_type == "Medicaid" %}selected{% endif %}>Medicaid</option>
+                            <option value="Private" {% if patient.insurance_type == "Private" %}selected{% endif %}>Private</option>
+                            <option value="Self-pay" {% if patient.insurance_type == "Self-pay" %}selected{% endif %}>Self-pay</option>
+                            <option value="Other" {% if patient.insurance_type == "Other" %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Medication Access:</strong></label>
+                        <select name="medication_access" class="form-select">
+                            <option value="Excellent" {% if patient.medication_access == "Excellent" %}selected{% endif %}>Excellent</option>
+                            <option value="Good" {% if patient.medication_access == "Good" %}selected{% endif %}>Good</option>
+                            <option value="Limited" {% if patient.medication_access == "Limited" %}selected{% endif %}>Limited</option>
+                            <option value="Poor" {% if patient.medication_access == "Poor" %}selected{% endif %}>Poor</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -285,13 +458,146 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body text-center">
-                <a href="{% url 'patient_database' %}" class="btn btn-secondary me-2">← Back to Patients</a>
-                {% if user.userprofile.role == 'HCP' %}
-                    <a href="{% url 'add_patient' %}" class="btn btn-primary">Add Another Patient</a>
-                {% endif %}
+                <!-- View Mode Actions -->
+                <div id="view-actions" class="view-mode">
+                    <a href="{% url 'patient_database' %}" class="btn btn-secondary me-2">← Back to Patients</a>
+                    {% if user_role == 'HCP' %}
+                        <a href="{% url 'add_patient' %}" class="btn btn-primary">Add Another Patient</a>
+                    {% endif %}
+                </div>
+
+                <!-- Edit Mode Actions -->
+                <div id="edit-actions" class="edit-mode" style="display: none;">
+                    <button type="submit" form="patientForm" class="btn btn-success me-2">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                    <button type="button" class="btn btn-secondary me-2" id="cancelEditBtn">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <a href="{% url 'patient_database' %}" class="btn btn-outline-secondary">← Back to Patients</a>
+                </div>
+                    </form>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+{% if user_role == 'HCP' %}
+<div class="modal fade" id="deletePatientModal" tabindex="-1" aria-labelledby="deletePatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deletePatientModalLabel">Delete Patient</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Warning:</strong> This action cannot be undone.
+                </div>
+                <p>Are you sure you want to delete patient <strong>{{ patient.patient_id }}</strong>?</p>
+                <p><strong>Patient:</strong> {{ patient.primary_diagnosis }}</p>
+                <p><strong>Last Visit:</strong> {{ patient.last_visit_date }}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="{% url 'delete_patient' patient.patient_id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete Patient
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const editBtn = document.getElementById('editPatientBtn');
+    const cancelBtn = document.getElementById('cancelEditBtn');
+    const viewModes = document.querySelectorAll('.view-mode');
+    const editModes = document.querySelectorAll('.edit-mode');
+
+    // Toggle edit mode
+    if (editBtn) {
+        editBtn.addEventListener('click', function() {
+            // Hide view modes, show edit modes
+            viewModes.forEach(el => el.style.display = 'none');
+            editModes.forEach(el => el.style.display = 'block');
+
+            // Change button text
+            editBtn.innerHTML = '<i class="fas fa-eye"></i> View Mode';
+            editBtn.id = 'viewPatientBtn';
+
+            // Add new event listener for view mode
+            editBtn.addEventListener('click', exitEditMode);
+        });
+    }
+
+    // Cancel edit mode
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', exitEditMode);
+    }
+
+    function exitEditMode() {
+        // Show view modes, hide edit modes
+        viewModes.forEach(el => el.style.display = 'block');
+        editModes.forEach(el => el.style.display = 'none');
+
+        // Reset button
+        const viewBtn = document.getElementById('viewPatientBtn');
+        if (viewBtn) {
+            viewBtn.innerHTML = '<i class="fas fa-edit"></i> Edit Patient';
+            viewBtn.id = 'editPatientBtn';
+        }
+
+        // Reload page to reset form values
+        location.reload();
+    }
+
+    // Form validation
+    const patientForm = document.getElementById('patientForm');
+    if (patientForm) {
+        patientForm.addEventListener('submit', function(e) {
+            const primaryDiagnosis = document.querySelector('input[name="primary_diagnosis"]');
+            if (primaryDiagnosis && !primaryDiagnosis.value.trim()) {
+                e.preventDefault();
+                alert('Primary diagnosis is required.');
+                primaryDiagnosis.focus();
+                return false;
+            }
+        });
+    }
+});
+</script>
+
+<style>
+.edit-mode {
+    border-left: 4px solid #007bff;
+    padding-left: 10px;
+}
+
+.view-mode {
+    transition: all 0.3s ease;
+}
+
+.edit-mode .form-control,
+.edit-mode .form-select {
+    border-color: #007bff;
+}
+
+.edit-mode .form-control:focus,
+.edit-mode .form-select:focus {
+    border-color: #0056b3;
+    box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+}
+
+.modal-body .alert {
+    margin-bottom: 15px;
+}
+</style>
 {% endblock %}
 

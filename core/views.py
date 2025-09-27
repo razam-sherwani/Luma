@@ -7,6 +7,8 @@ from django.db import models
 from datetime import date, timedelta
 import json
 import csv
+import pandas as pd
+import io
 from .models import (HCP, ResearchUpdate, EMRData, Engagement, UserProfile, HCRRecommendation, 
                     PatientCohort, TreatmentOutcome, CohortRecommendation, ActionableInsight,
                     AnonymizedPatient, PatientCluster, ClusterMembership, PatientOutcome, 
@@ -358,20 +360,21 @@ def hcp_profile(request, hcp_id):
 @login_required
 def patient_database(request):
     """Display all patients in a database view"""
-    # Get filter parameters
+    # Get filter and search parameters
     current_specialty = request.GET.get('specialty', '')
     current_diagnosis = request.GET.get('diagnosis', '')
     current_hcp = request.GET.get('hcp', '')
-    
+    search_query = request.GET.get('search', '').strip()
+
     # Get user profile to determine role
     user_profile, created = UserProfile.objects.get_or_create(
         user=request.user,
         defaults={'role': 'HCR'}
     )
-    
+
     # Get all patients
     patients = AnonymizedPatient.objects.select_related('hcp').all()
-    
+
     # If user is an HCP, only show their patients
     if user_profile.role == 'HCP':
         try:
@@ -380,7 +383,29 @@ def patient_database(request):
         except HCP.DoesNotExist:
             # If HCP profile doesn't exist, show no patients
             patients = AnonymizedPatient.objects.none()
-    
+
+    # Apply search filter first (most important)
+    if search_query:
+        patients = patients.filter(
+            Q(patient_id__icontains=search_query) |
+            Q(primary_diagnosis__icontains=search_query) |
+            Q(secondary_diagnoses__icontains=search_query) |
+            Q(comorbidities__icontains=search_query) |
+            Q(current_treatments__icontains=search_query) |
+            Q(treatment_history__icontains=search_query) |
+            Q(risk_factors__icontains=search_query) |
+            Q(family_history__icontains=search_query) |
+            Q(hcp__name__icontains=search_query) |
+            Q(hcp__specialty__icontains=search_query) |
+            Q(age_group__icontains=search_query) |
+            Q(gender__icontains=search_query) |
+            Q(race__icontains=search_query) |
+            Q(ethnicity__icontains=search_query) |
+            Q(zip_code_prefix__icontains=search_query) |
+            Q(insurance_type__icontains=search_query) |
+            Q(medication_adherence__icontains=search_query)
+        )
+
     # Apply additional filters
     if current_specialty:
         patients = patients.filter(hcp__specialty=current_specialty)
@@ -388,16 +413,27 @@ def patient_database(request):
         patients = patients.filter(primary_diagnosis__icontains=current_diagnosis)
     if current_hcp:
         patients = patients.filter(hcp__name__icontains=current_hcp)
-    
-    # Get unique values for filter dropdowns
-    specialties = list(set(AnonymizedPatient.objects.values_list('hcp__specialty', flat=True)))
+
+    # Get unique values for filter dropdowns (from all accessible patients, not filtered)
+    all_patients = AnonymizedPatient.objects.select_related('hcp').all()
+    if user_profile.role == 'HCP':
+        try:
+            hcp = HCP.objects.get(user=request.user)
+            all_patients = all_patients.filter(hcp=hcp)
+        except HCP.DoesNotExist:
+            all_patients = AnonymizedPatient.objects.none()
+
+    specialties = list(set(all_patients.values_list('hcp__specialty', flat=True)))
     specialties = [s for s in specialties if s]
-    
-    diagnoses = list(set(AnonymizedPatient.objects.values_list('primary_diagnosis', flat=True)))
+
+    diagnoses = list(set(all_patients.values_list('primary_diagnosis', flat=True)))
     diagnoses = [d for d in diagnoses if d]
-    
-    hcps = HCP.objects.all()
-    
+
+    hcps = HCP.objects.all() if user_profile.role == 'HCR' else []
+
+    # Order patients by most recent visit
+    patients = patients.order_by('-last_visit_date', 'patient_id')
+
     context = {
         'patients': patients,
         'specialties': specialties,
@@ -406,6 +442,7 @@ def patient_database(request):
         'current_specialty': current_specialty,
         'current_diagnosis': current_diagnosis,
         'current_hcp': current_hcp,
+        'search_query': search_query,
         'show_hcp_column': user_profile.role == 'HCR',
         'user_role': user_profile.role,
         'page_title': 'Patient Database'
@@ -470,14 +507,70 @@ def add_patient(request):
     if request.user.userprofile.role != 'HCP':
         messages.error(request, 'Only Healthcare Providers can add patients.')
         return redirect('dashboard')
-    
-    # This would handle adding new patients
-    # For now, return a simple response
+
     if request.method == 'POST':
-        messages.success(request, 'Patient added successfully!')
-        return redirect('patient_database')
-    
-    context = {}
+        try:
+            # Get the HCP profile
+            hcp = HCP.objects.get(user=request.user)
+
+            # Generate a unique patient ID
+            import uuid
+            patient_id = f"PAT_{uuid.uuid4().hex[:8].upper()}"
+
+            # Create the patient record
+            patient = AnonymizedPatient.objects.create(
+                patient_id=patient_id,
+                hcp=hcp,
+                age_group=request.POST.get('age_group'),
+                gender=request.POST.get('gender'),
+                race=request.POST.get('race'),
+                ethnicity=request.POST.get('ethnicity'),
+                zip_code_prefix=request.POST.get('zip_code_prefix'),
+                primary_diagnosis=request.POST.get('primary_diagnosis'),
+                secondary_diagnoses=request.POST.get('secondary_diagnoses', ''),
+                comorbidities=request.POST.get('comorbidities', ''),
+                current_treatments=request.POST.get('current_treatments', ''),
+                treatment_history=request.POST.get('treatment_history', ''),
+                medication_adherence=request.POST.get('medication_adherence', ''),
+                last_visit_date=request.POST.get('last_visit_date'),
+                visit_frequency=request.POST.get('visit_frequency', ''),
+                emergency_visits_6m=int(request.POST.get('emergency_visits_6m', 0)),
+                hospitalizations_6m=int(request.POST.get('hospitalizations_6m', 0)),
+                risk_factors=request.POST.get('risk_factors', ''),
+                family_history=request.POST.get('family_history', ''),
+                insurance_type=request.POST.get('insurance_type', ''),
+                medication_access=request.POST.get('medication_access', ''),
+            )
+
+            messages.success(request, f'Patient {patient.patient_id} added successfully!')
+            return redirect('patient_database')
+
+        except HCP.DoesNotExist:
+            messages.error(request, 'HCP profile not found. Please contact support.')
+            return redirect('dashboard')
+        except Exception as e:
+            messages.error(request, f'Error adding patient: {str(e)}')
+
+    # Prepare form choices
+    age_groups = ['18-25', '26-35', '36-45', '46-55', '56-65', '66-75', '76+']
+    genders = AnonymizedPatient.GENDER_CHOICES
+    races = AnonymizedPatient.RACE_CHOICES
+    ethnicities = AnonymizedPatient.ETHNICITY_CHOICES
+    medication_adherences = ['Excellent', 'Good', 'Fair', 'Poor', 'Unknown']
+    visit_frequencies = ['Weekly', 'Monthly', 'Quarterly', 'Semi-annually', 'Annually', 'As needed']
+    insurance_types = ['Medicare', 'Medicaid', 'Private', 'Self-pay', 'Other']
+    medication_accesses = ['Excellent', 'Good', 'Limited', 'Poor']
+
+    context = {
+        'age_groups': age_groups,
+        'genders': genders,
+        'races': races,
+        'ethnicities': ethnicities,
+        'medication_adherences': medication_adherences,
+        'visit_frequencies': visit_frequencies,
+        'insurance_types': insurance_types,
+        'medication_accesses': medication_accesses,
+    }
     return render(request, 'core/add_patient.html', context)
 
 @login_required
@@ -951,3 +1044,314 @@ def generate_dynamic_drug_recommendations():
     # Sort by priority score and return top recommendations
     recommendations.sort(key=lambda x: x['priority_score'], reverse=True)
     return recommendations[:8]  # Return top 8 dynamic recommendations
+
+def parse_emr_file(emr_file):
+    """Parse EMR file and extract patient data"""
+    try:
+        # Read file content
+        file_extension = emr_file.name.lower().split('.')[-1]
+
+        if file_extension == 'csv':
+            # Read CSV file
+            df = pd.read_csv(io.StringIO(emr_file.read().decode('utf-8')))
+        elif file_extension in ['xlsx', 'xls']:
+            # Read Excel file
+            df = pd.read_excel(emr_file)
+        else:
+            return None, "Unsupported file format. Please upload CSV or Excel files."
+
+        # Define expected columns and their mappings
+        column_mappings = {
+            # Demographics
+            'age': ['age', 'age_group', 'patient_age'],
+            'gender': ['gender', 'sex', 'patient_gender'],
+            'race': ['race', 'ethnicity', 'patient_race'],
+            'zip_code': ['zip', 'zip_code', 'zipcode', 'postal_code'],
+
+            # Medical
+            'primary_diagnosis': ['diagnosis', 'primary_diagnosis', 'main_diagnosis', 'condition'],
+            'secondary_diagnoses': ['secondary_diagnosis', 'secondary_diagnoses', 'other_diagnoses'],
+            'comorbidities': ['comorbidities', 'comorbidity', 'other_conditions'],
+
+            # Treatment
+            'current_treatments': ['treatment', 'current_treatment', 'medications', 'current_medications'],
+            'treatment_history': ['treatment_history', 'past_treatments', 'medication_history'],
+
+            # Vital signs
+            'last_visit_date': ['visit_date', 'last_visit', 'appointment_date', 'date'],
+            'emergency_visits': ['emergency_visits', 'er_visits', 'emergency_room_visits'],
+            'hospitalizations': ['hospitalizations', 'hospital_admissions', 'admissions'],
+
+            # Additional
+            'risk_factors': ['risk_factors', 'risks', 'patient_risks'],
+            'family_history': ['family_history', 'family_medical_history'],
+            'insurance': ['insurance', 'insurance_type', 'coverage'],
+        }
+
+        # Extract patient data
+        patient_data = {}
+
+        # Normalize column names
+        df.columns = [col.lower().strip().replace(' ', '_') for col in df.columns]
+
+        # Map columns to expected fields
+        for field, possible_columns in column_mappings.items():
+            for col in possible_columns:
+                if col in df.columns:
+                    patient_data[field] = df[col].iloc[0] if not df[col].empty else ''
+                    break
+            if field not in patient_data:
+                patient_data[field] = ''
+
+        # Process age group
+        if 'age' in patient_data and patient_data['age']:
+            try:
+                age = int(patient_data['age'])
+                if age < 26:
+                    patient_data['age_group'] = '18-25'
+                elif age < 36:
+                    patient_data['age_group'] = '26-35'
+                elif age < 46:
+                    patient_data['age_group'] = '36-45'
+                elif age < 56:
+                    patient_data['age_group'] = '46-55'
+                elif age < 66:
+                    patient_data['age_group'] = '56-65'
+                elif age < 76:
+                    patient_data['age_group'] = '66-75'
+                else:
+                    patient_data['age_group'] = '76+'
+            except (ValueError, TypeError):
+                patient_data['age_group'] = '26-35'  # Default
+        else:
+            patient_data['age_group'] = '26-35'  # Default
+
+        # Process gender
+        gender_map = {'m': 'M', 'male': 'M', 'f': 'F', 'female': 'F'}
+        if patient_data.get('gender'):
+            patient_data['gender'] = gender_map.get(str(patient_data['gender']).lower(), 'U')
+        else:
+            patient_data['gender'] = 'U'
+
+        # Process race
+        race_map = {
+            'white': 'WHITE', 'caucasian': 'WHITE',
+            'black': 'BLACK', 'african american': 'BLACK',
+            'asian': 'ASIAN', 'pacific islander': 'PACIFIC',
+            'native american': 'NATIVE', 'indian': 'NATIVE'
+        }
+        if patient_data.get('race'):
+            patient_data['race'] = race_map.get(str(patient_data['race']).lower(), 'OTHER')
+        else:
+            patient_data['race'] = 'OTHER'
+
+        # Process zip code
+        if patient_data.get('zip_code'):
+            zip_str = str(patient_data['zip_code']).strip()
+            if len(zip_str) >= 5:
+                patient_data['zip_code_prefix'] = zip_str[:5]
+            else:
+                patient_data['zip_code_prefix'] = '00000'
+        else:
+            patient_data['zip_code_prefix'] = '00000'
+
+        # Process dates
+        if patient_data.get('last_visit_date'):
+            try:
+                # Try to parse the date
+                visit_date = pd.to_datetime(patient_data['last_visit_date']).date()
+                patient_data['last_visit_date'] = visit_date
+            except:
+                patient_data['last_visit_date'] = date.today()
+        else:
+            patient_data['last_visit_date'] = date.today()
+
+        # Process numeric fields
+        numeric_fields = ['emergency_visits', 'hospitalizations']
+        for field in numeric_fields:
+            if patient_data.get(field):
+                try:
+                    patient_data[field] = int(patient_data[field])
+                except:
+                    patient_data[field] = 0
+            else:
+                patient_data[field] = 0
+
+        # Set defaults for required fields
+        if not patient_data.get('primary_diagnosis'):
+            patient_data['primary_diagnosis'] = 'General Medical Condition'
+
+        return patient_data, None
+
+    except Exception as e:
+        return None, f"Error parsing EMR file: {str(e)}"
+
+@login_required
+def upload_emr_patient(request):
+    """Upload EMR file and create patient automatically"""
+    # Check if user is an HCP
+    if request.user.userprofile.role != 'HCP':
+        messages.error(request, 'Only Healthcare Providers can upload EMR files.')
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        try:
+            # Get the HCP profile
+            hcp = HCP.objects.get(user=request.user)
+
+            # Check if file was uploaded
+            if 'emr_file' not in request.FILES:
+                messages.error(request, 'Please select an EMR file to upload.')
+                return redirect('add_patient')
+
+            emr_file = request.FILES['emr_file']
+
+            # Parse the EMR file
+            patient_data, error = parse_emr_file(emr_file)
+
+            if error:
+                messages.error(request, error)
+                return redirect('add_patient')
+
+            if not patient_data:
+                messages.error(request, 'No patient data could be extracted from the file.')
+                return redirect('add_patient')
+
+            # Generate a unique patient ID
+            import uuid
+            patient_id = f"PAT_{uuid.uuid4().hex[:8].upper()}"
+
+            # Create the patient record
+            patient = AnonymizedPatient.objects.create(
+                patient_id=patient_id,
+                hcp=hcp,
+                age_group=patient_data.get('age_group', '26-35'),
+                gender=patient_data.get('gender', 'U'),
+                race=patient_data.get('race', 'OTHER'),
+                ethnicity='NON_HISPANIC',  # Default
+                zip_code_prefix=patient_data.get('zip_code_prefix', '00000'),
+                primary_diagnosis=patient_data.get('primary_diagnosis', 'General Medical Condition'),
+                secondary_diagnoses=patient_data.get('secondary_diagnoses', ''),
+                comorbidities=patient_data.get('comorbidities', ''),
+                current_treatments=patient_data.get('current_treatments', ''),
+                treatment_history=patient_data.get('treatment_history', ''),
+                medication_adherence='Good',  # Default
+                last_visit_date=patient_data.get('last_visit_date', date.today()),
+                visit_frequency='Monthly',  # Default
+                emergency_visits_6m=patient_data.get('emergency_visits', 0),
+                hospitalizations_6m=patient_data.get('hospitalizations', 0),
+                risk_factors=patient_data.get('risk_factors', ''),
+                family_history=patient_data.get('family_history', ''),
+                insurance_type=patient_data.get('insurance', 'Private'),
+                medication_access='Good',  # Default
+            )
+
+            # Create EMR data points if additional data exists
+            for key, value in patient_data.items():
+                if key not in ['age_group', 'gender', 'race', 'zip_code_prefix', 'primary_diagnosis',
+                              'secondary_diagnoses', 'comorbidities', 'current_treatments',
+                              'treatment_history', 'last_visit_date', 'emergency_visits',
+                              'hospitalizations', 'risk_factors', 'family_history'] and value:
+                    EMRDataPoint.objects.create(
+                        patient=patient,
+                        data_type='LAB_RESULT',
+                        metric_name=key.replace('_', ' ').title(),
+                        value=str(value),
+                        date_recorded=date.today(),
+                    )
+
+            messages.success(request, f'Patient {patient.patient_id} created successfully from EMR file!')
+            return redirect('patient_database')
+
+        except HCP.DoesNotExist:
+            messages.error(request, 'HCP profile not found. Please contact support.')
+            return redirect('dashboard')
+        except Exception as e:
+            messages.error(request, f'Error processing EMR file: {str(e)}')
+            return redirect('add_patient')
+
+    return redirect('add_patient')
+
+@login_required
+def update_patient(request, patient_id):
+    """Update patient information - HCPs only"""
+    # Check if user is an HCP
+    if request.user.userprofile.role != 'HCP':
+        messages.error(request, 'Only Healthcare Providers can update patients.')
+        return redirect('patient_detail', patient_id=patient_id)
+
+    try:
+        # Get the HCP profile
+        hcp = HCP.objects.get(user=request.user)
+
+        # Get the patient and ensure it belongs to this HCP
+        patient = get_object_or_404(AnonymizedPatient, patient_id=patient_id, hcp=hcp)
+
+        if request.method == 'POST':
+            try:
+                # Update patient fields
+                patient.age_group = request.POST.get('age_group', patient.age_group)
+                patient.gender = request.POST.get('gender', patient.gender)
+                patient.race = request.POST.get('race', patient.race)
+                patient.ethnicity = request.POST.get('ethnicity', patient.ethnicity)
+                patient.zip_code_prefix = request.POST.get('zip_code_prefix', patient.zip_code_prefix)
+                patient.primary_diagnosis = request.POST.get('primary_diagnosis', patient.primary_diagnosis)
+                patient.secondary_diagnoses = request.POST.get('secondary_diagnoses', patient.secondary_diagnoses)
+                patient.comorbidities = request.POST.get('comorbidities', patient.comorbidities)
+                patient.current_treatments = request.POST.get('current_treatments', patient.current_treatments)
+                patient.treatment_history = request.POST.get('treatment_history', patient.treatment_history)
+                patient.medication_adherence = request.POST.get('medication_adherence', patient.medication_adherence)
+                patient.last_visit_date = request.POST.get('last_visit_date', patient.last_visit_date)
+                patient.visit_frequency = request.POST.get('visit_frequency', patient.visit_frequency)
+                patient.emergency_visits_6m = int(request.POST.get('emergency_visits_6m', patient.emergency_visits_6m))
+                patient.hospitalizations_6m = int(request.POST.get('hospitalizations_6m', patient.hospitalizations_6m))
+                patient.risk_factors = request.POST.get('risk_factors', patient.risk_factors)
+                patient.family_history = request.POST.get('family_history', patient.family_history)
+                patient.insurance_type = request.POST.get('insurance_type', patient.insurance_type)
+                patient.medication_access = request.POST.get('medication_access', patient.medication_access)
+
+                patient.save()
+                messages.success(request, f'Patient {patient.patient_id} updated successfully!')
+                return redirect('patient_detail', patient_id=patient_id)
+
+            except Exception as e:
+                messages.error(request, f'Error updating patient: {str(e)}')
+
+        # If GET request, redirect to patient detail page
+        return redirect('patient_detail', patient_id=patient_id)
+
+    except HCP.DoesNotExist:
+        messages.error(request, 'HCP profile not found. Please contact support.')
+        return redirect('dashboard')
+
+@login_required
+def delete_patient(request, patient_id):
+    """Delete patient - HCPs only"""
+    # Check if user is an HCP
+    if request.user.userprofile.role != 'HCP':
+        messages.error(request, 'Only Healthcare Providers can delete patients.')
+        return redirect('patient_detail', patient_id=patient_id)
+
+    try:
+        # Get the HCP profile
+        hcp = HCP.objects.get(user=request.user)
+
+        # Get the patient and ensure it belongs to this HCP
+        patient = get_object_or_404(AnonymizedPatient, patient_id=patient_id, hcp=hcp)
+
+        if request.method == 'POST':
+            try:
+                patient_id_backup = patient.patient_id
+                patient.delete()
+                messages.success(request, f'Patient {patient_id_backup} has been deleted successfully.')
+                return redirect('patient_database')
+            except Exception as e:
+                messages.error(request, f'Error deleting patient: {str(e)}')
+                return redirect('patient_detail', patient_id=patient_id)
+
+        # If GET request, redirect to patient detail page
+        return redirect('patient_detail', patient_id=patient_id)
+
+    except HCP.DoesNotExist:
+        messages.error(request, 'HCP profile not found. Please contact support.')
+        return redirect('dashboard')

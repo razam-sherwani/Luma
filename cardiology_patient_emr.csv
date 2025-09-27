@@ -1,0 +1,33 @@
+Field,Value
+Patient_ID,CARD_456789
+Age,62
+Gender,Male
+Race,Black
+Zip,10001
+Diagnosis,Acute Myocardial Infarction
+Secondary_Diagnosis,Hypertension; Hyperlipidemia; Type 2 Diabetes
+Current_Medications,Aspirin 81mg daily; Metoprolol 50mg twice daily; Atorvastatin 80mg nightly; Clopidogrel 75mg daily
+Treatment_History,Emergency cardiac catheterization with drug-eluting stent placement to LAD; Completed 12 weeks cardiac rehabilitation
+Visit_Date,2024-09-22
+ER_Visits,1
+Hospital_Admissions,1
+Risk_Factors,Smoking 30 pack-years (quit after MI); Diabetes 15 years; Hypertension 10 years
+Family_Medical_History,Father: MI at age 58; Mother: Stroke at 72; Brother: Diabetes
+Insurance,Private
+Systolic_BP,128
+Diastolic_BP,78
+Pulse,68
+Weight,210
+Height,70
+BMI,30.1
+LDL_Cholesterol,85
+HDL_Cholesterol,42
+Triglycerides,180
+Ejection_Fraction,55
+Stress_Test_Result,Negative for inducible ischemia
+Troponin_Peak,15.6
+CK_MB_Peak,45
+BNP,125
+Medications_Compliance,Excellent
+Exercise_Tolerance,Walks 30 minutes daily without chest pain
+Diet_Adherence,Following cardiac diet with dietitian

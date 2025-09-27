@@ -11,5 +11,8 @@ urlpatterns = [
     path('patient/<str:patient_id>/', views.patient_detail, name='patient_detail'),
     path('cluster/<int:cluster_id>/', views.cluster_detail, name='cluster_detail'),
     path('add-patient/', views.add_patient, name='add_patient'),
+    path('upload-emr-patient/', views.upload_emr_patient, name='upload_emr_patient'),
+    path('patient/<str:patient_id>/update/', views.update_patient, name='update_patient'),
+    path('patient/<str:patient_id>/delete/', views.delete_patient, name='delete_patient'),
     path('cohort-cluster-network/', views.cohort_cluster_network, name='cohort_cluster_network'),
 ]
