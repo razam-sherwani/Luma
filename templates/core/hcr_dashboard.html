@@ -2,6 +2,12 @@
 
 {% block title %}HCR Dashboard - ProviderPulse{% endblock %}
 
+{% block extra_head %}
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+{% endblock %}
+
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
@@ -13,6 +19,8 @@
         <div class="badge bg-primary fs-6">{{ total_insights }} Active Insights</div>
         <div class="badge bg-warning fs-6">{{ high_priority_insights }} High Priority</div>
         <div class="badge bg-success fs-6">{{ total_patients_impacted }} Patients Impacted</div>
+        <div class="badge bg-info fs-6" id="patient-count">{{ total_patients }} Total Patients</div>
+        <small class="text-muted d-block mt-1">Last updated: {% now "M d, Y H:i:s" %}</small>
     </div>
 </div>
 
@@ -28,6 +36,9 @@
             </a>
             <a href="#research" class="btn btn-outline-secondary">
                 🔬 Research
+            </a>
+            <a href="{% url 'patient_database' %}" class="btn btn-primary">
+                👥 Patient Database
             </a>
         </div>
     </div>
@@ -158,11 +169,141 @@
     </div>
 </div>
 
-<!-- Patient Cohort Analysis Section -->
+<!-- AI-Powered Drug Recommendations Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">💊 AI-Powered Drug Recommendations</h5>
+                <small>Evidence-based drug suggestions based on patient clustering and success rates</small>
+            </div>
+            <div class="card-body">
+                {% if drug_recommendations %}
+                    <div class="row">
+                        {% for rec in drug_recommendations %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %}">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">
+                                            💊 {{ rec.drug_name }}
+                                        </h6>
+                                        <div>
+                                            <span class="badge bg-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %}">
+                                                {{ rec.priority }}
+                                            </span>
+                                            <span class="badge bg-success">{{ rec.success_rate|floatformat:1 }}% Success</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            <strong>Indication:</strong> {{ rec.indication }}<br>
+                                            <strong>Evidence Level:</strong> {{ rec.evidence_level }}<br>
+                                            <strong>Patient Count:</strong> {{ rec.patient_count }} similar patients<br>
+                                            <strong>Research Support:</strong> {{ rec.research_support|truncatewords:15 }}
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">{{ rec.hcp.name }} - {{ rec.hcp.specialty }}</small>
+                                            <div>
+                                                <a href="{% url 'hcp_profile' rec.hcp.id %}" class="btn btn-sm btn-outline-primary">View HCP</a>
+                                                <a href="{% url 'mark_recommendation_reviewed' rec.id %}" class="btn btn-sm btn-outline-success">Mark Reviewed</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No drug recommendations available. Run clustering analysis to generate recommendations.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Patient Clustering Analysis Section -->
 <div class="row mt-4">
     <div class="col-md-6">
         <div class="card">
             <div class="card-header bg-info text-white">
+                <h5 class="mb-0">🧠 AI Patient Clusters</h5>
+                <small>Machine learning-driven patient similarity groups</small>
+            </div>
+            <div class="card-body">
+                {% if patient_clusters %}
+                    {% for cluster in patient_clusters %}
+                        <div class="mb-3">
+                            <h6>
+                                <a href="{% url 'cluster_detail' cluster.id %}" class="text-decoration-none">
+                                    {{ cluster.name }}
+                                </a>
+                            </h6>
+                            <p class="text-muted mb-1">{{ cluster.description }}</p>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">{{ cluster.primary_diagnosis }} - {{ cluster.cluster_type }}</small>
+                                <div>
+                                    <span class="badge bg-primary">{{ cluster.patient_count }} patients</span>
+                                    <span class="badge bg-success">{{ cluster.success_rate|floatformat:1 }}% success</span>
+                                </div>
+                            </div>
+                            {% if cluster.common_treatments %}
+                                <small class="text-muted">Common treatments: {{ cluster.common_treatments|truncatewords:5 }}</small>
+                            {% endif %}
+                            <div class="mt-2">
+                                <a href="{% url 'cluster_detail' cluster.id %}" class="btn btn-sm btn-outline-primary">View Details</a>
+                            </div>
+                        </div>
+                        {% if not forloop.last %}<hr>{% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No patient clusters available. Run clustering analysis to generate clusters.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">💡 Cluster Insights</h5>
+                <small>AI-generated insights from patient clustering</small>
+            </div>
+            <div class="card-body">
+                {% if cluster_insights %}
+                    {% for insight in cluster_insights %}
+                        <div class="mb-3">
+                            <h6 class="text-{% if insight.confidence_score >= 0.8 %}success{% elif insight.confidence_score >= 0.6 %}warning{% else %}info{% endif %}">
+                                {% if insight.insight_type == 'TREATMENT_EFFECTIVENESS' %}💊
+                                {% elif insight.insight_type == 'PATTERN_DISCOVERY' %}🔍
+                                {% elif insight.insight_type == 'RISK_FACTORS' %}⚠️
+                                {% elif insight.insight_type == 'TREATMENT_GAPS' %}📊
+                                {% elif insight.insight_type == 'OPTIMIZATION_OPPORTUNITY' %}🚀
+                                {% endif %}
+                                {{ insight.title }}
+                            </h6>
+                            <p class="text-muted mb-1">{{ insight.description|truncatewords:20 }}</p>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">{{ insight.cluster.name }} ({{ insight.confidence_score|floatformat:2 }} confidence)</small>
+                                <span class="badge bg-{% if insight.confidence_score >= 0.8 %}success{% elif insight.confidence_score >= 0.6 %}warning{% else %}info{% endif %}">
+                                    {{ insight.confidence_score|floatformat:0 }}%
+                                </span>
+                            </div>
+                        </div>
+                        {% if not forloop.last %}<hr>{% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No cluster insights available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Patient Cohort Analysis Section -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
                 <h5 class="mb-0">👥 Patient Cohort Analysis</h5>
                 <small>Groups of patients with similar conditions</small>
             </div>
@@ -188,7 +329,7 @@
     
     <div class="col-md-6">
         <div class="card">
-            <div class="card-header bg-success text-white">
+            <div class="card-header bg-warning text-dark">
                 <h5 class="mb-0">💡 Cohort Recommendations</h5>
                 <small>Treatment optimization opportunities</small>
             </div>
@@ -205,6 +346,10 @@
                                 <span class="badge bg-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %}">
                                     {{ rec.priority }}
                                 </span>
+                            </div>
+                            <div class="mt-2">
+                                <a href="{% url 'hcp_profile' rec.hcp.id %}" class="btn btn-sm btn-outline-primary">View HCP</a>
+                                <a href="{% url 'mark_insight_addressed' rec.id %}" class="btn btn-sm btn-outline-success">Mark Addressed</a>
                             </div>
                         </div>
                         {% if not forloop.last %}<hr>{% endif %}

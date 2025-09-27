@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Patient Database - ProviderPulse{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>{{ page_title }}</h1>
+        <p class="text-muted mb-0">
+            {% if user_role == 'HCP' %}
+                Your patient database - manage your patients and their EMR data
+            {% else %}
+                Comprehensive view of all patient EMR data across HCPs
+            {% endif %}
+        </p>
+    </div>
+    <div class="text-end">
+        <div class="badge bg-primary fs-6">{{ patients|length }} Patients</div>
+        {% if user_role == 'HCP' %}
+            <a href="{% url 'add_patient' %}" class="btn btn-success ms-2">+ Add Patient</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">🔍 Filter Patients</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="specialty" class="form-label">Specialty</label>
+                        <select name="specialty" id="specialty" class="form-select">
+                            <option value="">All Specialties</option>
+                            {% for specialty in specialties %}
+                                <option value="{{ specialty }}" {% if current_specialty == specialty %}selected{% endif %}>
+                                    {{ specialty }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="diagnosis" class="form-label">Diagnosis</label>
+                        <select name="diagnosis" id="diagnosis" class="form-select">
+                            <option value="">All Diagnoses</option>
+                            {% for diagnosis in diagnoses %}
+                                <option value="{{ diagnosis }}" {% if current_diagnosis == diagnosis %}selected{% endif %}>
+                                    {{ diagnosis }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% if show_hcp_column %}
+                    <div class="col-md-3">
+                        <label for="hcp" class="form-label">HCP</label>
+                        <select name="hcp" id="hcp" class="form-select">
+                            <option value="">All HCPs</option>
+                            {% for hcp in hcps %}
+                                <option value="{{ hcp.name }}" {% if current_hcp == hcp.name %}selected{% endif %}>
+                                    {{ hcp.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Apply Filters</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Patient List -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">👥 Patient Records</h5>
+            </div>
+            <div class="card-body">
+                {% if patients %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Patient ID</th>
+                                    {% if show_hcp_column %}
+                                    <th>HCP</th>
+                                    <th>Specialty</th>
+                                    {% endif %}
+                                    <th>Primary Diagnosis</th>
+                                    <th>Age Group</th>
+                                    <th>Gender</th>
+                                    <th>Last Visit</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for patient in patients %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ patient.patient_id }}</strong>
+                                        </td>
+                                        {% if show_hcp_column %}
+                                        <td>
+                                            <a href="{% url 'hcp_profile' patient.hcp.id %}" class="text-decoration-none">
+                                                {{ patient.hcp.name }}
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary">{{ patient.hcp.specialty }}</span>
+                                        </td>
+                                        {% endif %}
+                                        <td>{{ patient.primary_diagnosis }}</td>
+                                        <td>{{ patient.age_group }}</td>
+                                        <td>{{ patient.get_gender_display }}</td>
+                                        <td>{{ patient.last_visit_date|date:"M d, Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'patient_detail' patient.patient_id %}" class="btn btn-sm btn-outline-primary">
+                                                View Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <h5 class="text-muted">No patients found</h5>
+                        <p class="text-muted">Try adjusting your filters or run the data seeder to populate patient data.</p>
+                        <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

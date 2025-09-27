@@ -35,3 +35,9 @@ def signup_view(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+def debug_csrf(request):
+    """Debug view for CSRF token issues"""
+    if request.method == 'POST':
+        messages.success(request, 'CSRF token is working correctly!')
+    return render(request, 'accounts/debug_csrf.html')

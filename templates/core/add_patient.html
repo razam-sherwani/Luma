@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Patient - ProviderPulse{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Add New Patient</h1>
+        <p class="text-muted mb-0">Add a new patient to your database</p>
+    </div>
+    <div class="text-end">
+        <a href="{% url 'patient_database' %}" class="btn btn-outline-secondary">← Back to Patients</a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Patient Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Demographics -->
+                    <h6 class="mb-3">Demographics</h6>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="age_group" class="form-label">Age Group *</label>
+                            <select name="age_group" id="age_group" class="form-select" required>
+                                <option value="">Select Age Group</option>
+                                {% for age_group in age_groups %}
+                                    <option value="{{ age_group }}">{{ age_group }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="gender" class="form-label">Gender *</label>
+                            <select name="gender" id="gender" class="form-select" required>
+                                <option value="">Select Gender</option>
+                                {% for value, label in genders %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="race" class="form-label">Race *</label>
+                            <select name="race" id="race" class="form-select" required>
+                                <option value="">Select Race</option>
+                                {% for value, label in races %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="ethnicity" class="form-label">Ethnicity *</label>
+                            <select name="ethnicity" id="ethnicity" class="form-select" required>
+                                <option value="">Select Ethnicity</option>
+                                {% for value, label in ethnicities %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="zip_code_prefix" class="form-label">Zip Code *</label>
+                        <input type="text" name="zip_code_prefix" id="zip_code_prefix" class="form-control" 
+                               placeholder="e.g., 10001" maxlength="5" pattern="[0-9]{5}" required>
+                    </div>
+                    
+                    <!-- Medical Information -->
+                    <h6 class="mb-3 mt-4">Medical Information</h6>
+                    <div class="mb-3">
+                        <label for="primary_diagnosis" class="form-label">Primary Diagnosis *</label>
+                        <input type="text" name="primary_diagnosis" id="primary_diagnosis" class="form-control" 
+                               placeholder="e.g., Type 2 Diabetes Mellitus" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="secondary_diagnoses" class="form-label">Secondary Diagnoses</label>
+                        <textarea name="secondary_diagnoses" id="secondary_diagnoses" class="form-control" 
+                                  rows="2" placeholder="Separate multiple diagnoses with semicolons"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="comorbidities" class="form-label">Comorbidities</label>
+                        <textarea name="comorbidities" id="comorbidities" class="form-control" 
+                                  rows="2" placeholder="Separate multiple comorbidities with semicolons"></textarea>
+                    </div>
+                    
+                    <!-- Treatment Information -->
+                    <h6 class="mb-3 mt-4">Treatment Information</h6>
+                    <div class="mb-3">
+                        <label for="current_treatments" class="form-label">Current Treatments</label>
+                        <textarea name="current_treatments" id="current_treatments" class="form-control" 
+                                  rows="2" placeholder="Separate multiple treatments with semicolons"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="treatment_history" class="form-label">Treatment History</label>
+                        <textarea name="treatment_history" id="treatment_history" class="form-control" 
+                                  rows="2" placeholder="Previous treatments and their outcomes"></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="medication_adherence" class="form-label">Medication Adherence</label>
+                            <select name="medication_adherence" id="medication_adherence" class="form-select">
+                                {% for adherence in medication_adherences %}
+                                    <option value="{{ adherence }}">{{ adherence }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="visit_frequency" class="form-label">Visit Frequency</label>
+                            <select name="visit_frequency" id="visit_frequency" class="form-select">
+                                {% for frequency in visit_frequencies %}
+                                    <option value="{{ frequency }}">{{ frequency }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Visit Information -->
+                    <h6 class="mb-3 mt-4">Visit Information</h6>
+                    <div class="mb-3">
+                        <label for="last_visit_date" class="form-label">Last Visit Date *</label>
+                        <input type="date" name="last_visit_date" id="last_visit_date" class="form-control" required>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="emergency_visits_6m" class="form-label">Emergency Visits (6 months)</label>
+                            <input type="number" name="emergency_visits_6m" id="emergency_visits_6m" class="form-control" 
+                                   min="0" value="0">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="hospitalizations_6m" class="form-label">Hospitalizations (6 months)</label>
+                            <input type="number" name="hospitalizations_6m" id="hospitalizations_6m" class="form-control" 
+                                   min="0" value="0">
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Information -->
+                    <h6 class="mb-3 mt-4">Additional Information</h6>
+                    <div class="mb-3">
+                        <label for="risk_factors" class="form-label">Risk Factors</label>
+                        <textarea name="risk_factors" id="risk_factors" class="form-control" 
+                                  rows="2" placeholder="e.g., Smoking, Obesity, Family history"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="family_history" class="form-label">Family History</label>
+                        <textarea name="family_history" id="family_history" class="form-control" 
+                                  rows="2" placeholder="Relevant family medical history"></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="insurance_type" class="form-label">Insurance Type</label>
+                            <select name="insurance_type" id="insurance_type" class="form-select">
+                                <option value="">Select Insurance Type</option>
+                                {% for insurance in insurance_types %}
+                                    <option value="{{ insurance }}">{{ insurance }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="medication_access" class="form-label">Medication Access</label>
+                            <select name="medication_access" id="medication_access" class="form-select">
+                                {% for access in medication_accesses %}
+                                    <option value="{{ access }}">{{ access }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary">Add Patient</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Set today's date as default for last visit date
+document.getElementById('last_visit_date').valueAsDate = new Date();
+</script>
+{% endblock %}

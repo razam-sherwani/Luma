@@ -2,7 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from datetime import date, timedelta
-from .models import HCP, ResearchUpdate, EMRData, Engagement, UserProfile, HCRRecommendation, PatientCohort, TreatmentOutcome, CohortRecommendation, ActionableInsight
+from .models import (HCP, ResearchUpdate, EMRData, Engagement, UserProfile, HCRRecommendation, 
+                    PatientCohort, TreatmentOutcome, CohortRecommendation, ActionableInsight,
+                    AnonymizedPatient, EMRDataPoint, PatientOutcome, PatientCluster, 
+                    ClusterMembership, ClusterInsight, DrugRecommendation)
 
 def generate_actionable_insights():
     """Generate intelligent insights for HCRs based on data analysis"""
@@ -197,6 +200,19 @@ def hcr_dashboard(request, user_profile):
         is_read=False
     ).order_by('-created_date')[:5]
     
+    # Get drug recommendations
+    drug_recommendations = DrugRecommendation.objects.filter(
+        is_reviewed=False
+    ).order_by('-priority', '-success_rate')[:10]
+    
+    # Get patient clusters
+    patient_clusters = PatientCluster.objects.all()[:10]
+    
+    # Get cluster insights
+    cluster_insights = ClusterInsight.objects.filter(
+        is_implemented=False
+    ).order_by('-confidence_score')[:10]
+    
     # Calculate summary statistics
     total_insights = ActionableInsight.objects.filter(is_addressed=False).count()
     high_priority_insights = ActionableInsight.objects.filter(
@@ -207,6 +223,9 @@ def hcr_dashboard(request, user_profile):
         ActionableInsight.objects.filter(is_addressed=False).values_list('patient_impact', flat=True)
     )
     
+    # Get total patient count
+    total_patients = AnonymizedPatient.objects.count()
+    
     context = {
         'user_role': 'HCR',
         'overdue_hcps': overdue_hcps,
@@ -216,14 +235,24 @@ def hcr_dashboard(request, user_profile):
         'actionable_insights': actionable_insights,
         'patient_cohorts': patient_cohorts,
         'cohort_recommendations': cohort_recommendations,
+        'drug_recommendations': drug_recommendations,
+        'patient_clusters': patient_clusters,
+        'cluster_insights': cluster_insights,
         'total_insights': total_insights,
         'high_priority_insights': high_priority_insights,
         'total_patients_impacted': total_patients_impacted,
+        'total_patients': total_patients,
     }
     return render(request, 'core/hcr_dashboard.html', context)
 
 def hcp_dashboard(request, user_profile):
     """Dashboard for Healthcare Providers"""
+    # Get the HCP associated with this user
+    try:
+        hcp = HCP.objects.get(user=request.user)
+    except HCP.DoesNotExist:
+        hcp = None
+    
     # Get all recommendations for this HCP (query not sliced yet)
     all_recommendations_query = HCRRecommendation.objects.filter(
         hcp_user=request.user
@@ -245,6 +274,16 @@ def hcp_dashboard(request, user_profile):
         specialty=user_profile.specialty
     ).order_by('-date')[:3] if user_profile.specialty else []
     
+    # Get HCP's patients
+    patients = []
+    patient_clusters = []
+    drug_recommendations = []
+    
+    if hcp:
+        patients = AnonymizedPatient.objects.filter(hcp=hcp).order_by('-last_visit_date')[:50]
+        patient_clusters = PatientCluster.objects.filter(hcp=hcp)
+        drug_recommendations = DrugRecommendation.objects.filter(hcp=hcp, is_reviewed=False)
+    
     context = {
         'user_role': 'HCP',
         'user_profile': user_profile,
@@ -252,6 +291,9 @@ def hcp_dashboard(request, user_profile):
         'specialty_research': specialty_research,
         'general_research': general_research,
         'unread_count': unread_count,
+        'patients': patients,
+        'patient_clusters': patient_clusters,
+        'drug_recommendations': drug_recommendations,
     }
     return render(request, 'core/hcp_dashboard.html', context)
 
@@ -274,6 +316,15 @@ def mark_insight_addressed(request, insight_id):
     return redirect('dashboard')
 
 @login_required
+def mark_recommendation_reviewed(request, recommendation_id):
+    """Mark a drug recommendation as reviewed"""
+    recommendation = get_object_or_404(DrugRecommendation, id=recommendation_id)
+    recommendation.is_reviewed = True
+    recommendation.save()
+    messages.success(request, 'Drug recommendation marked as reviewed.')
+    return redirect('dashboard')
+
+@login_required
 def hcp_profile(request, hcp_id):
     hcp = get_object_or_404(HCP, id=hcp_id)
     
@@ -292,10 +343,184 @@ def hcp_profile(request, hcp_id):
     emr_data = EMRData.objects.filter(hcp=hcp).order_by('-date')
     relevant_research = ResearchUpdate.objects.filter(specialty=hcp.specialty).order_by('-date')
     
+    # Get patient data for this HCP
+    patients = AnonymizedPatient.objects.filter(hcp=hcp).order_by('-last_visit_date')[:50]
+    patient_clusters = PatientCluster.objects.filter(hcp=hcp)
+    drug_recommendations = DrugRecommendation.objects.filter(hcp=hcp, is_reviewed=False)
+    
     context = {
         'hcp': hcp,
         'engagements': engagements,
         'emr_data': emr_data,
         'relevant_research': relevant_research,
+        'patients': patients,
+        'patient_clusters': patient_clusters,
+        'drug_recommendations': drug_recommendations,
     }
     return render(request, 'core/hcp_profile.html', context)
+
+@login_required
+def patient_database(request):
+    """View all patients across all HCPs for HCRs, or HCP's own patients for HCPs"""
+    user_profile = UserProfile.objects.get(user=request.user)
+    
+    # Get filter parameters
+    specialty_filter = request.GET.get('specialty', '')
+    diagnosis_filter = request.GET.get('diagnosis', '')
+    hcp_filter = request.GET.get('hcp', '')
+    
+    if user_profile.role == 'HCP':
+        # HCPs see only their own patients
+        patients = AnonymizedPatient.objects.filter(hcp__user=request.user).select_related('hcp')
+        page_title = "My Patients"
+        show_hcp_column = False
+    else:
+        # HCRs see all patients
+        patients = AnonymizedPatient.objects.select_related('hcp').all()
+        page_title = "All Patients"
+        show_hcp_column = True
+    
+    # Apply filters
+    if specialty_filter:
+        patients = patients.filter(hcp__specialty__icontains=specialty_filter)
+    if diagnosis_filter:
+        patients = patients.filter(primary_diagnosis__icontains=diagnosis_filter)
+    if hcp_filter and user_profile.role == 'HCR':
+        patients = patients.filter(hcp__name__icontains=hcp_filter)
+    
+    patients = patients.order_by('-last_visit_date')[:200]  # Increased limit to show more patients
+    
+    # Get filter options
+    specialties = HCP.objects.values_list('specialty', flat=True).distinct()
+    diagnoses = AnonymizedPatient.objects.values_list('primary_diagnosis', flat=True).distinct()
+    hcps = HCP.objects.all()
+    
+    context = {
+        'patients': patients,
+        'specialties': specialties,
+        'diagnoses': diagnoses,
+        'hcps': hcps,
+        'current_specialty': specialty_filter,
+        'current_diagnosis': diagnosis_filter,
+        'current_hcp': hcp_filter,
+        'page_title': page_title,
+        'show_hcp_column': show_hcp_column,
+        'user_role': user_profile.role,
+    }
+    return render(request, 'core/patient_database.html', context)
+
+@login_required
+def patient_detail(request, patient_id):
+    """View detailed patient information"""
+    patient = get_object_or_404(AnonymizedPatient, patient_id=patient_id)
+    
+    # Get patient's EMR data points
+    emr_data_points = EMRDataPoint.objects.filter(patient=patient).order_by('-date_recorded')
+    
+    # Get patient outcomes
+    outcomes = PatientOutcome.objects.filter(patient=patient).order_by('-outcome_date')
+    
+    # Get cluster memberships
+    cluster_memberships = ClusterMembership.objects.filter(patient=patient).select_related('cluster')
+    
+    context = {
+        'patient': patient,
+        'emr_data_points': emr_data_points,
+        'outcomes': outcomes,
+        'cluster_memberships': cluster_memberships,
+    }
+    return render(request, 'core/patient_detail.html', context)
+
+@login_required
+def cluster_detail(request, cluster_id):
+    """View detailed cluster information"""
+    cluster = get_object_or_404(PatientCluster, id=cluster_id)
+    
+    # Get cluster members
+    cluster_members = ClusterMembership.objects.filter(cluster=cluster).select_related('patient')
+    
+    # Get cluster insights
+    insights = ClusterInsight.objects.filter(cluster=cluster).order_by('-confidence_score')
+    
+    # Get drug recommendations for this cluster
+    drug_recommendations = DrugRecommendation.objects.filter(cluster=cluster)
+    
+    context = {
+        'cluster': cluster,
+        'cluster_members': cluster_members,
+        'insights': insights,
+        'drug_recommendations': drug_recommendations,
+    }
+    return render(request, 'core/cluster_detail.html', context)
+
+@login_required
+def add_patient(request):
+    """Add a new patient to HCP's database"""
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+    except UserProfile.DoesNotExist:
+        messages.error(request, 'User profile not found.')
+        return redirect('dashboard')
+    
+    if user_profile.role != 'HCP':
+        messages.error(request, 'Only HCPs can add patients.')
+        return redirect('dashboard')
+    
+    # Get the HCP associated with this user
+    try:
+        hcp = HCP.objects.get(user=request.user)
+    except HCP.DoesNotExist:
+        messages.error(request, 'HCP profile not found.')
+        return redirect('dashboard')
+    
+    if request.method == 'POST':
+        # Generate a unique patient ID
+        import random
+        patient_id = f"P{random.randint(100000, 999999)}"
+        while AnonymizedPatient.objects.filter(patient_id=patient_id).exists():
+            patient_id = f"P{random.randint(100000, 999999)}"
+        
+        # Create the patient
+        patient = AnonymizedPatient.objects.create(
+            patient_id=patient_id,
+            hcp=hcp,
+            age_group=request.POST.get('age_group'),
+            gender=request.POST.get('gender'),
+            race=request.POST.get('race'),
+            ethnicity=request.POST.get('ethnicity'),
+            zip_code_prefix=request.POST.get('zip_code_prefix'),
+            primary_diagnosis=request.POST.get('primary_diagnosis'),
+            secondary_diagnoses=request.POST.get('secondary_diagnoses', ''),
+            comorbidities=request.POST.get('comorbidities', ''),
+            current_treatments=request.POST.get('current_treatments', ''),
+            treatment_history=request.POST.get('treatment_history', ''),
+            medication_adherence=request.POST.get('medication_adherence', 'Good'),
+            last_lab_values={},
+            vital_signs={},
+            last_visit_date=request.POST.get('last_visit_date'),
+            visit_frequency=request.POST.get('visit_frequency', 'Monthly'),
+            emergency_visits_6m=int(request.POST.get('emergency_visits_6m', 0)),
+            hospitalizations_6m=int(request.POST.get('hospitalizations_6m', 0)),
+            risk_factors=request.POST.get('risk_factors', ''),
+            family_history=request.POST.get('family_history', ''),
+            insurance_type=request.POST.get('insurance_type', ''),
+            medication_access=request.POST.get('medication_access', 'Good')
+        )
+        
+        messages.success(request, f'Patient {patient_id} added successfully!')
+        return redirect('patient_detail', patient_id=patient_id)
+    
+    context = {
+        'hcp': hcp,
+        'age_groups': ['18-25', '26-35', '36-45', '46-55', '56-65', '66-75', '76+'],
+        'genders': [('M', 'Male'), ('F', 'Female'), ('O', 'Other'), ('U', 'Unknown')],
+        'races': [('WHITE', 'White'), ('BLACK', 'Black or African American'), ('ASIAN', 'Asian'), 
+                 ('NATIVE', 'American Indian or Alaska Native'), ('PACIFIC', 'Native Hawaiian or Other Pacific Islander'), 
+                 ('OTHER', 'Other'), ('UNKNOWN', 'Unknown')],
+        'ethnicities': [('HISPANIC', 'Hispanic or Latino'), ('NON_HISPANIC', 'Not Hispanic or Latino'), ('UNKNOWN', 'Unknown')],
+        'visit_frequencies': ['Weekly', 'Monthly', 'Quarterly', 'As needed'],
+        'medication_adherences': ['Excellent', 'Good', 'Fair', 'Poor'],
+        'insurance_types': ['Private', 'Medicare', 'Medicaid', 'Uninsured'],
+        'medication_accesses': ['Excellent', 'Good', 'Limited', 'Poor']
+    }
+    return render(request, 'core/add_patient.html', context)
