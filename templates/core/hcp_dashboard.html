@@ -16,9 +16,6 @@
             <span class="badge bg-danger fs-6">{{ unread_count }} New Recommendations</span>
         {% endif %}
         <a href="{% url 'patient_database' %}" class="btn btn-primary ms-2">My Patients</a>
-        <a href="{% url 'ai_cohort_identification' %}" class="btn btn-info ms-2">
-            <i class="fas fa-robot"></i> AI Cohorts
-        </a>
         {% if user.userprofile.role == 'HCP' %}
             <a href="{% url 'add_patient' %}" class="btn btn-success ms-2">+ Add Patient</a>
         {% endif %}
@@ -169,17 +166,7 @@
             </div>
             <div class="card-body">
                 <div class="row text-center">
-                    <div class="col-md-3">
-                        <div class="p-3">
-                            <a href="{% url 'ai_cohort_identification' %}" class="text-decoration-none">
-                                <div class="mb-2">
-                                    <i class="fas fa-robot fa-2x text-primary"></i>
-                                </div>
-                                <h6 class="text-primary">🤖 AI Cohort Identification</h6>
-                                <p class="small text-muted">Find treatment gaps and high-risk patients using clinical AI</p>
-                            </a>
-                        </div>
-                    </div>
+
                     <div class="col-md-3">
                         <div class="p-3">
                             <a href="{% url 'patient_database' %}" class="text-decoration-none">

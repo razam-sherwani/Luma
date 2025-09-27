@@ -40,9 +40,6 @@
             <a href="{% url 'patient_database' %}" class="btn btn-primary">
                 👥 Patient Database
             </a>
-            <a href="{% url 'ai_cohort_identification' %}" class="btn btn-warning">
-                🤖 AI Cohort Identification
-            </a>
         </div>
     </div>
 </div>
@@ -172,68 +169,6 @@
     </div>
 </div>
 
-<!-- AI Cohort Identification Feature Card -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card border-primary">
-            <div class="card-header bg-gradient text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="mb-0">🤖 AI Cohort Identification</h5>
-                        <small>Intelligent identification of high-potential patient cohorts using clinical AI</small>
-                    </div>
-                    <div class="text-end">
-                        <div class="badge bg-warning">NEW FEATURE</div>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h6 class="text-primary mb-2">🎯 What it does:</h6>
-                        <ul class="mb-3">
-                            <li><strong>Treatment Gap Detection:</strong> Finds patients missing standard-of-care treatments</li>
-                            <li><strong>Risk Stratification:</strong> Identifies high-risk patients needing intervention</li>
-                            <li><strong>AI Discovery:</strong> Uncovers novel patient patterns from machine learning</li>
-                            <li><strong>Clinical Guidelines:</strong> Uses evidence-based protocols and clinical targets</li>
-                        </ul>
-                        <div class="row text-center">
-                            <div class="col-3">
-                                <div class="h5 text-success mb-0">{{ total_patients|default:15285 }}</div>
-                                <small class="text-muted">Patients Analyzed</small>
-                            </div>
-                            <div class="col-3">
-                                <div class="h5 text-warning mb-0">24+</div>
-                                <small class="text-muted">Cohort Types</small>
-                            </div>
-                            <div class="col-3">
-                                <div class="h5 text-info mb-0">95%</div>
-                                <small class="text-muted">AI Accuracy</small>
-                            </div>
-                            <div class="col-3">
-                                <div class="h5 text-danger mb-0">A/B</div>
-                                <small class="text-muted">Evidence Grade</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 text-center">
-                        <div class="mb-3">
-                            <i class="fas fa-brain fa-4x text-primary mb-2"></i>
-                            <div class="badge bg-success">Real Clinical AI</div>
-                        </div>
-                        <a href="{% url 'ai_cohort_identification' %}" class="btn btn-primary btn-lg w-100">
-                            <i class="fas fa-rocket me-2"></i>
-                            Launch AI Analysis
-                        </a>
-                        <small class="text-muted d-block mt-2">
-                            Identify actionable patient cohorts in seconds
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- AI-Powered Drug Recommendations Section -->
 <div class="row mt-4">
