@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ cluster.name }} - ProviderPulse{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>{{ cluster.name }}</h1>
+        <p class="text-muted mb-0">{{ cluster.description }}</p>
+    </div>
+    <div class="text-end">
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">← Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Cluster Overview -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📊 Cluster Overview</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>Type:</strong></td>
+                        <td>{{ cluster.get_cluster_type_display }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HCP:</strong></td>
+                        <td>
+                            <a href="{% url 'hcp_profile' cluster.hcp.id %}" class="text-decoration-none">
+                                {{ cluster.hcp.name }}
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Patient Count:</strong></td>
+                        <td>
+                            <span class="badge bg-primary">{{ cluster.patient_count }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Success Rate:</strong></td>
+                        <td>
+                            <span class="badge bg-success">{{ cluster.success_rate|floatformat:1 }}%</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Risk Score:</strong></td>
+                        <td>
+                            <span class="badge bg-{% if cluster.avg_risk_score > 0.7 %}danger{% elif cluster.avg_risk_score > 0.4 %}warning{% else %}success{% endif %}">
+                                {{ cluster.avg_risk_score|floatformat:2 }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Created:</strong></td>
+                        <td>{{ cluster.created_date|date:"M d, Y" }}</td>
+                    </tr>
+                </table>
+                
+                {% if cluster.primary_diagnosis %}
+                    <h6>Primary Diagnosis</h6>
+                    <p class="text-primary">{{ cluster.primary_diagnosis }}</p>
+                {% endif %}
+                
+                {% if cluster.common_treatments %}
+                    <h6>Common Treatments</h6>
+                    <p class="text-muted">{{ cluster.common_treatments }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Cluster Insights -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">💡 AI Insights</h5>
+            </div>
+            <div class="card-body">
+                {% if insights %}
+                    {% for insight in insights %}
+                        <div class="mb-3">
+                            <div class="card border-{% if insight.confidence_score >= 0.8 %}success{% elif insight.confidence_score >= 0.6 %}warning{% else %}info{% endif %}">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">
+                                        {% if insight.insight_type == 'TREATMENT_EFFECTIVENESS' %}💊
+                                        {% elif insight.insight_type == 'PATTERN_DISCOVERY' %}🔍
+                                        {% elif insight.insight_type == 'RISK_FACTORS' %}⚠️
+                                        {% elif insight.insight_type == 'TREATMENT_GAPS' %}📊
+                                        {% elif insight.insight_type == 'OPTIMIZATION_OPPORTUNITY' %}🚀
+                                        {% endif %}
+                                        {{ insight.title }}
+                                    </h6>
+                                    <span class="badge bg-{% if insight.confidence_score >= 0.8 %}success{% elif insight.confidence_score >= 0.6 %}warning{% else %}info{% endif %}">
+                                        {{ insight.confidence_score|floatformat:0 }}% confidence
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">{{ insight.description }}</p>
+                                    <h6>Actionable Recommendations:</h6>
+                                    <p class="card-text">{{ insight.actionable_recommendations }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">{{ insight.created_date|date:"M d, Y" }}</small>
+                                        {% if insight.is_implemented %}
+                                            <span class="badge bg-success">Implemented</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No insights available for this cluster.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Drug Recommendations -->
+{% if drug_recommendations %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">💊 Drug Recommendations</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for rec in drug_recommendations %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %}">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">💊 {{ rec.drug_name }}</h6>
+                                    <span class="badge bg-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %}">
+                                        {{ rec.priority }}
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <p class="card-text">
+                                        <strong>Indication:</strong> {{ rec.indication }}<br>
+                                        <strong>Success Rate:</strong> {{ rec.success_rate|floatformat:1 }}%<br>
+                                        <strong>Evidence Level:</strong> {{ rec.evidence_level }}<br>
+                                        <strong>Patient Count:</strong> {{ rec.patient_count }} similar patients
+                                    </p>
+                                    {% if rec.research_support %}
+                                        <p class="card-text">
+                                            <strong>Research Support:</strong> {{ rec.research_support }}
+                                        </p>
+                                    {% endif %}
+                                    {% if rec.contraindications %}
+                                        <p class="card-text">
+                                            <strong>Contraindications:</strong> {{ rec.contraindications }}
+                                        </p>
+                                    {% endif %}
+                                    {% if rec.side_effects %}
+                                        <p class="card-text">
+                                            <strong>Side Effects:</strong> {{ rec.side_effects }}
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Cluster Members -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">👥 Cluster Members ({{ cluster_members|length }} patients)</h5>
+            </div>
+            <div class="card-body">
+                {% if cluster_members %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Patient ID</th>
+                                    <th>Primary Diagnosis</th>
+                                    <th>Age Group</th>
+                                    <th>Gender</th>
+                                    <th>Similarity Score</th>
+                                    <th>Last Visit</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for membership in cluster_members %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ membership.patient.patient_id }}</strong>
+                                        </td>
+                                        <td>{{ membership.patient.primary_diagnosis }}</td>
+                                        <td>{{ membership.patient.age_group }}</td>
+                                        <td>{{ membership.patient.get_gender_display }}</td>
+                                        <td>
+                                            <span class="badge bg-{% if membership.similarity_score > 0.8 %}success{% elif membership.similarity_score > 0.6 %}warning{% else %}info{% endif %}">
+                                                {{ membership.similarity_score|floatformat:2 }}
+                                            </span>
+                                        </td>
+                                        <td>{{ membership.patient.last_visit_date|date:"M d, Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'patient_detail' membership.patient.patient_id %}" class="btn btn-sm btn-outline-primary">
+                                                View Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No patients in this cluster.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+

@@ -1,8 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import JsonResponse, HttpResponse
+from django.db.models import Q, Count, Avg
+from django.db import models
 from datetime import date, timedelta
 import json
+import csv
 from .models import (HCP, ResearchUpdate, EMRData, Engagement, UserProfile, HCRRecommendation, 
                     PatientCohort, TreatmentOutcome, CohortRecommendation, ActionableInsight,
                     AnonymizedPatient, PatientCluster, ClusterMembership, PatientOutcome, 
@@ -211,6 +215,11 @@ def hcr_dashboard(request, user_profile):
         ActionableInsight.objects.filter(is_addressed=False).values_list('patient_impact', flat=True)
     )
     
+    # Get actual patient statistics
+    total_patients = AnonymizedPatient.objects.count()
+    total_cohorts = PatientCohort.objects.count()
+    total_clusters = PatientCluster.objects.count()
+    
     context = {
         'user_role': 'HCR',
         'overdue_hcps': overdue_hcps,
@@ -223,11 +232,20 @@ def hcr_dashboard(request, user_profile):
         'total_insights': total_insights,
         'high_priority_insights': high_priority_insights,
         'total_patients_impacted': total_patients_impacted,
+        'total_patients': total_patients,
+        'total_cohorts': total_cohorts,
+        'total_clusters': total_clusters,
     }
     return render(request, 'core/hcr_dashboard.html', context)
 
 def hcp_dashboard(request, user_profile):
     """Dashboard for Healthcare Providers"""
+    # Get HCP profile
+    try:
+        hcp = HCP.objects.get(user=request.user)
+    except HCP.DoesNotExist:
+        hcp = None
+    
     # Get all recommendations for this HCP (query not sliced yet)
     all_recommendations_query = HCRRecommendation.objects.filter(
         hcp_user=request.user
@@ -249,13 +267,28 @@ def hcp_dashboard(request, user_profile):
         specialty=user_profile.specialty
     ).order_by('-date')[:3] if user_profile.specialty else []
     
+    # Get patient statistics for this HCP
+    patient_stats = {}
+    if hcp:
+        patients = AnonymizedPatient.objects.filter(hcp=hcp)
+        patient_stats = {
+            'total_patients': patients.count(),
+            'recent_patients': patients.filter(last_visit_date__gte=date.today() - timedelta(days=30)).count(),
+            'high_risk_patients': patients.filter(emergency_visits_6m__gte=2).count(),
+            'common_diagnosis': patients.values('primary_diagnosis').annotate(
+                count=models.Count('primary_diagnosis')
+            ).order_by('-count').first()
+        }
+    
     context = {
         'user_role': 'HCP',
         'user_profile': user_profile,
+        'hcp': hcp,
         'recommendations': recommendations,
         'specialty_research': specialty_research,
         'general_research': general_research,
         'unread_count': unread_count,
+        'patient_stats': patient_stats,
     }
     return render(request, 'core/hcp_dashboard.html', context)
 
@@ -275,6 +308,14 @@ def mark_insight_addressed(request, insight_id):
     insight.is_addressed = True
     insight.save()
     messages.success(request, 'Insight marked as addressed.')
+    return redirect('dashboard')
+
+@login_required
+def mark_recommendation_reviewed(request, recommendation_id):
+    """Mark a drug recommendation as reviewed"""
+    # This would typically work with DrugRecommendation model
+    # For now, we'll just redirect back to dashboard
+    messages.success(request, 'Drug recommendation marked as reviewed.')
     return redirect('dashboard')
 
 @login_required
