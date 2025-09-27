@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}HCP Dashboard - ProviderPulse{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Healthcare Provider Dashboard</h1>
+        <p class="text-muted mb-0">Welcome, Dr. {{ user.username }}!</p>
+        {% if user_profile.specialty %}
+            <small class="text-muted">Specialty: {{ user_profile.specialty }}</small>
+        {% endif %}
+    </div>
+    {% if unread_count > 0 %}
+        <span class="badge bg-danger fs-6">{{ unread_count }} New Recommendations</span>
+    {% endif %}
+</div>
+
+<div class="row">
+    <!-- HCR Recommendations -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">💡 Recommendations from Healthcare Reps</h5>
+                <small>Personalized insights and updates</small>
+            </div>
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                {% if recommendations %}
+                    {% for rec in recommendations %}
+                        <div class="mb-3 p-2 {% if not rec.is_read %}border-start border-primary border-3 bg-light{% endif %}">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="mb-1 fw-bold">{{ rec.title }}</h6>
+                                <div>
+                                    <span class="badge bg-{{ rec.priority|lower }}">{{ rec.get_priority_display }}</span>
+                                    {% if not rec.is_read %}
+                                        <a href="{% url 'mark_recommendation_read' rec.id %}" 
+                                           class="btn btn-sm btn-outline-primary ms-1">Mark Read</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <p class="mb-1">{{ rec.message }}</p>
+                            {% if rec.research_update %}
+                                <small class="text-info">
+                                    📊 Related Research: {{ rec.research_update.headline }}
+                                </small>
+                            {% endif %}
+                            <br>
+                            <small class="text-muted">{{ rec.created_date }}</small>
+                        </div>
+                        {% if not forloop.last %}<hr>{% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No recommendations yet. Healthcare reps will send you personalized insights based on the latest research and your practice needs.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Research Updates for Your Specialty -->
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">🔬 Research Updates</h5>
+                {% if user_profile.specialty %}
+                    <small>For {{ user_profile.specialty }}</small>
+                {% else %}
+                    <small>Latest medical research</small>
+                {% endif %}
+            </div>
+            <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                {% if specialty_research %}
+                    {% for research in specialty_research %}
+                        <div class="mb-2">
+                            <strong>{{ research.headline }}</strong>
+                            <br>
+                            <small class="text-muted">{{ research.date }}</small>
+                        </div>
+                        {% if not forloop.last %}<hr class="my-2">{% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No recent research updates for your specialty.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- General Research Updates -->
+{% if general_research %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">📚 Other Research Updates</h5>
+                <small>General medical research that might interest you</small>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for research in general_research %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ research.headline }}</h6>
+                                    <p class="card-text">
+                                        <small class="text-muted">{{ research.specialty }} | {{ research.date }}</small>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Quick Actions -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">🚀 Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <h6>📧 Contact Reps</h6>
+                            <p class="small text-muted">Reach out to healthcare representatives for more information</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <h6>📋 Update Profile</h6>
+                            <p class="small text-muted">Keep your specialty and preferences current</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <h6>🔔 Notifications</h6>
+                            <p class="small text-muted">Manage your alert preferences</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3">
+                            <h6>📊 Analytics</h6>
+                            <p class="small text-muted">View your engagement patterns</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-high { background-color: #dc3545; }
+.bg-medium { background-color: #ffc107; color: #000; }
+.bg-low { background-color: #28a745; }
+</style>
+{% endblock %}
