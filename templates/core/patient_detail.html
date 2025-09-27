@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+
+{% block title %}Patient {{ patient.patient_id }} - ProviderPulse{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>Patient {{ patient.patient_id }}</h1>
+        <p class="text-muted mb-0">{{ patient.primary_diagnosis }}</p>
+    </div>
+    <div class="text-end">
+        <a href="{% url 'patient_database' %}" class="btn btn-outline-secondary">← Back to Patients</a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Patient Demographics -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Demographics</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>Patient ID:</strong></td>
+                        <td>{{ patient.patient_id }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Age Group:</strong></td>
+                        <td>{{ patient.age_group }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Gender:</strong></td>
+                        <td>{{ patient.get_gender_display }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Race:</strong></td>
+                        <td>{{ patient.get_race_display }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ethnicity:</strong></td>
+                        <td>{{ patient.get_ethnicity_display }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Zip Code:</strong></td>
+                        <td>{{ patient.zip_code_prefix }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Medical Information -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Medical Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Primary Diagnosis</h6>
+                        <p>{{ patient.primary_diagnosis }}</p>
+                        
+                        {% if patient.secondary_diagnoses %}
+                        <h6>Secondary Diagnoses</h6>
+                        <p>{{ patient.secondary_diagnoses }}</p>
+                        {% endif %}
+                        
+                        {% if patient.comorbidities %}
+                        <h6>Comorbidities</h6>
+                        <p>{{ patient.comorbidities }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Current Treatments</h6>
+                        <p>{{ patient.current_treatments|default:"None recorded" }}</p>
+                        
+                        <h6>Treatment History</h6>
+                        <p>{{ patient.treatment_history|default:"None recorded" }}</p>
+                        
+                        <h6>Medication Adherence</h6>
+                        <p>{{ patient.medication_adherence|default:"Not specified" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Visit Information -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Visit Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>Last Visit:</strong></td>
+                        <td>{{ patient.last_visit_date }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Visit Frequency:</strong></td>
+                        <td>{{ patient.visit_frequency }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Emergency Visits (6m):</strong></td>
+                        <td>{{ patient.emergency_visits_6m }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hospitalizations (6m):</strong></td>
+                        <td>{{ patient.hospitalizations_6m }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Risk Factors & History -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Risk Factors & History</h5>
+            </div>
+            <div class="card-body">
+                {% if patient.risk_factors %}
+                <h6>Risk Factors</h6>
+                <p>{{ patient.risk_factors }}</p>
+                {% endif %}
+                
+                {% if patient.family_history %}
+                <h6>Family History</h6>
+                <p>{{ patient.family_history }}</p>
+                {% endif %}
+                
+                <h6>Insurance Type</h6>
+                <p>{{ patient.insurance_type|default:"Not specified" }}</p>
+                
+                <h6>Medication Access</h6>
+                <p>{{ patient.medication_access|default:"Not specified" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EMR Data Points -->
+{% if emr_data_points %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">EMR Data Points</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Metric</th>
+                                <th>Value</th>
+                                <th>Unit</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data_point in emr_data_points %}
+                            <tr>
+                                <td>{{ data_point.date_recorded }}</td>
+                                <td>{{ data_point.get_data_type_display }}</td>
+                                <td>{{ data_point.metric_name }}</td>
+                                <td>{{ data_point.value }}</td>
+                                <td>{{ data_point.unit|default:"-" }}</td>
+                                <td>
+                                    {% if data_point.is_abnormal %}
+                                        <span class="badge bg-warning">Abnormal</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Normal</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Patient Outcomes -->
+{% if outcomes %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Treatment Outcomes</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Treatment</th>
+                                <th>Outcome</th>
+                                <th>Duration</th>
+                                <th>Side Effects</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for outcome in outcomes %}
+                            <tr>
+                                <td>{{ outcome.outcome_date }}</td>
+                                <td>{{ outcome.treatment }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if outcome.outcome == 'IMPROVED' %}bg-success
+                                        {% elif outcome.outcome == 'STABLE' %}bg-info
+                                        {% elif outcome.outcome == 'DETERIORATED' %}bg-danger
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ outcome.get_outcome_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if outcome.duration_months %}
+                                        {{ outcome.duration_months }} months
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ outcome.side_effects|default:"None" }}</td>
+                                <td>{{ outcome.notes|default:"-" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Cluster Memberships -->
+{% if cluster_memberships %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Patient Clusters</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for membership in cluster_memberships %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-primary">
+                            <div class="card-body">
+                                <h6 class="card-title">{{ membership.cluster.name }}</h6>
+                                <p class="card-text">{{ membership.cluster.description }}</p>
+                                <small class="text-muted">
+                                    Similarity Score: {{ membership.similarity_score|floatformat:2 }}<br>
+                                    Type: {{ membership.cluster.get_cluster_type_display }}<br>
+                                    Assigned: {{ membership.assigned_date }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Patient Actions -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center">
+                <a href="{% url 'patient_database' %}" class="btn btn-secondary me-2">← Back to Patients</a>
+                <a href="{% url 'add_patient' %}" class="btn btn-primary">Add Another Patient</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

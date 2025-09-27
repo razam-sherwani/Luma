@@ -11,9 +11,49 @@
             <small class="text-muted">Specialty: {{ user_profile.specialty }}</small>
         {% endif %}
     </div>
-    {% if unread_count > 0 %}
-        <span class="badge bg-danger fs-6">{{ unread_count }} New Recommendations</span>
-    {% endif %}
+    <div class="text-end">
+        {% if unread_count > 0 %}
+            <span class="badge bg-danger fs-6">{{ unread_count }} New Recommendations</span>
+        {% endif %}
+        <a href="{% url 'patient_database' %}" class="btn btn-primary ms-2">My Patients</a>
+        <a href="{% url 'add_patient' %}" class="btn btn-success ms-2">+ Add Patient</a>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-primary">{{ patients|length }}</h3>
+                <p class="card-text">My Patients</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-success">{{ patient_clusters|length }}</h3>
+                <p class="card-text">AI Clusters</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-warning">{{ drug_recommendations|length }}</h3>
+                <p class="card-text">Drug Recommendations</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <h3 class="text-info">{{ unread_count }}</h3>
+                <p class="card-text">New Recommendations</p>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="row">
