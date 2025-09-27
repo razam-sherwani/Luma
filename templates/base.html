@@ -1,41 +1,324 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}ProviderPulse - The Intelligent Engagement Platform{% endblock %}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <link href="{% static 'css/tailwind.css' %}" rel="stylesheet">
+    
+    <!-- Google Fonts - Enhanced -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS for enhanced styling -->
+    <style>
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        .gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        .gradient-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .gradient-info {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .floating-animation {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .text-shadow {
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    
+    {% block extra_head %}{% endblock %}
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">ProviderPulse</a>
-            <div class="navbar-nav ms-auto">
-                {% if user.is_authenticated %}
-                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-                    <a class="nav-link" href="{% url 'logout' %}">Logout ({{ user.username }})</a>
-                {% else %}
-                    <a class="nav-link" href="{% url 'login' %}">Login</a>
-                    <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
-                {% endif %}
+<body class="h-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 font-sans antialiased">
+    <!-- Navigation -->
+    <nav class="glass-morphism sticky top-0 z-50 border-b border-white/20">
+        <div class="container mx-auto px-6">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <a href="{% url 'home' %}" class="flex items-center space-x-3 group">
+                        <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-all duration-300 shadow-xl">
+                            <i class="fas fa-heartbeat text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <span class="text-2xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                                ProviderPulse
+                            </span>
+                            <div class="text-xs text-gray-500 font-medium -mt-1">Intelligence Platform</div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="flex items-center space-x-2">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium rounded-xl hover:bg-white/50 transition-all duration-200 flex items-center space-x-2">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <div class="relative">
+                            <button id="user-menu-button" class="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium rounded-xl hover:bg-white/50 transition-all duration-200 flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-sm font-bold">{{ user.username|slice:":1"|upper }}</span>
+                                </div>
+                                <span>{{ user.username }}</span>
+                                <i id="chevron-icon" class="fas fa-chevron-down text-xs transition-transform duration-200"></i>
+                            </button>
+                            <div id="user-dropdown" class="absolute right-0 mt-3 w-56 bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl py-2 z-50 border border-white/20 opacity-0 invisible scale-95 transition-all duration-200 transform origin-top-right">
+                                <div class="px-4 py-3 border-b border-gray-100">
+                                    <p class="text-sm font-semibold text-gray-900">{{ user.get_full_name|default:user.username }}</p>
+                                    <p class="text-xs text-gray-500">Healthcare Representative</p>
+                                </div>
+                                <a href="{% url 'logout' %}" class="flex items-center px-4 py-3 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors duration-200">
+                                    <i class="fas fa-sign-out-alt mr-3"></i>Logout
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="px-6 py-2 text-gray-700 hover:text-blue-600 font-medium rounded-xl hover:bg-white/50 transition-all duration-200 flex items-center space-x-2">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Login</span>
+                        </a>
+                        <a href="{% url 'signup' %}" class="px-6 py-2 gradient-primary text-white font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-200 flex items-center space-x-2">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Sign Up</span>
+                        </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
     </nav>
 
-    <main class="container mt-4">
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-12">
+        <!-- Messages -->
         {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            {% endfor %}
+            <div class="mb-8 space-y-4">
+                {% for message in messages %}
+                    <div class="glass-morphism border-l-4 {% if message.tags == 'success' %}border-green-400{% elif message.tags == 'warning' %}border-yellow-400{% elif message.tags == 'error' %}border-red-400{% else %}border-blue-400{% endif %} p-6 rounded-r-2xl shadow-xl animate-slide-up">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4 {% if message.tags == 'success' %}bg-green-100 text-green-600{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-600{% elif message.tags == 'error' %}bg-red-100 text-red-600{% else %}bg-blue-100 text-blue-600{% endif %}">
+                                    {% if message.tags == 'success' %}
+                                        <i class="fas fa-check-circle text-lg"></i>
+                                    {% elif message.tags == 'warning' %}
+                                        <i class="fas fa-exclamation-triangle text-lg"></i>
+                                    {% elif message.tags == 'error' %}
+                                        <i class="fas fa-exclamation-circle text-lg"></i>
+                                    {% else %}
+                                        <i class="fas fa-info-circle text-lg"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-900">{{ message }}</p>
+                                    <p class="text-sm text-gray-600 mt-1">
+                                        {% if message.tags == 'success' %}Action completed successfully{% elif message.tags == 'warning' %}Please review this information{% elif message.tags == 'error' %}Please check and try again{% else %}Information updated{% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                            <button onclick="this.parentElement.parentElement.remove()" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-700 transition-colors duration-200">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         {% endif %}
 
+        <!-- Page Content -->
         {% block content %}
         {% endblock %}
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Footer -->
+    <footer class="glass-morphism border-t border-white/20 mt-20">
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <!-- Logo & Description -->
+                <div class="md:col-span-2">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center">
+                            <i class="fas fa-heartbeat text-white"></i>
+                        </div>
+                        <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            ProviderPulse
+                        </span>
+                    </div>
+                    <p class="text-gray-600 mb-4 leading-relaxed">
+                        Empowering healthcare providers with intelligent insights, seamless patient engagement, and data-driven decision making for better patient outcomes.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-blue-100 hover:bg-blue-200 rounded-full flex items-center justify-center text-blue-600 hover:text-blue-700 transition-colors duration-200">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-blue-100 hover:bg-blue-200 rounded-full flex items-center justify-center text-blue-600 hover:text-blue-700 transition-colors duration-200">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-blue-100 hover:bg-blue-200 rounded-full flex items-center justify-center text-blue-600 hover:text-blue-700 transition-colors duration-200">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-4">Platform</h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li><a href="#" class="hover:text-blue-600 transition-colors duration-200">Dashboard</a></li>
+                        <li><a href="#" class="hover:text-blue-600 transition-colors duration-200">Research</a></li>
+                        <li><a href="#" class="hover:text-blue-600 transition-colors duration-200">Analytics</a></li>
+                        <li><a href="#" class="hover:text-blue-600 transition-colors duration-200">Insights</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Support -->
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-4">Support</h3>
+                    <ul class="space-y-2 text-gray-600">
+                        <li><a href="#" class="hover:text-blue-600 transition-colors duration-200">Help Center</a></li>
+                        <li><a href="#" class="hover:text-blue-600 transition-colors duration-200">Documentation</a></li>
+                        <li><a href="#" class="hover:text-blue-600 transition-colors duration-200">Contact</a></li>
+                        <li><a href="#" class="hover:text-blue-600 transition-colors duration-200">Privacy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/20 pt-8 text-center">
+                <p class="text-gray-600">&copy; 2025 ProviderPulse. All rights reserved.</p>
+                <p class="text-sm text-gray-500 mt-2">The Intelligent Healthcare Engagement Platform</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Enhanced animation utilities
+        document.addEventListener('DOMContentLoaded', function() {
+            // User dropdown functionality
+            const userMenuButton = document.getElementById('user-menu-button');
+            const userDropdown = document.getElementById('user-dropdown');
+            const chevronIcon = document.getElementById('chevron-icon');
+            let isDropdownOpen = false;
+
+            if (userMenuButton && userDropdown) {
+                // Toggle dropdown on button click
+                userMenuButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleDropdown();
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function() {
+                    if (isDropdownOpen) {
+                        closeDropdown();
+                    }
+                });
+
+                // Prevent dropdown from closing when clicking inside it
+                userDropdown.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+
+                function toggleDropdown() {
+                    if (isDropdownOpen) {
+                        closeDropdown();
+                    } else {
+                        openDropdown();
+                    }
+                }
+
+                function openDropdown() {
+                    isDropdownOpen = true;
+                    userDropdown.classList.remove('opacity-0', 'invisible', 'scale-95');
+                    userDropdown.classList.add('opacity-100', 'visible', 'scale-100');
+                    if (chevronIcon) {
+                        chevronIcon.classList.add('rotate-180');
+                    }
+                }
+
+                function closeDropdown() {
+                    isDropdownOpen = false;
+                    userDropdown.classList.remove('opacity-100', 'visible', 'scale-100');
+                    userDropdown.classList.add('opacity-0', 'invisible', 'scale-95');
+                    if (chevronIcon) {
+                        chevronIcon.classList.remove('rotate-180');
+                    }
+                }
+
+                // Close dropdown on Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && isDropdownOpen) {
+                        closeDropdown();
+                    }
+                });
+            }
+            
+            // Fade in animations
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            fadeElements.forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    el.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+            
+            // Slide up animations
+            const slideElements = document.querySelectorAll('.animate-slide-up');
+            slideElements.forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    el.style.transition = 'all 0.7s cubic-bezier(0.4, 0, 0.2, 1)';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+            
+            // Parallax effect for background
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const parallax = document.querySelector('body');
+                const speed = scrolled * 0.5;
+                parallax.style.backgroundPosition = `0 ${speed}px`;
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
 </body>
 </html>

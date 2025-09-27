@@ -41,7 +41,19 @@ ProviderPulse is an intelligent dashboard that acts as a co-pilot for healthcare
    pip install django
    ```
 
-3. **Set up the database**
+3. **Install Node.js dependencies for Tailwind CSS**
+   ```bash
+   # Install Node.js packages
+   npm install
+   
+   # Build Tailwind CSS
+   npm run build-css
+   
+   # For development with auto-rebuild:
+   npm run watch-css
+   ```
+
+4. **Set up the database**
    ```bash
    # Create and apply migrations
    python manage.py makemigrations
@@ -144,6 +156,52 @@ The `seed.py` script creates the following sample data:
    - Identify high-priority engagement opportunities
    - Filter networks by condition, specialty, or region
    - Analyze treatment patterns and success rates
+
+## UI & Styling
+
+ProviderPulse uses **Tailwind CSS 3.4.0** for modern, responsive design with beautiful glassmorphism effects and gradient styling.
+
+### Development Workflow
+
+```bash
+# Install dependencies
+npm install
+
+# Development mode (auto-rebuild CSS on changes)
+npm run watch-css
+
+# Production build (optimized CSS)
+npm run build-css
+
+# Run Django development server
+python manage.py runserver
+```
+
+### Design Features
+
+- **🎨 Glassmorphism UI**: Modern frosted glass effects with backdrop blur
+- **📱 Mobile-First**: Responsive design that works on all device sizes
+- **🌈 Gradient Elements**: Beautiful color gradients throughout the interface
+- **⚡ Smooth Animations**: Hover effects, transitions, and micro-interactions
+- **🎯 Accessible**: Keyboard navigation and proper contrast ratios
+- **💎 Modern Cards**: Elegant card-based layouts with hover transforms
+
+### Custom Styling
+
+The platform includes custom CSS components defined in `static/css/input.css`:
+- Glass-morphism cards and navigation
+- Gradient buttons and badges
+- Enhanced form controls
+- Floating animations
+- Beautiful alert messages
+
+### Tailwind Configuration
+
+Custom configuration in `tailwind.config.js` includes:
+- ProviderPulse brand colors
+- Custom gradient utilities
+- Enhanced animation keyframes
+- Typography scale optimization
 
 ## Project Structure
 

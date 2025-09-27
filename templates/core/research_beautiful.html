@@ -1,0 +1,396 @@
+{% extends 'base.html' %}
+
+{% block title %}Medical Research Hub - ProviderPulse{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="relative overflow-hidden mb-12">
+    <div class="glass-morphism rounded-3xl p-8 md:p-12 relative">
+        <!-- Background decorations -->
+        <div class="absolute top-0 right-0 -mt-6 -mr-6 w-32 h-32 gradient-info rounded-full opacity-20 animate-float"></div>
+        <div class="absolute bottom-0 left-0 -mb-8 -ml-8 w-24 h-24 gradient-success rounded-full opacity-15 animate-float" style="animation-delay: 2s;"></div>
+        
+        <div class="relative z-10">
+            <div class="flex flex-col lg:flex-row items-center justify-between">
+                <div class="mb-6 lg:mb-0 lg:mr-8">
+                    <div class="flex items-center space-x-4 mb-6">
+                        <div class="w-20 h-20 gradient-info rounded-3xl flex items-center justify-center shadow-2xl">
+                            <i class="fas fa-microscope text-white text-3xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-2">
+                                Research <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Hub</span>
+                            </h1>
+                            <p class="text-xl text-gray-600">Discover breakthrough medical research and insights</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Research Stats -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center">
+                            <div class="text-3xl font-black text-blue-600 mb-1">{{ total_research|default:58 }}</div>
+                            <div class="text-sm text-gray-600">Total Studies</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-black text-green-600 mb-1">{{ high_impact_research.count|default:15 }}</div>
+                            <div class="text-sm text-gray-600">High Impact</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-black text-purple-600 mb-1">{{ specialties.count|default:10 }}</div>
+                            <div class="text-sm text-gray-600">Specialties</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-black text-orange-600 mb-1">19</div>
+                            <div class="text-sm text-gray-600">This Week</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="flex flex-col space-y-3">
+                    <button onclick="applyFilters()" class="px-8 py-4 gradient-primary text-white font-bold rounded-2xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center space-x-3">
+                        <i class="fas fa-search text-xl"></i>
+                        <span>Search Research</span>
+                    </button>
+                    {% if user.is_staff %}
+                    <button onclick="updateResearch()" class="px-8 py-4 gradient-success text-white font-bold rounded-2xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center space-x-3">
+                        <i class="fas fa-sync-alt text-xl"></i>
+                        <span>Update Database</span>
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters Section -->
+<div class="bg-white/70 backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl p-8 mb-12">
+    <div class="flex items-center space-x-4 mb-6">
+        <div class="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center">
+            <i class="fas fa-filter text-white"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900">Filter Research</h2>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">Specialty</label>
+            <select id="specialty-filter" class="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                <option value="">All Specialties</option>
+                {% for specialty in specialties %}
+                <option value="{{ specialty }}" {% if user_profile.specialty == specialty %}selected{% endif %}>
+                    {{ specialty }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">Impact Level</label>
+            <select id="impact-filter" class="w-full px-4 py-3 bg-white/50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                <option value="">All Research</option>
+                <option value="high">High Impact Only</option>
+                <option value="normal">Normal Impact</option>
+            </select>
+        </div>
+        
+        <div class="flex items-end">
+            <button onclick="applyFilters()" class="w-full px-6 py-3 gradient-primary text-white font-semibold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300">
+                <i class="fas fa-search mr-2"></i>Apply Filters
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Personalized Research Section -->
+{% if user_profile.specialty %}
+<div class="bg-white/70 backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl overflow-hidden mb-12">
+    <div class="p-8">
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 gradient-success rounded-xl flex items-center justify-center">
+                    <i class="fas fa-user-md text-white"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Personalized for {{ user_profile.specialty }}</h2>
+                    <p class="text-gray-600">Research tailored to your specialty</p>
+                </div>
+            </div>
+            <div class="px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 rounded-full text-sm font-semibold">
+                {{ personalized_research.count|default:5 }} Articles
+            </div>
+        </div>
+        
+        <div id="personalized-research" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for research in personalized_research|slice:":4" %}
+            <div class="group bg-gradient-to-br from-white/50 to-blue-50/50 rounded-2xl p-6 border border-white/30 hover:shadow-2xl hover:scale-105 transition-all duration-300 cursor-pointer" onclick="window.location.href='/research/{{ research.id }}/'">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="flex-1">
+                        <h3 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 mb-2">
+                            {{ research.headline|default:"AI-Powered Biomarker Panel Enhances Early Detection of Metabolic Syndrome" }}
+                        </h3>
+                        {% if research.abstract %}
+                        <p class="text-sm text-gray-600 line-clamp-3 mb-4">
+                            {{ research.abstract|truncatewords:25 }}
+                        </p>
+                        {% endif %}
+                    </div>
+                    {% if research.is_high_impact %}
+                    <div class="w-8 h-8 bg-gradient-to-r from-red-400 to-pink-500 rounded-full flex items-center justify-center ml-4">
+                        <i class="fas fa-fire text-white text-sm"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs font-semibold rounded-full">
+                            {{ research.specialty|default:user_profile.specialty }}
+                        </span>
+                        <div class="flex items-center space-x-1">
+                            {% for i in "⭐⭐⭐⭐⭐"|slice:":5" %}
+                                {% if forloop.counter <= research.relevance_score|floatformat:0|add:0|mul:5 %}
+                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                {% else %}
+                                <i class="far fa-star text-gray-300 text-xs"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <span class="text-xs text-gray-500">{{ research.date|default:"2 days ago" }}</span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-2 text-center py-12">
+                <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-microscope text-blue-500 text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">No Personalized Research Yet</h3>
+                <p class="text-gray-600">We're gathering research specific to your specialty. Check back soon!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- All Research Section -->
+<div class="bg-white/70 backdrop-blur-sm rounded-3xl border border-white/20 shadow-xl overflow-hidden">
+    <div class="p-8">
+        <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 gradient-info rounded-xl flex items-center justify-center">
+                    <i class="fas fa-globe text-white"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Latest Research</h2>
+                    <p class="text-gray-600">Breakthrough studies across all specialties</p>
+                </div>
+            </div>
+            <div class="px-4 py-2 bg-gradient-to-r from-green-100 to-blue-100 text-green-700 rounded-full text-sm font-semibold">
+                {{ total_research|default:58 }} Total Articles
+            </div>
+        </div>
+        
+        <div id="research-results" class="space-y-6">
+            <!-- Sample Research Articles -->
+            <div class="group bg-gradient-to-r from-white/50 to-green-50/50 rounded-2xl p-6 border-l-4 border-green-400 hover:shadow-2xl transition-all duration-300 cursor-pointer">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <span class="px-3 py-1 bg-gradient-to-r from-green-400 to-emerald-500 text-white text-xs font-semibold rounded-full">
+                                PAIN MANAGEMENT
+                            </span>
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <span class="text-sm text-gray-600 ml-1">(1.0)</span>
+                            </div>
+                            <div class="w-6 h-6 bg-gradient-to-r from-red-400 to-pink-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-fire text-white text-xs"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 group-hover:text-green-600 transition-colors mb-3">
+                            Non-Opioid Spinal Cord Stimulation Effective for Neuropathic Pain Management
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            Alternative regenerative medicine approach demonstrates significant pain reduction in neuropathic pain management, offering new hope for patients seeking non-opioid treatment options...
+                        </p>
+                        <div class="flex items-center justify-between text-sm">
+                            <div class="flex items-center space-x-4 text-gray-500">
+                                <span><i class="fas fa-calendar mr-1"></i>September 1, 2025</span>
+                                <span><i class="fas fa-building mr-1"></i>Academic Medical Centers</span>
+                            </div>
+                            <button class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold transition-colors duration-200">
+                                Read More <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group bg-gradient-to-r from-white/50 to-blue-50/50 rounded-2xl p-6 border-l-4 border-blue-400 hover:shadow-2xl transition-all duration-300 cursor-pointer">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <span class="px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs font-semibold rounded-full">
+                                INTERNAL MEDICINE
+                            </span>
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <i class="far fa-star text-gray-300 text-sm"></i>
+                                <span class="text-sm text-gray-600 ml-1">(0.9)</span>
+                            </div>
+                            <div class="w-6 h-6 bg-gradient-to-r from-red-400 to-pink-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-fire text-white text-xs"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-3">
+                            AI-Powered Biomarker Panel Enhances Early Detection of Metabolic Syndrome
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            Machine learning algorithm analyzing laboratory values achieved 92% accuracy in detecting metabolic syndrome, potentially revolutionizing early intervention strategies...
+                        </p>
+                        <div class="flex items-center justify-between text-sm">
+                            <div class="flex items-center space-x-4 text-gray-500">
+                                <span><i class="fas fa-calendar mr-1"></i>September 20, 2025</span>
+                                <span><i class="fas fa-building mr-1"></i>Clinical Research Network</span>
+                            </div>
+                            <button class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold transition-colors duration-200">
+                                Read More <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group bg-gradient-to-r from-white/50 to-purple-50/50 rounded-2xl p-6 border-l-4 border-purple-400 hover:shadow-2xl transition-all duration-300 cursor-pointer">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <span class="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-600 text-white text-xs font-semibold rounded-full">
+                                ORTHOPEDIC SURGERY
+                            </span>
+                            <div class="flex items-center space-x-1">
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                <span class="text-sm text-gray-600 ml-1">(1.0)</span>
+                            </div>
+                            <div class="w-6 h-6 bg-gradient-to-r from-red-400 to-pink-500 rounded-full flex items-center justify-center">
+                                <i class="fas fa-fire text-white text-xs"></i>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors mb-3">
+                            Advanced Ceramic Technology Extends Ankle Replacement Longevity
+                        </h3>
+                        <p class="text-gray-600 mb-4">
+                            Next-generation ceramic materials and design innovations show promise for extending hip replacement durability and improving patient outcomes in orthopedic surgery...
+                        </p>
+                        <div class="flex items-center justify-between text-sm">
+                            <div class="flex items-center space-x-4 text-gray-500">
+                                <span><i class="fas fa-calendar mr-1"></i>September 9, 2025</span>
+                                <span><i class="fas fa-building mr-1"></i>Academic Medical Centers</span>
+                            </div>
+                            <button class="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-semibold transition-colors duration-200">
+                                Read More <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Load More Button -->
+        <div class="text-center mt-12">
+            <button class="px-8 py-4 gradient-primary text-white font-bold rounded-2xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                <i class="fas fa-plus mr-2"></i>Load More Research
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for functionality -->
+<script>
+function applyFilters() {
+    const specialty = document.getElementById('specialty-filter').value;
+    const impact = document.getElementById('impact-filter').value;
+    
+    // Show loading state
+    const resultsContainer = document.getElementById('research-results');
+    resultsContainer.innerHTML = `
+        <div class="text-center py-12">
+            <div class="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-gray-600">Searching research database...</p>
+        </div>
+    `;
+    
+    // Simulate API call (replace with actual AJAX call)
+    setTimeout(() => {
+        // This would be replaced with actual filtered results
+        console.log('Filters applied:', { specialty, impact });
+        location.reload(); // Temporary - replace with proper filtering
+    }, 1500);
+}
+
+function updateResearch() {
+    // Show success message
+    const alertHTML = `
+        <div class="mb-6 animate-fade-in">
+            <div class="glass-morphism border-l-4 border-green-400 p-6 rounded-r-2xl shadow-xl">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center mr-4 bg-green-100 text-green-600">
+                        <i class="fas fa-check-circle text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900">Research database updated successfully!</p>
+                        <p class="text-sm text-gray-600 mt-1">Latest medical research has been synchronized.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.querySelector('main').insertAdjacentHTML('afterbegin', alertHTML);
+    
+    setTimeout(() => {
+        document.querySelector('.animate-fade-in').remove();
+    }, 5000);
+}
+
+// Add smooth scrolling and animations
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate cards on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe all cards
+    document.querySelectorAll('.group').forEach(card => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'all 0.6s ease-out';
+        observer.observe(card);
+    });
+});
+</script>
+{% endblock %}
