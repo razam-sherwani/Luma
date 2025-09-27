@@ -1,0 +1,41 @@
+cohort_condition,treatment_type,success_rate,patient_count,average_duration_days,cost_category
+Type 2 diabetes mellitus,Radiation Therapy,0.79,214,314,High
+Type 2 diabetes mellitus,Lifestyle Counseling,0.69,54,136,High
+Type 2 diabetes mellitus,Lifestyle Counseling,0.64,352,63,Medium
+Type 2 diabetes mellitus,Behavioral Therapy,0.8,13,105,Low
+Essential hypertension,Lifestyle Counseling,0.59,392,40,High
+Essential hypertension,Diagnostic Testing,0.59,120,186,Low
+Essential hypertension,Diagnostic Testing,0.64,495,37,High
+Essential hypertension,Physical Therapy,0.6,447,332,Medium
+Chronic obstructive pulmonary disease,Nutritional Counseling,0.77,307,174,High
+Chronic obstructive pulmonary disease,Medication Management,0.67,57,206,High
+Chronic obstructive pulmonary disease,Radiation Therapy,0.68,6,163,High
+Chronic obstructive pulmonary disease,Medication Management,0.55,276,288,Medium
+Chronic obstructive pulmonary disease,Radiation Therapy,0.61,220,97,Medium
+Panniculitis,Monitoring,0.56,247,105,Low
+Generalized anxiety disorder,Behavioral Therapy,0.59,17,72,Medium
+Generalized anxiety disorder,Nutritional Counseling,0.6,26,317,Low
+Generalized anxiety disorder,Lifestyle Counseling,0.59,14,310,High
+Secondary malignant neoplasm of lung,Chemotherapy,0.73,112,144,Medium
+Secondary malignant neoplasm of lung,Diagnostic Testing,0.94,134,76,Low
+Secondary malignant neoplasm of lung,Chemotherapy,0.85,82,128,Low
+End stage renal disease,Lifestyle Counseling,0.93,298,134,Low
+End stage renal disease,Immunotherapy,0.93,309,205,High
+End stage renal disease,Nutritional Counseling,0.72,32,72,Medium
+Gastro-esophageal reflux disease,Behavioral Therapy,0.36,107,184,Medium
+Rheumatoid arthritis,Chemotherapy,0.3,63,14,Low
+Anoxic brain damage,Physical Therapy,0.48,158,320,High
+Psoriasis,Physical Therapy,0.56,192,293,Medium
+Psoriasis,Surgical Intervention,0.33,139,69,Low
+Psoriasis,Lifestyle Counseling,0.41,149,27,High
+Age-related cataract,Physical Therapy,0.31,224,96,Low
+Age-related cataract,Physical Therapy,0.41,10,58,Medium
+Age-related cataract,Monitoring,0.33,389,111,Low
+Encounter for antineoplastic chemotherapy,Physical Therapy,0.92,67,212,Medium
+Encounter for antineoplastic chemotherapy,Diagnostic Testing,0.95,104,179,High
+Encounter for antineoplastic chemotherapy,Medication Management,0.79,101,205,Medium
+Heart failure,Diagnostic Testing,0.86,29,196,Low
+Heart failure,Physical Therapy,0.83,70,196,Medium
+Asthma,Behavioral Therapy,0.54,62,246,Medium
+Asthma,Behavioral Therapy,0.71,153,167,Low
+Asthma,Medication Management,0.78,142,188,Medium
