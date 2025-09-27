@@ -6,13 +6,17 @@ from datetime import date, timedelta
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'providerpulse.settings')
 django.setup()
 
-from core.models import HCP, ResearchUpdate, EMRData, Engagement
+from core.models import HCP, ResearchUpdate, EMRData, Engagement, UserProfile, HCRRecommendation
+from django.contrib.auth.models import User
 
 # Clear existing data
 HCP.objects.all().delete()
 ResearchUpdate.objects.all().delete()
 EMRData.objects.all().delete()
 Engagement.objects.all().delete()
+HCRRecommendation.objects.all().delete()
+# Keep existing users but clear their profiles
+UserProfile.objects.all().delete()
 
 # Create fake HCPs
 hcps = [
@@ -61,4 +65,64 @@ for hcp in hcps:
             note=random.choice(notes)
         )
 
+# Create sample HCP users (for demo purposes)
+hcp_users = []
+specialties = ['Oncology', 'Cardiology', 'Endocrinology', 'Neurology', 'Pediatrics']
+for i, specialty in enumerate(specialties, 1):
+    username = f"hcp_user_{i}"
+    if not User.objects.filter(username=username).exists():
+        user = User.objects.create_user(
+            username=username,
+            password='demo123',
+            first_name=f'Dr. Sample {i}',
+            email=f'hcp{i}@hospital.com'
+        )
+        UserProfile.objects.create(
+            user=user,
+            role='HCP',
+            specialty=specialty
+        )
+        hcp_users.append(user)
+
+# Create sample HCR recommendations for HCP users
+recommendations_data = [
+    {
+        'title': 'New Immunotherapy Protocol Available',
+        'message': 'Based on your oncology practice, we have exciting new immunotherapy options that could benefit your patients with advanced melanoma. The latest trial data shows 70% response rates.',
+        'priority': 'HIGH'
+    },
+    {
+        'title': 'Updated Cardiac Stent Guidelines',
+        'message': 'Recent cardiology guidelines have been updated for stent placement procedures. New biodegradable options show improved long-term outcomes.',
+        'priority': 'MEDIUM'
+    },
+    {
+        'title': 'Diabetes Management Innovation',
+        'message': 'Revolutionary continuous glucose monitoring system now available. Patients report 40% better glucose control with this new technology.',
+        'priority': 'HIGH'
+    },
+    {
+        'title': 'Pediatric Vaccine Schedule Update',
+        'message': 'New recommendations for pediatric vaccination schedules have been released. Updated timing could improve immune response by 25%.',
+        'priority': 'MEDIUM'
+    },
+    {
+        'title': 'Migraine Prevention Breakthrough',
+        'message': 'New monthly injection for migraine prevention shows promise. 80% of patients experienced 50% reduction in migraine frequency.',
+        'priority': 'LOW'
+    }
+]
+
+for i, (user, rec_data) in enumerate(zip(hcp_users, recommendations_data)):
+    HCRRecommendation.objects.create(
+        hcp_user=user,
+        title=rec_data['title'],
+        message=rec_data['message'],
+        research_update=research_updates[i] if i < len(research_updates) else None,
+        priority=rec_data['priority'],
+        is_read=False
+    )
+
 print('Database seeded successfully!')
+print('Sample HCP users created with usernames: hcp_user_1, hcp_user_2, hcp_user_3, hcp_user_4, hcp_user_5')
+print('Password for all demo HCP users: demo123')
