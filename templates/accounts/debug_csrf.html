@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}CSRF Debug - ProviderPulse{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center mb-0">CSRF Debug Information</h3>
+            </div>
+            <div class="card-body">
+                <h5>Current CSRF Token:</h5>
+                <code>{{ csrf_token }}</code>
+                
+                <hr>
+                
+                <h5>Test Form with CSRF Token:</h5>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Test Field</label>
+                        <input type="text" name="test_field" class="form-control" value="test">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Test Submit</button>
+                </form>
+                
+                <hr>
+                
+                <div class="alert alert-info">
+                    <h6>CSRF Troubleshooting Tips:</h6>
+                    <ul>
+                        <li>Make sure your browser accepts cookies</li>
+                        <li>Try clearing your browser cache and cookies</li>
+                        <li>Make sure you're not using an old bookmark</li>
+                        <li>Try opening the site in an incognito/private window</li>
+                        <li>Check if you have any browser extensions blocking cookies</li>
+                    </ul>
+                </div>
+                
+                <div class="text-center">
+                    <a href="{% url 'login' %}" class="btn btn-secondary">Back to Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
