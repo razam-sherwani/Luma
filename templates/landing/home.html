@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto text-center">
+        <div class="hero-section py-5">
+            <h1 class="display-4 fw-bold text-primary mb-4">HCR Hub</h1>
+            <h2 class="h3 text-muted mb-4">The Intelligent Engagement Platform</h2>
+            <p class="lead mb-5">
+                Empower healthcare reps with intelligent insights from EMR data and latest research. 
+                Know exactly who to contact, what to discuss, and why it matters today.
+            </p>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                <a href="{% url 'signup' %}" class="btn btn-primary btn-lg px-4 me-md-2">Get Started</a>
+                <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg px-4">Sign In</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">🎯 Smart Prioritization</h5>
+                <p class="card-text">Get prioritized alerts for overdue engagements and critical updates tailored to your HCPs.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">📊 EMR Insights</h5>
+                <p class="card-text">Track patient volume changes and key metrics that matter to your healthcare providers.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <h5 class="card-title">🔬 Research Updates</h5>
+                <p class="card-text">Stay informed with the latest research relevant to your HCPs' specialties and practice areas.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
