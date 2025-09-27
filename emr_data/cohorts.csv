@@ -1,16 +1,16 @@
 condition,icd_code,category,patient_count,age_group,severity_level,last_updated
-Type 2 diabetes mellitus,E11,Endocrine,382,18-35,Moderate,2024-12-30
-Essential hypertension,I10,Cardiovascular,498,18-35,Severe,2025-03-11
-Chronic obstructive pulmonary disease,J44,Respiratory,334,36-50,Moderate,2025-02-15
-Panniculitis,M79.3,Musculoskeletal,261,36-50,Moderate,2024-11-24
-Generalized anxiety disorder,F41.1,Mental Health,28,65+,Severe,2025-05-05
-Secondary malignant neoplasm of lung,C78.0,Oncology,138,51-65,Mild,2024-11-01
-End stage renal disease,N18.6,Renal,397,18-35,Mild,2025-04-28
-Gastro-esophageal reflux disease,K21.9,Gastroenterology,159,65+,Severe,2025-09-15
-Rheumatoid arthritis,M06.9,Rheumatology,112,36-50,Severe,2025-01-20
-Anoxic brain damage,G93.1,Neurology,260,65+,Severe,2024-10-19
-Psoriasis,L40.9,Dermatology,208,18-35,Severe,2024-11-03
-Age-related cataract,H25.9,Ophthalmology,422,36-50,Severe,2025-07-16
-Encounter for antineoplastic chemotherapy,Z51.11,Oncology,146,36-50,Mild,2024-10-27
-Heart failure,I50.9,Cardiovascular,269,51-65,Mild,2025-05-22
-Asthma,J45.9,Respiratory,167,18-35,Moderate,2025-05-19
+Type 2 diabetes mellitus,E11,Endocrine,420,65+,Severe,2025-09-18
+Essential hypertension,I10,Cardiovascular,57,65+,Moderate,2025-02-06
+Chronic obstructive pulmonary disease,J44,Respiratory,221,65+,Mild,2024-10-27
+Panniculitis,M79.3,Musculoskeletal,393,65+,Mild,2025-05-23
+Generalized anxiety disorder,F41.1,Mental Health,199,51-65,Mild,2025-04-06
+Secondary malignant neoplasm of lung,C78.0,Oncology,65,36-50,Moderate,2024-12-22
+End stage renal disease,N18.6,Renal,234,36-50,Severe,2024-12-08
+Gastro-esophageal reflux disease,K21.9,Gastroenterology,299,18-35,Moderate,2025-02-17
+Rheumatoid arthritis,M06.9,Rheumatology,325,36-50,Severe,2025-06-12
+Anoxic brain damage,G93.1,Neurology,57,18-35,Mild,2024-10-22
+Psoriasis,L40.9,Dermatology,307,65+,Severe,2024-12-21
+Age-related cataract,H25.9,Ophthalmology,77,36-50,Mild,2025-08-07
+Encounter for antineoplastic chemotherapy,Z51.11,Oncology,397,18-35,Severe,2025-01-09
+Heart failure,I50.9,Cardiovascular,39,51-65,Severe,2025-04-26
+Asthma,J45.9,Respiratory,379,51-65,Moderate,2024-11-07

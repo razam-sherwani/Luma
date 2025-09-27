@@ -1,41 +1,55 @@
 cohort_condition,treatment_type,success_rate,patient_count,average_duration_days,cost_category
-Type 2 diabetes mellitus,Radiation Therapy,0.79,214,314,High
-Type 2 diabetes mellitus,Lifestyle Counseling,0.69,54,136,High
-Type 2 diabetes mellitus,Lifestyle Counseling,0.64,352,63,Medium
-Type 2 diabetes mellitus,Behavioral Therapy,0.8,13,105,Low
-Essential hypertension,Lifestyle Counseling,0.59,392,40,High
-Essential hypertension,Diagnostic Testing,0.59,120,186,Low
-Essential hypertension,Diagnostic Testing,0.64,495,37,High
-Essential hypertension,Physical Therapy,0.6,447,332,Medium
-Chronic obstructive pulmonary disease,Nutritional Counseling,0.77,307,174,High
-Chronic obstructive pulmonary disease,Medication Management,0.67,57,206,High
-Chronic obstructive pulmonary disease,Radiation Therapy,0.68,6,163,High
-Chronic obstructive pulmonary disease,Medication Management,0.55,276,288,Medium
-Chronic obstructive pulmonary disease,Radiation Therapy,0.61,220,97,Medium
-Panniculitis,Monitoring,0.56,247,105,Low
-Generalized anxiety disorder,Behavioral Therapy,0.59,17,72,Medium
-Generalized anxiety disorder,Nutritional Counseling,0.6,26,317,Low
-Generalized anxiety disorder,Lifestyle Counseling,0.59,14,310,High
-Secondary malignant neoplasm of lung,Chemotherapy,0.73,112,144,Medium
-Secondary malignant neoplasm of lung,Diagnostic Testing,0.94,134,76,Low
-Secondary malignant neoplasm of lung,Chemotherapy,0.85,82,128,Low
-End stage renal disease,Lifestyle Counseling,0.93,298,134,Low
-End stage renal disease,Immunotherapy,0.93,309,205,High
-End stage renal disease,Nutritional Counseling,0.72,32,72,Medium
-Gastro-esophageal reflux disease,Behavioral Therapy,0.36,107,184,Medium
-Rheumatoid arthritis,Chemotherapy,0.3,63,14,Low
-Anoxic brain damage,Physical Therapy,0.48,158,320,High
-Psoriasis,Physical Therapy,0.56,192,293,Medium
-Psoriasis,Surgical Intervention,0.33,139,69,Low
-Psoriasis,Lifestyle Counseling,0.41,149,27,High
-Age-related cataract,Physical Therapy,0.31,224,96,Low
-Age-related cataract,Physical Therapy,0.41,10,58,Medium
-Age-related cataract,Monitoring,0.33,389,111,Low
-Encounter for antineoplastic chemotherapy,Physical Therapy,0.92,67,212,Medium
-Encounter for antineoplastic chemotherapy,Diagnostic Testing,0.95,104,179,High
-Encounter for antineoplastic chemotherapy,Medication Management,0.79,101,205,Medium
-Heart failure,Diagnostic Testing,0.86,29,196,Low
-Heart failure,Physical Therapy,0.83,70,196,Medium
-Asthma,Behavioral Therapy,0.54,62,246,Medium
-Asthma,Behavioral Therapy,0.71,153,167,Low
-Asthma,Medication Management,0.78,142,188,Medium
+Type 2 diabetes mellitus,Monitoring,0.33,389,215,Medium
+Type 2 diabetes mellitus,Medication Management,0.42,256,93,High
+Type 2 diabetes mellitus,Medication Management,0.42,310,222,Medium
+Essential hypertension,Surgical Intervention,0.53,37,293,Low
+Essential hypertension,Immunotherapy,0.72,31,309,Low
+Essential hypertension,Behavioral Therapy,0.76,32,315,High
+Essential hypertension,Surgical Intervention,0.5,24,104,Low
+Essential hypertension,Chemotherapy,0.54,22,260,Medium
+Chronic obstructive pulmonary disease,Chemotherapy,0.8,102,83,High
+Chronic obstructive pulmonary disease,Nutritional Counseling,0.83,202,143,Low
+Chronic obstructive pulmonary disease,Lifestyle Counseling,0.73,64,97,Low
+Panniculitis,Behavioral Therapy,0.72,181,283,Low
+Panniculitis,Lifestyle Counseling,0.73,304,313,Medium
+Panniculitis,Lifestyle Counseling,0.79,140,351,Low
+Generalized anxiety disorder,Radiation Therapy,0.77,27,177,Medium
+Generalized anxiety disorder,Behavioral Therapy,0.82,10,218,Low
+Generalized anxiety disorder,Monitoring,0.86,158,243,Medium
+Generalized anxiety disorder,Immunotherapy,0.89,104,200,Low
+Generalized anxiety disorder,Lifestyle Counseling,0.94,55,158,High
+Secondary malignant neoplasm of lung,Medication Management,0.76,37,235,Medium
+End stage renal disease,Nutritional Counseling,0.56,173,313,Medium
+Gastro-esophageal reflux disease,Chemotherapy,0.64,206,347,Low
+Gastro-esophageal reflux disease,Nutritional Counseling,0.54,231,322,Medium
+Gastro-esophageal reflux disease,Nutritional Counseling,0.69,146,294,Low
+Rheumatoid arthritis,Lifestyle Counseling,0.39,148,85,Medium
+Rheumatoid arthritis,Diagnostic Testing,0.5,24,330,High
+Rheumatoid arthritis,Nutritional Counseling,0.62,318,21,Low
+Anoxic brain damage,Surgical Intervention,0.88,26,273,Low
+Anoxic brain damage,Behavioral Therapy,0.72,23,253,Low
+Anoxic brain damage,Chemotherapy,0.79,7,33,High
+Anoxic brain damage,Immunotherapy,0.76,36,120,Medium
+Psoriasis,Lifestyle Counseling,0.47,86,231,High
+Psoriasis,Behavioral Therapy,0.32,9,55,High
+Psoriasis,Physical Therapy,0.4,261,54,Medium
+Psoriasis,Surgical Intervention,0.61,68,100,Low
+Psoriasis,Monitoring,0.42,68,272,Low
+Age-related cataract,Radiation Therapy,0.88,71,342,Medium
+Age-related cataract,Lifestyle Counseling,0.7,7,350,Low
+Age-related cataract,Chemotherapy,0.82,76,168,Medium
+Age-related cataract,Medication Management,0.9,63,139,Medium
+Age-related cataract,Behavioral Therapy,0.79,70,326,High
+Encounter for antineoplastic chemotherapy,Nutritional Counseling,0.65,239,88,Medium
+Encounter for antineoplastic chemotherapy,Immunotherapy,0.5,135,187,Medium
+Encounter for antineoplastic chemotherapy,Surgical Intervention,0.43,378,365,Low
+Encounter for antineoplastic chemotherapy,Nutritional Counseling,0.63,187,179,High
+Encounter for antineoplastic chemotherapy,Surgical Intervention,0.5,71,48,Medium
+Heart failure,Monitoring,0.52,35,282,Medium
+Heart failure,Physical Therapy,0.62,5,7,Low
+Heart failure,Surgical Intervention,0.36,17,306,Low
+Asthma,Chemotherapy,0.77,353,208,Low
+Asthma,Monitoring,0.73,143,205,Low
+Asthma,Chemotherapy,0.7,339,151,High
+Asthma,Medication Management,0.65,35,181,Low
+Asthma,Monitoring,0.71,53,177,Medium

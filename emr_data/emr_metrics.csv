@@ -1,229 +1,228 @@
 provider_name,provider_specialty,metric_type,metric_value,patient_count,date_recorded
-Dr. Melanie Medina,HOSPITALIST,Patient Diagnosis,Rheumatoid arthritis,19,2025-09-25
-Dr. Melanie Medina,HOSPITALIST,Patient Diagnosis,Gastro-esophageal reflux disease,10,2025-09-25
-Dr. Melanie Medina,HOSPITALIST,Patient Diagnosis,End stage renal disease,24,2025-09-25
-Dr. Melanie Medina,HOSPITALIST,Monthly Patient Volume,227,75,2025-09-25
-Dr. Melanie Medina,HOSPITALIST,Treatment Success Rate,93%,66,2025-09-25
-Dr. Sarah Ray,INTERNAL MEDICINE,Patient Diagnosis,Psoriasis,5,2025-09-25
-Dr. Sarah Ray,INTERNAL MEDICINE,Patient Diagnosis,Panniculitis,42,2025-09-25
-Dr. Sarah Ray,INTERNAL MEDICINE,Patient Diagnosis,Gastro-esophageal reflux disease,9,2025-09-25
-Dr. Sarah Ray,INTERNAL MEDICINE,Monthly Patient Volume,250,196,2025-09-25
-Dr. Sarah Ray,INTERNAL MEDICINE,Treatment Success Rate,69%,25,2025-09-25
-Dr. Corey Harvey,ANESTHESIOLOGY,Patient Diagnosis,Chronic obstructive pulmonary disease,8,2025-09-25
-Dr. Corey Harvey,ANESTHESIOLOGY,Patient Diagnosis,Rheumatoid arthritis,12,2025-09-25
-Dr. Corey Harvey,ANESTHESIOLOGY,Monthly Patient Volume,181,203,2025-09-25
-Dr. Corey Harvey,ANESTHESIOLOGY,Treatment Success Rate,73%,93,2025-09-25
-Dr. Brittany Hall,ANESTHESIOLOGY,Patient Diagnosis,Age-related cataract,15,2025-09-25
-Dr. Brittany Hall,ANESTHESIOLOGY,Patient Diagnosis,Panniculitis,43,2025-09-25
-Dr. Brittany Hall,ANESTHESIOLOGY,Patient Diagnosis,Type 2 diabetes mellitus,18,2025-09-25
-Dr. Brittany Hall,ANESTHESIOLOGY,Monthly Patient Volume,142,59,2025-09-25
-Dr. Brittany Hall,ANESTHESIOLOGY,Treatment Success Rate,80%,54,2025-09-25
-Dr. Carlos Ibarra,ANESTHESIOLOGY,Patient Diagnosis,Chronic obstructive pulmonary disease,7,2025-09-25
-Dr. Carlos Ibarra,ANESTHESIOLOGY,Patient Diagnosis,Anoxic brain damage,26,2025-09-25
-Dr. Carlos Ibarra,ANESTHESIOLOGY,Monthly Patient Volume,78,279,2025-09-25
-Dr. Carlos Ibarra,ANESTHESIOLOGY,Treatment Success Rate,93%,49,2025-09-25
-Dr. Toni Wilson,ANESTHESIOLOGY,Patient Diagnosis,End stage renal disease,3,2025-09-25
-Dr. Toni Wilson,ANESTHESIOLOGY,Patient Diagnosis,Age-related cataract,37,2025-09-25
-Dr. Toni Wilson,ANESTHESIOLOGY,Monthly Patient Volume,197,52,2025-09-25
-Dr. Toni Wilson,ANESTHESIOLOGY,Treatment Success Rate,88%,90,2025-09-25
-Dr. Shannon Harris,OBSTETRICS/GYNECOLOGY,Patient Diagnosis,Secondary malignant neoplasm of lung,11,2025-09-25
-Dr. Shannon Harris,OBSTETRICS/GYNECOLOGY,Patient Diagnosis,Encounter for antineoplastic chemotherapy,40,2025-09-25
-Dr. Shannon Harris,OBSTETRICS/GYNECOLOGY,Monthly Patient Volume,195,131,2025-09-25
-Dr. Shannon Harris,OBSTETRICS/GYNECOLOGY,Treatment Success Rate,93%,68,2025-09-25
-Dr. Peter Richards,GENERAL SURGERY,Patient Diagnosis,Generalized anxiety disorder,9,2025-09-25
-Dr. Peter Richards,GENERAL SURGERY,Monthly Patient Volume,286,210,2025-09-25
-Dr. Peter Richards,GENERAL SURGERY,Treatment Success Rate,71%,35,2025-09-25
-Dr. Christopher Rogers,GENERAL SURGERY,Patient Diagnosis,Generalized anxiety disorder,25,2025-09-25
-Dr. Christopher Rogers,GENERAL SURGERY,Monthly Patient Volume,137,148,2025-09-25
-Dr. Christopher Rogers,GENERAL SURGERY,Treatment Success Rate,90%,65,2025-09-25
-Dr. David Richards,GENERAL SURGERY,Patient Diagnosis,Generalized anxiety disorder,5,2025-09-25
-Dr. David Richards,GENERAL SURGERY,Monthly Patient Volume,155,132,2025-09-25
-Dr. David Richards,GENERAL SURGERY,Treatment Success Rate,72%,72,2025-09-25
-Dr. Lisa Smith,INTERNAL MEDICINE,Patient Diagnosis,Gastro-esophageal reflux disease,39,2025-09-25
-Dr. Lisa Smith,INTERNAL MEDICINE,Patient Diagnosis,Age-related cataract,9,2025-09-25
-Dr. Lisa Smith,INTERNAL MEDICINE,Patient Diagnosis,Rheumatoid arthritis,35,2025-09-25
-Dr. Lisa Smith,INTERNAL MEDICINE,Monthly Patient Volume,179,150,2025-09-25
-Dr. Lisa Smith,INTERNAL MEDICINE,Treatment Success Rate,78%,70,2025-09-25
-Dr. Joanna Fernandez,UROLOGY,Patient Diagnosis,Rheumatoid arthritis,25,2025-09-25
-Dr. Joanna Fernandez,UROLOGY,Patient Diagnosis,Asthma,44,2025-09-25
-Dr. Joanna Fernandez,UROLOGY,Patient Diagnosis,Panniculitis,16,2025-09-25
-Dr. Joanna Fernandez,UROLOGY,Monthly Patient Volume,277,137,2025-09-25
-Dr. Joanna Fernandez,UROLOGY,Treatment Success Rate,90%,43,2025-09-25
-Dr. Emily Ruiz,UROLOGY,Patient Diagnosis,Gastro-esophageal reflux disease,11,2025-09-25
-Dr. Emily Ruiz,UROLOGY,Patient Diagnosis,End stage renal disease,13,2025-09-25
-Dr. Emily Ruiz,UROLOGY,Patient Diagnosis,Anoxic brain damage,32,2025-09-25
-Dr. Emily Ruiz,UROLOGY,Monthly Patient Volume,61,237,2025-09-25
-Dr. Emily Ruiz,UROLOGY,Treatment Success Rate,93%,48,2025-09-25
-Dr. Albert Bryant,CARDIAC SURGERY,Patient Diagnosis,Type 2 diabetes mellitus,49,2025-09-25
-Dr. Albert Bryant,CARDIAC SURGERY,Patient Diagnosis,Heart failure,33,2025-09-25
-Dr. Albert Bryant,CARDIAC SURGERY,Monthly Patient Volume,62,258,2025-09-25
-Dr. Albert Bryant,CARDIAC SURGERY,Treatment Success Rate,65%,63,2025-09-25
-Dr. Deborah Hart,CARDIAC SURGERY,Patient Diagnosis,Gastro-esophageal reflux disease,13,2025-09-25
-Dr. Deborah Hart,CARDIAC SURGERY,Patient Diagnosis,Heart failure,12,2025-09-25
-Dr. Deborah Hart,CARDIAC SURGERY,Monthly Patient Volume,77,256,2025-09-25
-Dr. Deborah Hart,CARDIAC SURGERY,Treatment Success Rate,75%,26,2025-09-25
-Dr. Mckenzie Brown,ANESTHESIOLOGY,Patient Diagnosis,Essential hypertension,31,2025-09-25
-Dr. Mckenzie Brown,ANESTHESIOLOGY,Patient Diagnosis,Asthma,17,2025-09-25
-Dr. Mckenzie Brown,ANESTHESIOLOGY,Patient Diagnosis,Chronic obstructive pulmonary disease,2,2025-09-25
-Dr. Mckenzie Brown,ANESTHESIOLOGY,Monthly Patient Volume,116,84,2025-09-25
-Dr. Mckenzie Brown,ANESTHESIOLOGY,Treatment Success Rate,79%,64,2025-09-25
-Dr. Christopher Phelps,CLINICAL SOCIAL WORKER,Patient Diagnosis,Panniculitis,41,2025-09-25
-Dr. Christopher Phelps,CLINICAL SOCIAL WORKER,Patient Diagnosis,Essential hypertension,43,2025-09-25
-Dr. Christopher Phelps,CLINICAL SOCIAL WORKER,Patient Diagnosis,Psoriasis,10,2025-09-25
-Dr. Christopher Phelps,CLINICAL SOCIAL WORKER,Monthly Patient Volume,138,250,2025-09-25
-Dr. Christopher Phelps,CLINICAL SOCIAL WORKER,Treatment Success Rate,95%,84,2025-09-25
-Dr. Kirsten Kent,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Anoxic brain damage,10,2025-09-25
-Dr. Kirsten Kent,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Encounter for antineoplastic chemotherapy,23,2025-09-25
-Dr. Kirsten Kent,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Monthly Patient Volume,236,143,2025-09-25
-Dr. Kirsten Kent,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Treatment Success Rate,87%,23,2025-09-25
-Dr. Michael Bailey,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Anoxic brain damage,43,2025-09-25
-Dr. Michael Bailey,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Encounter for antineoplastic chemotherapy,47,2025-09-25
-Dr. Michael Bailey,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Monthly Patient Volume,155,229,2025-09-25
-Dr. Michael Bailey,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Treatment Success Rate,74%,38,2025-09-25
-Dr. Eric Mcbride,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Anoxic brain damage,24,2025-09-25
-Dr. Eric Mcbride,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Encounter for antineoplastic chemotherapy,32,2025-09-25
-Dr. Eric Mcbride,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Monthly Patient Volume,284,279,2025-09-25
-Dr. Eric Mcbride,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Treatment Success Rate,91%,50,2025-09-25
-Dr. Kimberly Stevenson,FAMILY PRACTICE,Patient Diagnosis,Anoxic brain damage,32,2025-09-25
-Dr. Kimberly Stevenson,FAMILY PRACTICE,Patient Diagnosis,End stage renal disease,29,2025-09-25
-Dr. Kimberly Stevenson,FAMILY PRACTICE,Patient Diagnosis,Essential hypertension,2,2025-09-25
-Dr. Kimberly Stevenson,FAMILY PRACTICE,Monthly Patient Volume,158,179,2025-09-25
-Dr. Kimberly Stevenson,FAMILY PRACTICE,Treatment Success Rate,69%,88,2025-09-25
-Dr. Carla Brown,FAMILY PRACTICE,Patient Diagnosis,Age-related cataract,40,2025-09-25
-Dr. Carla Brown,FAMILY PRACTICE,Patient Diagnosis,Chronic obstructive pulmonary disease,35,2025-09-25
-Dr. Carla Brown,FAMILY PRACTICE,Patient Diagnosis,Essential hypertension,3,2025-09-25
-Dr. Carla Brown,FAMILY PRACTICE,Monthly Patient Volume,124,158,2025-09-25
-Dr. Carla Brown,FAMILY PRACTICE,Treatment Success Rate,75%,66,2025-09-25
-Dr. Jillian Cabrera,FAMILY PRACTICE,Patient Diagnosis,Essential hypertension,21,2025-09-25
-Dr. Jillian Cabrera,FAMILY PRACTICE,Patient Diagnosis,Chronic obstructive pulmonary disease,7,2025-09-25
-Dr. Jillian Cabrera,FAMILY PRACTICE,Patient Diagnosis,Asthma,16,2025-09-25
-Dr. Jillian Cabrera,FAMILY PRACTICE,Monthly Patient Volume,258,261,2025-09-25
-Dr. Jillian Cabrera,FAMILY PRACTICE,Treatment Success Rate,78%,66,2025-09-25
-Dr. Hannah Keller,FAMILY PRACTICE,Patient Diagnosis,Type 2 diabetes mellitus,1,2025-09-25
-Dr. Hannah Keller,FAMILY PRACTICE,Patient Diagnosis,Rheumatoid arthritis,39,2025-09-25
-Dr. Hannah Keller,FAMILY PRACTICE,Patient Diagnosis,Age-related cataract,48,2025-09-25
-Dr. Hannah Keller,FAMILY PRACTICE,Monthly Patient Volume,58,270,2025-09-25
-Dr. Hannah Keller,FAMILY PRACTICE,Treatment Success Rate,72%,96,2025-09-25
-Dr. Louis Guzman,CARDIOVASCULAR DISEASE (CARDIOLOGY),Patient Diagnosis,Essential hypertension,45,2025-09-25
-Dr. Louis Guzman,CARDIOVASCULAR DISEASE (CARDIOLOGY),Patient Diagnosis,Chronic obstructive pulmonary disease,40,2025-09-25
-Dr. Louis Guzman,CARDIOVASCULAR DISEASE (CARDIOLOGY),Monthly Patient Volume,135,281,2025-09-25
-Dr. Louis Guzman,CARDIOVASCULAR DISEASE (CARDIOLOGY),Treatment Success Rate,69%,71,2025-09-25
-Dr. Michael Smith,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Patient Diagnosis,End stage renal disease,9,2025-09-25
-Dr. Michael Smith,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Patient Diagnosis,Panniculitis,35,2025-09-25
-Dr. Michael Smith,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Patient Diagnosis,Rheumatoid arthritis,11,2025-09-25
-Dr. Michael Smith,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Monthly Patient Volume,111,141,2025-09-25
-Dr. Michael Smith,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Treatment Success Rate,91%,54,2025-09-25
-Dr. Michael Johnson,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Patient Diagnosis,Generalized anxiety disorder,23,2025-09-25
-Dr. Michael Johnson,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Patient Diagnosis,Heart failure,21,2025-09-25
-Dr. Michael Johnson,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Patient Diagnosis,Essential hypertension,2,2025-09-25
-Dr. Michael Johnson,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Monthly Patient Volume,186,289,2025-09-25
-Dr. Michael Johnson,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Treatment Success Rate,85%,82,2025-09-25
-Dr. William Phillips,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Anoxic brain damage,5,2025-09-25
-Dr. William Phillips,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Encounter for antineoplastic chemotherapy,38,2025-09-25
-Dr. William Phillips,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Monthly Patient Volume,86,186,2025-09-25
-Dr. William Phillips,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Treatment Success Rate,92%,44,2025-09-25
-Dr. Dana Harding,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Anoxic brain damage,6,2025-09-25
-Dr. Dana Harding,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Encounter for antineoplastic chemotherapy,21,2025-09-25
-Dr. Dana Harding,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Monthly Patient Volume,123,90,2025-09-25
-Dr. Dana Harding,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Treatment Success Rate,75%,42,2025-09-25
-Dr. Kelly Mann,FAMILY PRACTICE,Patient Diagnosis,Secondary malignant neoplasm of lung,32,2025-09-25
-Dr. Kelly Mann,FAMILY PRACTICE,Patient Diagnosis,Essential hypertension,45,2025-09-25
-Dr. Kelly Mann,FAMILY PRACTICE,Patient Diagnosis,Rheumatoid arthritis,30,2025-09-25
-Dr. Kelly Mann,FAMILY PRACTICE,Monthly Patient Volume,133,69,2025-09-25
-Dr. Kelly Mann,FAMILY PRACTICE,Treatment Success Rate,88%,82,2025-09-25
-Dr. Timothy Green,OPTOMETRY,Patient Diagnosis,Rheumatoid arthritis,26,2025-09-25
-Dr. Timothy Green,OPTOMETRY,Patient Diagnosis,Anoxic brain damage,47,2025-09-25
-Dr. Timothy Green,OPTOMETRY,Patient Diagnosis,Age-related cataract,8,2025-09-25
-Dr. Timothy Green,OPTOMETRY,Monthly Patient Volume,171,111,2025-09-25
-Dr. Timothy Green,OPTOMETRY,Treatment Success Rate,72%,30,2025-09-25
-Dr. Charlotte Gonzalez,OPTOMETRY,Patient Diagnosis,Gastro-esophageal reflux disease,17,2025-09-25
-Dr. Charlotte Gonzalez,OPTOMETRY,Patient Diagnosis,Panniculitis,3,2025-09-25
-Dr. Charlotte Gonzalez,OPTOMETRY,Patient Diagnosis,Generalized anxiety disorder,10,2025-09-25
-Dr. Charlotte Gonzalez,OPTOMETRY,Monthly Patient Volume,66,167,2025-09-25
-Dr. Charlotte Gonzalez,OPTOMETRY,Treatment Success Rate,69%,49,2025-09-25
-Dr. Andrew Parker,ANESTHESIOLOGY,Patient Diagnosis,Generalized anxiety disorder,9,2025-09-25
-Dr. Andrew Parker,ANESTHESIOLOGY,Patient Diagnosis,Encounter for antineoplastic chemotherapy,39,2025-09-25
-Dr. Andrew Parker,ANESTHESIOLOGY,Patient Diagnosis,Anoxic brain damage,35,2025-09-25
-Dr. Andrew Parker,ANESTHESIOLOGY,Monthly Patient Volume,70,170,2025-09-25
-Dr. Andrew Parker,ANESTHESIOLOGY,Treatment Success Rate,90%,90,2025-09-25
-Dr. Michele Ingram,PAIN MANAGEMENT,Patient Diagnosis,Panniculitis,50,2025-09-25
-Dr. Michele Ingram,PAIN MANAGEMENT,Patient Diagnosis,Rheumatoid arthritis,2,2025-09-25
-Dr. Michele Ingram,PAIN MANAGEMENT,Patient Diagnosis,Essential hypertension,21,2025-09-25
-Dr. Michele Ingram,PAIN MANAGEMENT,Monthly Patient Volume,167,164,2025-09-25
-Dr. Michele Ingram,PAIN MANAGEMENT,Treatment Success Rate,88%,75,2025-09-25
-Dr. Krista Harrison,PAIN MANAGEMENT,Patient Diagnosis,Rheumatoid arthritis,12,2025-09-25
-Dr. Krista Harrison,PAIN MANAGEMENT,Patient Diagnosis,Generalized anxiety disorder,7,2025-09-25
-Dr. Krista Harrison,PAIN MANAGEMENT,Patient Diagnosis,Panniculitis,11,2025-09-25
-Dr. Krista Harrison,PAIN MANAGEMENT,Monthly Patient Volume,105,103,2025-09-25
-Dr. Krista Harrison,PAIN MANAGEMENT,Treatment Success Rate,89%,46,2025-09-25
-Dr. Victoria Lewis,PAIN MANAGEMENT,Patient Diagnosis,Encounter for antineoplastic chemotherapy,14,2025-09-25
-Dr. Victoria Lewis,PAIN MANAGEMENT,Patient Diagnosis,Chronic obstructive pulmonary disease,40,2025-09-25
-Dr. Victoria Lewis,PAIN MANAGEMENT,Patient Diagnosis,Secondary malignant neoplasm of lung,27,2025-09-25
-Dr. Victoria Lewis,PAIN MANAGEMENT,Monthly Patient Volume,114,133,2025-09-25
-Dr. Victoria Lewis,PAIN MANAGEMENT,Treatment Success Rate,91%,69,2025-09-25
-Dr. Andrew Johnson,PHYSICAL MEDICINE AND REHABILITATION,Patient Diagnosis,Rheumatoid arthritis,11,2025-09-25
-Dr. Andrew Johnson,PHYSICAL MEDICINE AND REHABILITATION,Patient Diagnosis,Psoriasis,21,2025-09-25
-Dr. Andrew Johnson,PHYSICAL MEDICINE AND REHABILITATION,Patient Diagnosis,Age-related cataract,47,2025-09-25
-Dr. Andrew Johnson,PHYSICAL MEDICINE AND REHABILITATION,Monthly Patient Volume,285,138,2025-09-25
-Dr. Andrew Johnson,PHYSICAL MEDICINE AND REHABILITATION,Treatment Success Rate,71%,85,2025-09-25
-Dr. Michael Zamora,RADIATION ONCOLOGY,Patient Diagnosis,Secondary malignant neoplasm of lung,17,2025-09-25
-Dr. Michael Zamora,RADIATION ONCOLOGY,Patient Diagnosis,Encounter for antineoplastic chemotherapy,42,2025-09-25
-Dr. Michael Zamora,RADIATION ONCOLOGY,Monthly Patient Volume,273,215,2025-09-25
-Dr. Michael Zamora,RADIATION ONCOLOGY,Treatment Success Rate,90%,96,2025-09-25
-Dr. Juan Price,QUALIFIED SPEECH LANGUAGE PATHOLOGIST,Patient Diagnosis,Chronic obstructive pulmonary disease,39,2025-09-25
-Dr. Juan Price,QUALIFIED SPEECH LANGUAGE PATHOLOGIST,Patient Diagnosis,Secondary malignant neoplasm of lung,29,2025-09-25
-Dr. Juan Price,QUALIFIED SPEECH LANGUAGE PATHOLOGIST,Monthly Patient Volume,197,282,2025-09-25
-Dr. Juan Price,QUALIFIED SPEECH LANGUAGE PATHOLOGIST,Treatment Success Rate,91%,73,2025-09-25
-Dr. Vernon Hernandez,INFECTIOUS DISEASE,Patient Diagnosis,Chronic obstructive pulmonary disease,25,2025-09-25
-Dr. Vernon Hernandez,INFECTIOUS DISEASE,Patient Diagnosis,End stage renal disease,24,2025-09-25
-Dr. Vernon Hernandez,INFECTIOUS DISEASE,Patient Diagnosis,Gastro-esophageal reflux disease,31,2025-09-25
-Dr. Vernon Hernandez,INFECTIOUS DISEASE,Monthly Patient Volume,105,123,2025-09-25
-Dr. Vernon Hernandez,INFECTIOUS DISEASE,Treatment Success Rate,86%,26,2025-09-25
-Dr. Morgan Chapman,INFECTIOUS DISEASE,Patient Diagnosis,Chronic obstructive pulmonary disease,12,2025-09-25
-Dr. Morgan Chapman,INFECTIOUS DISEASE,Patient Diagnosis,End stage renal disease,31,2025-09-25
-Dr. Morgan Chapman,INFECTIOUS DISEASE,Patient Diagnosis,Gastro-esophageal reflux disease,7,2025-09-25
-Dr. Morgan Chapman,INFECTIOUS DISEASE,Monthly Patient Volume,241,269,2025-09-25
-Dr. Morgan Chapman,INFECTIOUS DISEASE,Treatment Success Rate,66%,26,2025-09-25
-Dr. Wesley Hernandez,INFECTIOUS DISEASE,Patient Diagnosis,Chronic obstructive pulmonary disease,20,2025-09-25
-Dr. Wesley Hernandez,INFECTIOUS DISEASE,Patient Diagnosis,End stage renal disease,8,2025-09-25
-Dr. Wesley Hernandez,INFECTIOUS DISEASE,Monthly Patient Volume,277,63,2025-09-25
-Dr. Wesley Hernandez,INFECTIOUS DISEASE,Treatment Success Rate,70%,53,2025-09-25
-Dr. Jenna Fisher,NURSE PRACTITIONER,Patient Diagnosis,Heart failure,29,2025-09-25
-Dr. Jenna Fisher,NURSE PRACTITIONER,Patient Diagnosis,Generalized anxiety disorder,28,2025-09-25
-Dr. Jenna Fisher,NURSE PRACTITIONER,Monthly Patient Volume,83,241,2025-09-25
-Dr. Jenna Fisher,NURSE PRACTITIONER,Treatment Success Rate,84%,55,2025-09-25
-Dr. Autumn Haley,NURSE PRACTITIONER,Patient Diagnosis,Rheumatoid arthritis,42,2025-09-25
-Dr. Autumn Haley,NURSE PRACTITIONER,Patient Diagnosis,Essential hypertension,36,2025-09-25
-Dr. Autumn Haley,NURSE PRACTITIONER,Patient Diagnosis,Gastro-esophageal reflux disease,4,2025-09-25
-Dr. Autumn Haley,NURSE PRACTITIONER,Monthly Patient Volume,152,75,2025-09-25
-Dr. Autumn Haley,NURSE PRACTITIONER,Treatment Success Rate,84%,28,2025-09-25
-Dr. Melissa Vazquez,NURSE PRACTITIONER,Patient Diagnosis,Generalized anxiety disorder,17,2025-09-25
-Dr. Melissa Vazquez,NURSE PRACTITIONER,Patient Diagnosis,Chronic obstructive pulmonary disease,14,2025-09-25
-Dr. Melissa Vazquez,NURSE PRACTITIONER,Patient Diagnosis,Type 2 diabetes mellitus,40,2025-09-25
-Dr. Melissa Vazquez,NURSE PRACTITIONER,Monthly Patient Volume,61,89,2025-09-25
-Dr. Melissa Vazquez,NURSE PRACTITIONER,Treatment Success Rate,87%,82,2025-09-25
-Dr. Matthew Shepard,NURSE PRACTITIONER,Patient Diagnosis,End stage renal disease,44,2025-09-25
-Dr. Matthew Shepard,NURSE PRACTITIONER,Patient Diagnosis,Heart failure,24,2025-09-25
-Dr. Matthew Shepard,NURSE PRACTITIONER,Patient Diagnosis,Anoxic brain damage,48,2025-09-25
-Dr. Matthew Shepard,NURSE PRACTITIONER,Monthly Patient Volume,189,95,2025-09-25
-Dr. Matthew Shepard,NURSE PRACTITIONER,Treatment Success Rate,83%,96,2025-09-25
-Dr. Heather Fernandez,NURSE PRACTITIONER,Patient Diagnosis,Essential hypertension,29,2025-09-25
-Dr. Heather Fernandez,NURSE PRACTITIONER,Patient Diagnosis,End stage renal disease,39,2025-09-25
-Dr. Heather Fernandez,NURSE PRACTITIONER,Patient Diagnosis,Heart failure,16,2025-09-25
-Dr. Heather Fernandez,NURSE PRACTITIONER,Monthly Patient Volume,258,72,2025-09-25
-Dr. Heather Fernandez,NURSE PRACTITIONER,Treatment Success Rate,83%,56,2025-09-25
-Dr. Erika Walker,ORTHOPEDIC SURGERY,Patient Diagnosis,Psoriasis,27,2025-09-25
-Dr. Erika Walker,ORTHOPEDIC SURGERY,Patient Diagnosis,Heart failure,44,2025-09-25
-Dr. Erika Walker,ORTHOPEDIC SURGERY,Patient Diagnosis,Panniculitis,41,2025-09-25
-Dr. Erika Walker,ORTHOPEDIC SURGERY,Monthly Patient Volume,176,177,2025-09-25
-Dr. Erika Walker,ORTHOPEDIC SURGERY,Treatment Success Rate,83%,88,2025-09-25
-Dr. Charles Thomas,CLINICAL SOCIAL WORKER,Patient Diagnosis,Encounter for antineoplastic chemotherapy,49,2025-09-25
-Dr. Charles Thomas,CLINICAL SOCIAL WORKER,Patient Diagnosis,Age-related cataract,18,2025-09-25
-Dr. Charles Thomas,CLINICAL SOCIAL WORKER,Patient Diagnosis,Anoxic brain damage,49,2025-09-25
-Dr. Charles Thomas,CLINICAL SOCIAL WORKER,Monthly Patient Volume,82,244,2025-09-25
-Dr. Charles Thomas,CLINICAL SOCIAL WORKER,Treatment Success Rate,68%,66,2025-09-25
-Dr. Gregory Ball,CERTIFIED CLINICAL NURSE SPECIALIST (CNS),Patient Diagnosis,Gastro-esophageal reflux disease,48,2025-09-25
-Dr. Gregory Ball,CERTIFIED CLINICAL NURSE SPECIALIST (CNS),Patient Diagnosis,Chronic obstructive pulmonary disease,19,2025-09-25
-Dr. Gregory Ball,CERTIFIED CLINICAL NURSE SPECIALIST (CNS),Patient Diagnosis,Essential hypertension,19,2025-09-25
-Dr. Gregory Ball,CERTIFIED CLINICAL NURSE SPECIALIST (CNS),Monthly Patient Volume,263,285,2025-09-25
-Dr. Gregory Ball,CERTIFIED CLINICAL NURSE SPECIALIST (CNS),Treatment Success Rate,83%,21,2025-09-25
+Dr. James Thomas,HOSPITALIST,Patient Diagnosis,Heart failure,16,2025-09-26
+Dr. James Thomas,HOSPITALIST,Patient Diagnosis,Anoxic brain damage,34,2025-09-26
+Dr. James Thomas,HOSPITALIST,Monthly Patient Volume,268,71,2025-09-26
+Dr. James Thomas,HOSPITALIST,Treatment Success Rate,88%,95,2025-09-26
+Dr. Timothy Scott,INTERNAL MEDICINE,Patient Diagnosis,Heart failure,25,2025-09-26
+Dr. Timothy Scott,INTERNAL MEDICINE,Patient Diagnosis,Anoxic brain damage,36,2025-09-26
+Dr. Timothy Scott,INTERNAL MEDICINE,Monthly Patient Volume,187,164,2025-09-26
+Dr. Timothy Scott,INTERNAL MEDICINE,Treatment Success Rate,70%,87,2025-09-26
+Dr. Jeffrey Romero,ANESTHESIOLOGY,Patient Diagnosis,Heart failure,36,2025-09-26
+Dr. Jeffrey Romero,ANESTHESIOLOGY,Patient Diagnosis,Secondary malignant neoplasm of lung,49,2025-09-26
+Dr. Jeffrey Romero,ANESTHESIOLOGY,Patient Diagnosis,Asthma,36,2025-09-26
+Dr. Jeffrey Romero,ANESTHESIOLOGY,Monthly Patient Volume,139,134,2025-09-26
+Dr. Jeffrey Romero,ANESTHESIOLOGY,Treatment Success Rate,92%,46,2025-09-26
+Dr. Logan Morris,ANESTHESIOLOGY,Patient Diagnosis,Gastro-esophageal reflux disease,42,2025-09-26
+Dr. Logan Morris,ANESTHESIOLOGY,Patient Diagnosis,Essential hypertension,1,2025-09-26
+Dr. Logan Morris,ANESTHESIOLOGY,Monthly Patient Volume,50,133,2025-09-26
+Dr. Logan Morris,ANESTHESIOLOGY,Treatment Success Rate,77%,59,2025-09-26
+Dr. Holly Shaw,ANESTHESIOLOGY,Patient Diagnosis,Panniculitis,24,2025-09-26
+Dr. Holly Shaw,ANESTHESIOLOGY,Patient Diagnosis,Anoxic brain damage,41,2025-09-26
+Dr. Holly Shaw,ANESTHESIOLOGY,Patient Diagnosis,Type 2 diabetes mellitus,5,2025-09-26
+Dr. Holly Shaw,ANESTHESIOLOGY,Monthly Patient Volume,247,153,2025-09-26
+Dr. Holly Shaw,ANESTHESIOLOGY,Treatment Success Rate,78%,100,2025-09-26
+Dr. Dennis Wheeler,ANESTHESIOLOGY,Patient Diagnosis,Psoriasis,24,2025-09-26
+Dr. Dennis Wheeler,ANESTHESIOLOGY,Patient Diagnosis,End stage renal disease,6,2025-09-26
+Dr. Dennis Wheeler,ANESTHESIOLOGY,Monthly Patient Volume,266,51,2025-09-26
+Dr. Dennis Wheeler,ANESTHESIOLOGY,Treatment Success Rate,65%,71,2025-09-26
+Dr. Daniel Mcdonald,OBSTETRICS/GYNECOLOGY,Patient Diagnosis,Age-related cataract,30,2025-09-26
+Dr. Daniel Mcdonald,OBSTETRICS/GYNECOLOGY,Patient Diagnosis,Psoriasis,3,2025-09-26
+Dr. Daniel Mcdonald,OBSTETRICS/GYNECOLOGY,Patient Diagnosis,Heart failure,6,2025-09-26
+Dr. Daniel Mcdonald,OBSTETRICS/GYNECOLOGY,Monthly Patient Volume,225,162,2025-09-26
+Dr. Daniel Mcdonald,OBSTETRICS/GYNECOLOGY,Treatment Success Rate,69%,42,2025-09-26
+Dr. Shane Dunn,GENERAL SURGERY,Patient Diagnosis,Generalized anxiety disorder,12,2025-09-26
+Dr. Shane Dunn,GENERAL SURGERY,Monthly Patient Volume,215,153,2025-09-26
+Dr. Shane Dunn,GENERAL SURGERY,Treatment Success Rate,69%,71,2025-09-26
+Dr. Michael Melton,GENERAL SURGERY,Patient Diagnosis,Generalized anxiety disorder,41,2025-09-26
+Dr. Michael Melton,GENERAL SURGERY,Monthly Patient Volume,167,188,2025-09-26
+Dr. Michael Melton,GENERAL SURGERY,Treatment Success Rate,88%,23,2025-09-26
+Dr. Robert Ellis,GENERAL SURGERY,Patient Diagnosis,Generalized anxiety disorder,48,2025-09-26
+Dr. Robert Ellis,GENERAL SURGERY,Monthly Patient Volume,82,180,2025-09-26
+Dr. Robert Ellis,GENERAL SURGERY,Treatment Success Rate,81%,28,2025-09-26
+Dr. Nicole Price,INTERNAL MEDICINE,Patient Diagnosis,Heart failure,10,2025-09-26
+Dr. Nicole Price,INTERNAL MEDICINE,Patient Diagnosis,Type 2 diabetes mellitus,9,2025-09-26
+Dr. Nicole Price,INTERNAL MEDICINE,Monthly Patient Volume,159,198,2025-09-26
+Dr. Nicole Price,INTERNAL MEDICINE,Treatment Success Rate,92%,93,2025-09-26
+Dr. Richard Aguilar,UROLOGY,Patient Diagnosis,Generalized anxiety disorder,27,2025-09-26
+Dr. Richard Aguilar,UROLOGY,Patient Diagnosis,Rheumatoid arthritis,8,2025-09-26
+Dr. Richard Aguilar,UROLOGY,Patient Diagnosis,Essential hypertension,23,2025-09-26
+Dr. Richard Aguilar,UROLOGY,Monthly Patient Volume,73,239,2025-09-26
+Dr. Richard Aguilar,UROLOGY,Treatment Success Rate,74%,33,2025-09-26
+Dr. George Brewer,UROLOGY,Patient Diagnosis,Generalized anxiety disorder,3,2025-09-26
+Dr. George Brewer,UROLOGY,Patient Diagnosis,Anoxic brain damage,29,2025-09-26
+Dr. George Brewer,UROLOGY,Patient Diagnosis,Asthma,13,2025-09-26
+Dr. George Brewer,UROLOGY,Monthly Patient Volume,284,271,2025-09-26
+Dr. George Brewer,UROLOGY,Treatment Success Rate,87%,96,2025-09-26
+Dr. Ryan Miller,CARDIAC SURGERY,Patient Diagnosis,Rheumatoid arthritis,28,2025-09-26
+Dr. Ryan Miller,CARDIAC SURGERY,Patient Diagnosis,Type 2 diabetes mellitus,50,2025-09-26
+Dr. Ryan Miller,CARDIAC SURGERY,Monthly Patient Volume,182,268,2025-09-26
+Dr. Ryan Miller,CARDIAC SURGERY,Treatment Success Rate,85%,65,2025-09-26
+Dr. Laura Anderson,CARDIAC SURGERY,Patient Diagnosis,End stage renal disease,38,2025-09-26
+Dr. Laura Anderson,CARDIAC SURGERY,Patient Diagnosis,Asthma,31,2025-09-26
+Dr. Laura Anderson,CARDIAC SURGERY,Monthly Patient Volume,257,77,2025-09-26
+Dr. Laura Anderson,CARDIAC SURGERY,Treatment Success Rate,85%,35,2025-09-26
+Dr. Dawn Woods,ANESTHESIOLOGY,Patient Diagnosis,Encounter for antineoplastic chemotherapy,18,2025-09-26
+Dr. Dawn Woods,ANESTHESIOLOGY,Patient Diagnosis,Heart failure,36,2025-09-26
+Dr. Dawn Woods,ANESTHESIOLOGY,Patient Diagnosis,Rheumatoid arthritis,17,2025-09-26
+Dr. Dawn Woods,ANESTHESIOLOGY,Monthly Patient Volume,212,245,2025-09-26
+Dr. Dawn Woods,ANESTHESIOLOGY,Treatment Success Rate,95%,68,2025-09-26
+Dr. Karla Benton,CLINICAL SOCIAL WORKER,Patient Diagnosis,Gastro-esophageal reflux disease,16,2025-09-26
+Dr. Karla Benton,CLINICAL SOCIAL WORKER,Patient Diagnosis,Type 2 diabetes mellitus,44,2025-09-26
+Dr. Karla Benton,CLINICAL SOCIAL WORKER,Patient Diagnosis,Chronic obstructive pulmonary disease,47,2025-09-26
+Dr. Karla Benton,CLINICAL SOCIAL WORKER,Monthly Patient Volume,181,167,2025-09-26
+Dr. Karla Benton,CLINICAL SOCIAL WORKER,Treatment Success Rate,77%,60,2025-09-26
+Dr. George Montgomery,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Anoxic brain damage,35,2025-09-26
+Dr. George Montgomery,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Encounter for antineoplastic chemotherapy,39,2025-09-26
+Dr. George Montgomery,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Monthly Patient Volume,124,285,2025-09-26
+Dr. George Montgomery,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Treatment Success Rate,68%,73,2025-09-26
+Dr. Nicole Gardner,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Anoxic brain damage,46,2025-09-26
+Dr. Nicole Gardner,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Encounter for antineoplastic chemotherapy,9,2025-09-26
+Dr. Nicole Gardner,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Monthly Patient Volume,203,227,2025-09-26
+Dr. Nicole Gardner,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Treatment Success Rate,92%,98,2025-09-26
+Dr. Ronnie Weeks,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Anoxic brain damage,28,2025-09-26
+Dr. Ronnie Weeks,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Encounter for antineoplastic chemotherapy,44,2025-09-26
+Dr. Ronnie Weeks,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Monthly Patient Volume,91,64,2025-09-26
+Dr. Ronnie Weeks,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Treatment Success Rate,75%,78,2025-09-26
+Dr. Susan Jarvis,FAMILY PRACTICE,Patient Diagnosis,Asthma,44,2025-09-26
+Dr. Susan Jarvis,FAMILY PRACTICE,Patient Diagnosis,Type 2 diabetes mellitus,43,2025-09-26
+Dr. Susan Jarvis,FAMILY PRACTICE,Monthly Patient Volume,138,116,2025-09-26
+Dr. Susan Jarvis,FAMILY PRACTICE,Treatment Success Rate,95%,79,2025-09-26
+Dr. Jason Young,FAMILY PRACTICE,Patient Diagnosis,Heart failure,7,2025-09-26
+Dr. Jason Young,FAMILY PRACTICE,Patient Diagnosis,Rheumatoid arthritis,4,2025-09-26
+Dr. Jason Young,FAMILY PRACTICE,Patient Diagnosis,Type 2 diabetes mellitus,35,2025-09-26
+Dr. Jason Young,FAMILY PRACTICE,Monthly Patient Volume,183,159,2025-09-26
+Dr. Jason Young,FAMILY PRACTICE,Treatment Success Rate,83%,46,2025-09-26
+Dr. Timothy Peterson,FAMILY PRACTICE,Patient Diagnosis,Age-related cataract,33,2025-09-26
+Dr. Timothy Peterson,FAMILY PRACTICE,Patient Diagnosis,Secondary malignant neoplasm of lung,14,2025-09-26
+Dr. Timothy Peterson,FAMILY PRACTICE,Patient Diagnosis,Psoriasis,13,2025-09-26
+Dr. Timothy Peterson,FAMILY PRACTICE,Monthly Patient Volume,159,276,2025-09-26
+Dr. Timothy Peterson,FAMILY PRACTICE,Treatment Success Rate,84%,85,2025-09-26
+Dr. Joseph Hayden,FAMILY PRACTICE,Patient Diagnosis,Encounter for antineoplastic chemotherapy,2,2025-09-26
+Dr. Joseph Hayden,FAMILY PRACTICE,Patient Diagnosis,Asthma,33,2025-09-26
+Dr. Joseph Hayden,FAMILY PRACTICE,Patient Diagnosis,Psoriasis,39,2025-09-26
+Dr. Joseph Hayden,FAMILY PRACTICE,Monthly Patient Volume,293,275,2025-09-26
+Dr. Joseph Hayden,FAMILY PRACTICE,Treatment Success Rate,69%,27,2025-09-26
+Dr. Matthew Neal,CARDIOVASCULAR DISEASE (CARDIOLOGY),Patient Diagnosis,Essential hypertension,12,2025-09-26
+Dr. Matthew Neal,CARDIOVASCULAR DISEASE (CARDIOLOGY),Patient Diagnosis,Chronic obstructive pulmonary disease,19,2025-09-26
+Dr. Matthew Neal,CARDIOVASCULAR DISEASE (CARDIOLOGY),Patient Diagnosis,End stage renal disease,30,2025-09-26
+Dr. Matthew Neal,CARDIOVASCULAR DISEASE (CARDIOLOGY),Monthly Patient Volume,62,204,2025-09-26
+Dr. Matthew Neal,CARDIOVASCULAR DISEASE (CARDIOLOGY),Treatment Success Rate,68%,64,2025-09-26
+Dr. Kathryn Romero,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Patient Diagnosis,Age-related cataract,42,2025-09-26
+Dr. Kathryn Romero,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Patient Diagnosis,Panniculitis,40,2025-09-26
+Dr. Kathryn Romero,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Patient Diagnosis,Secondary malignant neoplasm of lung,41,2025-09-26
+Dr. Kathryn Romero,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Monthly Patient Volume,259,193,2025-09-26
+Dr. Kathryn Romero,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Treatment Success Rate,78%,67,2025-09-26
+Dr. Charles Miller,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Patient Diagnosis,End stage renal disease,1,2025-09-26
+Dr. Charles Miller,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Patient Diagnosis,Secondary malignant neoplasm of lung,35,2025-09-26
+Dr. Charles Miller,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Patient Diagnosis,Age-related cataract,10,2025-09-26
+Dr. Charles Miller,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Monthly Patient Volume,84,228,2025-09-26
+Dr. Charles Miller,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),Treatment Success Rate,70%,28,2025-09-26
+Dr. Roberto Flores,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Anoxic brain damage,40,2025-09-26
+Dr. Roberto Flores,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Encounter for antineoplastic chemotherapy,5,2025-09-26
+Dr. Roberto Flores,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Monthly Patient Volume,241,80,2025-09-26
+Dr. Roberto Flores,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Treatment Success Rate,80%,77,2025-09-26
+Dr. Sarah Mata,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Anoxic brain damage,34,2025-09-26
+Dr. Sarah Mata,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Patient Diagnosis,Encounter for antineoplastic chemotherapy,2,2025-09-26
+Dr. Sarah Mata,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Monthly Patient Volume,300,247,2025-09-26
+Dr. Sarah Mata,PHYSICAL THERAPIST IN PRIVATE PRACTICE,Treatment Success Rate,90%,91,2025-09-26
+Dr. Jeffrey Walsh,FAMILY PRACTICE,Patient Diagnosis,Chronic obstructive pulmonary disease,28,2025-09-26
+Dr. Jeffrey Walsh,FAMILY PRACTICE,Patient Diagnosis,Asthma,50,2025-09-26
+Dr. Jeffrey Walsh,FAMILY PRACTICE,Monthly Patient Volume,224,144,2025-09-26
+Dr. Jeffrey Walsh,FAMILY PRACTICE,Treatment Success Rate,83%,38,2025-09-26
+Dr. Kevin Thomas,OPTOMETRY,Patient Diagnosis,Panniculitis,22,2025-09-26
+Dr. Kevin Thomas,OPTOMETRY,Patient Diagnosis,Gastro-esophageal reflux disease,15,2025-09-26
+Dr. Kevin Thomas,OPTOMETRY,Patient Diagnosis,Chronic obstructive pulmonary disease,15,2025-09-26
+Dr. Kevin Thomas,OPTOMETRY,Monthly Patient Volume,90,192,2025-09-26
+Dr. Kevin Thomas,OPTOMETRY,Treatment Success Rate,95%,68,2025-09-26
+Dr. Elizabeth Henderson,OPTOMETRY,Patient Diagnosis,Essential hypertension,17,2025-09-26
+Dr. Elizabeth Henderson,OPTOMETRY,Patient Diagnosis,Psoriasis,10,2025-09-26
+Dr. Elizabeth Henderson,OPTOMETRY,Patient Diagnosis,Heart failure,18,2025-09-26
+Dr. Elizabeth Henderson,OPTOMETRY,Monthly Patient Volume,212,271,2025-09-26
+Dr. Elizabeth Henderson,OPTOMETRY,Treatment Success Rate,72%,93,2025-09-26
+Dr. Frances Stephens,ANESTHESIOLOGY,Patient Diagnosis,Age-related cataract,26,2025-09-26
+Dr. Frances Stephens,ANESTHESIOLOGY,Patient Diagnosis,Heart failure,4,2025-09-26
+Dr. Frances Stephens,ANESTHESIOLOGY,Patient Diagnosis,Essential hypertension,49,2025-09-26
+Dr. Frances Stephens,ANESTHESIOLOGY,Monthly Patient Volume,290,90,2025-09-26
+Dr. Frances Stephens,ANESTHESIOLOGY,Treatment Success Rate,89%,88,2025-09-26
+Dr. Kelly Suarez,PAIN MANAGEMENT,Patient Diagnosis,Age-related cataract,38,2025-09-26
+Dr. Kelly Suarez,PAIN MANAGEMENT,Patient Diagnosis,Generalized anxiety disorder,30,2025-09-26
+Dr. Kelly Suarez,PAIN MANAGEMENT,Patient Diagnosis,End stage renal disease,11,2025-09-26
+Dr. Kelly Suarez,PAIN MANAGEMENT,Monthly Patient Volume,76,168,2025-09-26
+Dr. Kelly Suarez,PAIN MANAGEMENT,Treatment Success Rate,65%,75,2025-09-26
+Dr. Jessica Douglas,PAIN MANAGEMENT,Patient Diagnosis,Chronic obstructive pulmonary disease,18,2025-09-26
+Dr. Jessica Douglas,PAIN MANAGEMENT,Patient Diagnosis,Essential hypertension,12,2025-09-26
+Dr. Jessica Douglas,PAIN MANAGEMENT,Patient Diagnosis,Type 2 diabetes mellitus,4,2025-09-26
+Dr. Jessica Douglas,PAIN MANAGEMENT,Monthly Patient Volume,136,111,2025-09-26
+Dr. Jessica Douglas,PAIN MANAGEMENT,Treatment Success Rate,84%,87,2025-09-26
+Dr. Tamara Scott,PAIN MANAGEMENT,Patient Diagnosis,Secondary malignant neoplasm of lung,31,2025-09-26
+Dr. Tamara Scott,PAIN MANAGEMENT,Patient Diagnosis,Asthma,40,2025-09-26
+Dr. Tamara Scott,PAIN MANAGEMENT,Monthly Patient Volume,150,115,2025-09-26
+Dr. Tamara Scott,PAIN MANAGEMENT,Treatment Success Rate,72%,94,2025-09-26
+Dr. Kayla Spencer,PHYSICAL MEDICINE AND REHABILITATION,Patient Diagnosis,Chronic obstructive pulmonary disease,8,2025-09-26
+Dr. Kayla Spencer,PHYSICAL MEDICINE AND REHABILITATION,Patient Diagnosis,Heart failure,23,2025-09-26
+Dr. Kayla Spencer,PHYSICAL MEDICINE AND REHABILITATION,Patient Diagnosis,Asthma,18,2025-09-26
+Dr. Kayla Spencer,PHYSICAL MEDICINE AND REHABILITATION,Monthly Patient Volume,187,296,2025-09-26
+Dr. Kayla Spencer,PHYSICAL MEDICINE AND REHABILITATION,Treatment Success Rate,86%,31,2025-09-26
+Dr. Melissa Norman,RADIATION ONCOLOGY,Patient Diagnosis,Secondary malignant neoplasm of lung,37,2025-09-26
+Dr. Melissa Norman,RADIATION ONCOLOGY,Patient Diagnosis,Encounter for antineoplastic chemotherapy,12,2025-09-26
+Dr. Melissa Norman,RADIATION ONCOLOGY,Monthly Patient Volume,285,193,2025-09-26
+Dr. Melissa Norman,RADIATION ONCOLOGY,Treatment Success Rate,93%,64,2025-09-26
+Dr. Anita Hall,QUALIFIED SPEECH LANGUAGE PATHOLOGIST,Patient Diagnosis,Encounter for antineoplastic chemotherapy,8,2025-09-26
+Dr. Anita Hall,QUALIFIED SPEECH LANGUAGE PATHOLOGIST,Patient Diagnosis,Secondary malignant neoplasm of lung,33,2025-09-26
+Dr. Anita Hall,QUALIFIED SPEECH LANGUAGE PATHOLOGIST,Patient Diagnosis,Asthma,39,2025-09-26
+Dr. Anita Hall,QUALIFIED SPEECH LANGUAGE PATHOLOGIST,Monthly Patient Volume,162,249,2025-09-26
+Dr. Anita Hall,QUALIFIED SPEECH LANGUAGE PATHOLOGIST,Treatment Success Rate,82%,84,2025-09-26
+Dr. Amanda Cummings,INFECTIOUS DISEASE,Patient Diagnosis,Chronic obstructive pulmonary disease,46,2025-09-26
+Dr. Amanda Cummings,INFECTIOUS DISEASE,Patient Diagnosis,End stage renal disease,7,2025-09-26
+Dr. Amanda Cummings,INFECTIOUS DISEASE,Patient Diagnosis,Gastro-esophageal reflux disease,43,2025-09-26
+Dr. Amanda Cummings,INFECTIOUS DISEASE,Monthly Patient Volume,227,126,2025-09-26
+Dr. Amanda Cummings,INFECTIOUS DISEASE,Treatment Success Rate,74%,39,2025-09-26
+Dr. Jose Chapman,INFECTIOUS DISEASE,Patient Diagnosis,Chronic obstructive pulmonary disease,10,2025-09-26
+Dr. Jose Chapman,INFECTIOUS DISEASE,Patient Diagnosis,End stage renal disease,38,2025-09-26
+Dr. Jose Chapman,INFECTIOUS DISEASE,Patient Diagnosis,Gastro-esophageal reflux disease,29,2025-09-26
+Dr. Jose Chapman,INFECTIOUS DISEASE,Monthly Patient Volume,60,202,2025-09-26
+Dr. Jose Chapman,INFECTIOUS DISEASE,Treatment Success Rate,76%,40,2025-09-26
+Dr. Michael Morris,INFECTIOUS DISEASE,Patient Diagnosis,Chronic obstructive pulmonary disease,3,2025-09-26
+Dr. Michael Morris,INFECTIOUS DISEASE,Patient Diagnosis,End stage renal disease,18,2025-09-26
+Dr. Michael Morris,INFECTIOUS DISEASE,Patient Diagnosis,Gastro-esophageal reflux disease,46,2025-09-26
+Dr. Michael Morris,INFECTIOUS DISEASE,Monthly Patient Volume,145,205,2025-09-26
+Dr. Michael Morris,INFECTIOUS DISEASE,Treatment Success Rate,80%,87,2025-09-26
+Dr. Andrew Boyd,NURSE PRACTITIONER,Patient Diagnosis,Rheumatoid arthritis,15,2025-09-26
+Dr. Andrew Boyd,NURSE PRACTITIONER,Patient Diagnosis,Essential hypertension,4,2025-09-26
+Dr. Andrew Boyd,NURSE PRACTITIONER,Patient Diagnosis,Asthma,9,2025-09-26
+Dr. Andrew Boyd,NURSE PRACTITIONER,Monthly Patient Volume,278,237,2025-09-26
+Dr. Andrew Boyd,NURSE PRACTITIONER,Treatment Success Rate,90%,63,2025-09-26
+Dr. Andrew Ewing,NURSE PRACTITIONER,Patient Diagnosis,Secondary malignant neoplasm of lung,38,2025-09-26
+Dr. Andrew Ewing,NURSE PRACTITIONER,Patient Diagnosis,Gastro-esophageal reflux disease,30,2025-09-26
+Dr. Andrew Ewing,NURSE PRACTITIONER,Patient Diagnosis,Generalized anxiety disorder,24,2025-09-26
+Dr. Andrew Ewing,NURSE PRACTITIONER,Monthly Patient Volume,160,100,2025-09-26
+Dr. Andrew Ewing,NURSE PRACTITIONER,Treatment Success Rate,76%,83,2025-09-26
+Dr. Mary Mathis,NURSE PRACTITIONER,Patient Diagnosis,Type 2 diabetes mellitus,28,2025-09-26
+Dr. Mary Mathis,NURSE PRACTITIONER,Patient Diagnosis,Encounter for antineoplastic chemotherapy,41,2025-09-26
+Dr. Mary Mathis,NURSE PRACTITIONER,Monthly Patient Volume,152,131,2025-09-26
+Dr. Mary Mathis,NURSE PRACTITIONER,Treatment Success Rate,75%,75,2025-09-26
+Dr. Kimberly Robinson,NURSE PRACTITIONER,Patient Diagnosis,Essential hypertension,24,2025-09-26
+Dr. Kimberly Robinson,NURSE PRACTITIONER,Patient Diagnosis,Psoriasis,48,2025-09-26
+Dr. Kimberly Robinson,NURSE PRACTITIONER,Patient Diagnosis,Chronic obstructive pulmonary disease,9,2025-09-26
+Dr. Kimberly Robinson,NURSE PRACTITIONER,Monthly Patient Volume,201,233,2025-09-26
+Dr. Kimberly Robinson,NURSE PRACTITIONER,Treatment Success Rate,70%,68,2025-09-26
+Dr. Nicholas Thomas,NURSE PRACTITIONER,Patient Diagnosis,Anoxic brain damage,30,2025-09-26
+Dr. Nicholas Thomas,NURSE PRACTITIONER,Patient Diagnosis,Age-related cataract,29,2025-09-26
+Dr. Nicholas Thomas,NURSE PRACTITIONER,Patient Diagnosis,Secondary malignant neoplasm of lung,9,2025-09-26
+Dr. Nicholas Thomas,NURSE PRACTITIONER,Monthly Patient Volume,136,235,2025-09-26
+Dr. Nicholas Thomas,NURSE PRACTITIONER,Treatment Success Rate,74%,70,2025-09-26
+Dr. Carrie Gregory,ORTHOPEDIC SURGERY,Patient Diagnosis,Generalized anxiety disorder,10,2025-09-26
+Dr. Carrie Gregory,ORTHOPEDIC SURGERY,Patient Diagnosis,Secondary malignant neoplasm of lung,3,2025-09-26
+Dr. Carrie Gregory,ORTHOPEDIC SURGERY,Patient Diagnosis,Encounter for antineoplastic chemotherapy,3,2025-09-26
+Dr. Carrie Gregory,ORTHOPEDIC SURGERY,Monthly Patient Volume,289,193,2025-09-26
+Dr. Carrie Gregory,ORTHOPEDIC SURGERY,Treatment Success Rate,77%,81,2025-09-26
+Dr. Mark Marshall,CLINICAL SOCIAL WORKER,Patient Diagnosis,Rheumatoid arthritis,41,2025-09-26
+Dr. Mark Marshall,CLINICAL SOCIAL WORKER,Patient Diagnosis,Type 2 diabetes mellitus,38,2025-09-26
+Dr. Mark Marshall,CLINICAL SOCIAL WORKER,Patient Diagnosis,Heart failure,3,2025-09-26
+Dr. Mark Marshall,CLINICAL SOCIAL WORKER,Monthly Patient Volume,214,226,2025-09-26
+Dr. Mark Marshall,CLINICAL SOCIAL WORKER,Treatment Success Rate,90%,37,2025-09-26
+Dr. Meredith Barton,CERTIFIED CLINICAL NURSE SPECIALIST (CNS),Patient Diagnosis,End stage renal disease,13,2025-09-26
+Dr. Meredith Barton,CERTIFIED CLINICAL NURSE SPECIALIST (CNS),Patient Diagnosis,Heart failure,37,2025-09-26
+Dr. Meredith Barton,CERTIFIED CLINICAL NURSE SPECIALIST (CNS),Patient Diagnosis,Encounter for antineoplastic chemotherapy,8,2025-09-26
+Dr. Meredith Barton,CERTIFIED CLINICAL NURSE SPECIALIST (CNS),Monthly Patient Volume,282,153,2025-09-26
+Dr. Meredith Barton,CERTIFIED CLINICAL NURSE SPECIALIST (CNS),Treatment Success Rate,75%,24,2025-09-26
