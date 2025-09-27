@@ -1,0 +1,51 @@
+name,specialty,contact_info,npi,location,years_experience
+Dr. Melanie Medina,HOSPITALIST,.melanie.medina@alexiston.health.org,1003000126,"Alexiston, NC",6
+Dr. Sarah Ray,INTERNAL MEDICINE,.sarah.ray@westashley.health.org,1003000126,"West Ashley, NJ",15
+Dr. Corey Harvey,ANESTHESIOLOGY,.corey.harvey@northyolandaville.health.org,1003000142,"North Yolandaville, MI",34
+Dr. Brittany Hall,ANESTHESIOLOGY,.brittany.hall@peggyville.health.org,1003000142,"Peggyville, PR",16
+Dr. Carlos Ibarra,ANESTHESIOLOGY,.carlos.ibarra@westashleyfurt.health.org,1003000142,"West Ashleyfurt, AZ",28
+Dr. Toni Wilson,ANESTHESIOLOGY,.toni.wilson@fisherfort.health.org,1003000142,"Fisherfort, MO",13
+Dr. Shannon Harris,OBSTETRICS/GYNECOLOGY,.shannon.harris@emilybury.health.org,1003000423,"Emilybury, PA",23
+Dr. Peter Richards,GENERAL SURGERY,.peter.richards@southamanda.health.org,1003000480,"South Amanda, AK",24
+Dr. Christopher Rogers,GENERAL SURGERY,.christopher.rogers@newthomasmouth.health.org,1003000480,"New Thomasmouth, AR",22
+Dr. David Richards,GENERAL SURGERY,.david.richards@northlucas.health.org,1003000480,"North Lucas, TX",29
+Dr. Lisa Smith,INTERNAL MEDICINE,.lisa.smith@northmatthew.health.org,1003000530,"North Matthew, NJ",31
+Dr. Joanna Fernandez,UROLOGY,.joanna.fernandez@parkerchester.health.org,1003000597,"Parkerchester, GA",5
+Dr. Emily Ruiz,UROLOGY,.emily.ruiz@eastangelaport.health.org,1003000597,"East Angelaport, GA",11
+Dr. Albert Bryant,CARDIAC SURGERY,.albert.bryant@oliviastad.health.org,1003000639,"Oliviastad, FM",21
+Dr. Deborah Hart,CARDIAC SURGERY,.deborah.hart@portseantown.health.org,1003000639,"Port Seantown, MS",7
+Dr. Mckenzie Brown,ANESTHESIOLOGY,.mckenzie.brown@brennanmouth.health.org,1003000704,"Brennanmouth, RI",18
+Dr. Christopher Phelps,CLINICAL SOCIAL WORKER,.christopher.phelps@tamaramouth.health.org,1003000795,"Tamaramouth, PR",23
+Dr. Kirsten Kent,PHYSICAL THERAPIST IN PRIVATE PRACTICE,.kirsten.kent@eastkellyberg.health.org,1003000829,"East Kellyberg, ME",24
+Dr. Michael Bailey,PHYSICAL THERAPIST IN PRIVATE PRACTICE,.michael.bailey@gabrielaberg.health.org,1003000829,"Gabrielaberg, VI",35
+Dr. Eric Mcbride,PHYSICAL THERAPIST IN PRIVATE PRACTICE,.eric.mcbride@eastdrewtown.health.org,1003000829,"East Drewtown, LA",10
+Dr. Kimberly Stevenson,FAMILY PRACTICE,.kimberly.stevenson@thomasshire.health.org,1003000902,"Thomasshire, MD",21
+Dr. Carla Brown,FAMILY PRACTICE,.carla.brown@robinsonhaven.health.org,1003000902,"Robinsonhaven, PR",21
+Dr. Jillian Cabrera,FAMILY PRACTICE,.jillian.cabrera@moorestad.health.org,1003000902,"Moorestad, AZ",7
+Dr. Hannah Keller,FAMILY PRACTICE,.hannah.keller@williamshire.health.org,1003000902,"Williamshire, PA",26
+Dr. Louis Guzman,CARDIOVASCULAR DISEASE (CARDIOLOGY),.louis.guzman@westmariafort.health.org,1003000936,"West Mariafort, AK",13
+Dr. Michael Smith,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),.michael.smith@danielfurt.health.org,1003001041,"Danielfurt, IL",33
+Dr. Michael Johnson,CERTIFIED REGISTERED NURSE ANESTHETIST (CRNA),.michael.johnson@wilsonbury.health.org,1003001041,"Wilsonbury, PW",28
+Dr. William Phillips,PHYSICAL THERAPIST IN PRIVATE PRACTICE,.william.phillips@newmartinshire.health.org,1003001140,"New Martinshire, MS",28
+Dr. Dana Harding,PHYSICAL THERAPIST IN PRIVATE PRACTICE,.dana.harding@piercemouth.health.org,1003001249,"Piercemouth, VA",33
+Dr. Kelly Mann,FAMILY PRACTICE,.kelly.mann@northgabriel.health.org,1003001256,"North Gabriel, MA",28
+Dr. Timothy Green,OPTOMETRY,.timothy.green@westtina.health.org,1003001298,"West Tina, ND",20
+Dr. Charlotte Gonzalez,OPTOMETRY,.charlotte.gonzalez@westkeithborough.health.org,1003001298,"West Keithborough, WA",11
+Dr. Andrew Parker,ANESTHESIOLOGY,.andrew.parker@westcolleenland.health.org,1003001363,"West Colleenland, MP",5
+Dr. Michele Ingram,PAIN MANAGEMENT,.michele.ingram@eastpaul.health.org,1003001363,"East Paul, NH",25
+Dr. Krista Harrison,PAIN MANAGEMENT,.krista.harrison@jenniferton.health.org,1003001363,"Jenniferton, AZ",19
+Dr. Victoria Lewis,PAIN MANAGEMENT,.victoria.lewis@westjustintown.health.org,1003001363,"West Justintown, PR",7
+Dr. Andrew Johnson,PHYSICAL MEDICINE AND REHABILITATION,.andrew.johnson@lakepaul.health.org,1003001371,"Lake Paul, WA",28
+Dr. Michael Zamora,RADIATION ONCOLOGY,.michael.zamora@eastjennyton.health.org,1003001462,"East Jennyton, NJ",7
+Dr. Juan Price,QUALIFIED SPEECH LANGUAGE PATHOLOGIST,.juan.price@westjose.health.org,1003001595,"West Jose, WA",27
+Dr. Vernon Hernandez,INFECTIOUS DISEASE,.vernon.hernandez@lakejoseph.health.org,1003001645,"Lake Joseph, NY",21
+Dr. Morgan Chapman,INFECTIOUS DISEASE,.morgan.chapman@jacksonville.health.org,1003001645,"Jacksonville, MA",24
+Dr. Wesley Hernandez,INFECTIOUS DISEASE,.wesley.hernandez@portlauren.health.org,1003001645,"Port Lauren, PW",13
+Dr. Jenna Fisher,NURSE PRACTITIONER,.jenna.fisher@bellfurt.health.org,1003001678,"Bellfurt, IN",11
+Dr. Autumn Haley,NURSE PRACTITIONER,.autumn.haley@northkristytown.health.org,1003001678,"North Kristytown, FM",28
+Dr. Melissa Vazquez,NURSE PRACTITIONER,.melissa.vazquez@lakealicia.health.org,1003001678,"Lake Alicia, PW",34
+Dr. Matthew Shepard,NURSE PRACTITIONER,.matthew.shepard@frankchester.health.org,1003001678,"Frankchester, GA",11
+Dr. Heather Fernandez,NURSE PRACTITIONER,.heather.fernandez@berrymouth.health.org,1003001678,"Berrymouth, CT",34
+Dr. Erika Walker,ORTHOPEDIC SURGERY,.erika.walker@portjason.health.org,1003001785,"Port Jason, IN",25
+Dr. Charles Thomas,CLINICAL SOCIAL WORKER,.charles.thomas@lakeemmaport.health.org,1003001819,"Lake Emmaport, FM",25
+Dr. Gregory Ball,CERTIFIED CLINICAL NURSE SPECIALIST (CNS),.gregory.ball@jeffersonland.health.org,1003001843,"Jeffersonland, PA",18
