@@ -495,9 +495,10 @@ def cohort_cluster_network(request):
     all_treatments = set()
     all_diagnoses = set()
     for cluster in clusters:
-        for patient in cluster.patients.all():
+        for membership in cluster.patients.all():
+            patient = membership.patient
             for outcome in patient.outcomes.all():
-                all_treatments.add(outcome.treatment_name)
+                all_treatments.add(outcome.treatment)
             if patient.primary_diagnosis:
                 all_diagnoses.add(patient.primary_diagnosis)
     
@@ -513,9 +514,10 @@ def cohort_cluster_network(request):
         cluster_treatment_list = []
         cluster_diagnoses = set()
         
-        for patient in cluster.patients.all():
+        for membership in cluster.patients.all():
+            patient = membership.patient
             for outcome in patient.outcomes.all():
-                cluster_treatment_list.append(outcome.treatment_name)
+                cluster_treatment_list.append(outcome.treatment)
             if patient.primary_diagnosis:
                 cluster_diagnoses.add(patient.primary_diagnosis)
         
