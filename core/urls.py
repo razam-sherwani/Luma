@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, research_views
 
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
@@ -15,4 +15,9 @@ urlpatterns = [
     path('patient/<str:patient_id>/update/', views.update_patient, name='update_patient'),
     path('patient/<str:patient_id>/delete/', views.delete_patient, name='delete_patient'),
     path('cohort-cluster-network/', views.cohort_cluster_network, name='cohort_cluster_network'),
+    # Research URLs
+    path('research/', research_views.research_dashboard, name='research_dashboard'),
+    path('research/<int:research_id>/', research_views.research_detail, name='research_detail'),
+    path('api/research/by-specialty/', research_views.get_research_by_specialty, name='research_by_specialty'),
+    path('api/research/update/', research_views.trigger_research_update, name='trigger_research_update'),
 ]

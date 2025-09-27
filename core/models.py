@@ -28,6 +28,20 @@ class ResearchUpdate(models.Model):
 	headline = models.CharField(max_length=200)
 	specialty = models.CharField(max_length=100)
 	date = models.DateField()
+	abstract = models.TextField(blank=True, null=True)
+	source = models.CharField(max_length=100, default='Manual')
+	relevance_score = models.FloatField(default=0.0)  # AI-calculated relevance
+	is_high_impact = models.BooleanField(default=False)
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
+
+	class Meta:
+		ordering = ['-date', '-relevance_score']
+		indexes = [
+			models.Index(fields=['specialty', '-date']),
+			models.Index(fields=['date']),
+			models.Index(fields=['-relevance_score']),
+		]
 
 	def __str__(self):
 		return self.headline

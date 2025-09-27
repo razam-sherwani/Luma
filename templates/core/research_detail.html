@@ -1,0 +1,241 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Research Detail - {{ research.headline }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.research-detail {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.research-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.meta-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.specialty-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.source-badge {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.date-badge {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+}
+
+.relevance-badge {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+}
+
+.high-impact-badge {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.abstract-section {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    border-left: 4px solid #667eea;
+}
+
+.related-research {
+    margin-top: 3rem;
+}
+
+.related-item {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.related-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.research-actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.btn-research {
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    border: none;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-research {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary-research:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'research_dashboard' %}">Research</a></li>
+            <li class="breadcrumb-item active">{{ research.headline|truncatechars:50 }}</li>
+        </ol>
+    </nav>
+
+    <!-- Research Detail -->
+    <div class="research-detail">
+        <h1 class="mb-3">{{ research.headline }}</h1>
+        
+        <!-- Meta Information -->
+        <div class="research-meta">
+            <span class="meta-badge specialty-badge">
+                <i class="fas fa-stethoscope me-2"></i>{{ research.specialty }}
+            </span>
+            <span class="meta-badge source-badge">
+                <i class="fas fa-book me-2"></i>{{ research.source }}
+            </span>
+            <span class="meta-badge date-badge">
+                <i class="fas fa-calendar me-2"></i>{{ research.date|date:"M d, Y" }}
+            </span>
+            <span class="meta-badge relevance-badge">
+                <i class="fas fa-star me-2"></i>{{ research.relevance_score|floatformat:1 }}/1.0
+            </span>
+            {% if research.is_high_impact %}
+            <span class="meta-badge high-impact-badge">
+                <i class="fas fa-fire me-2"></i>High Impact
+            </span>
+            {% endif %}
+        </div>
+
+        <!-- Abstract -->
+        {% if research.abstract %}
+        <div class="abstract-section">
+            <h4><i class="fas fa-file-alt me-2"></i>Abstract</h4>
+            <p class="mb-0">{{ research.abstract }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Actions -->
+        <div class="research-actions">
+            <a href="{% url 'research_dashboard' %}" class="btn-research btn-primary-research">
+                <i class="fas fa-arrow-left"></i>
+                Back to Research Dashboard
+            </a>
+            {% if user.is_staff %}
+            <button class="btn-research btn-primary-research" onclick="updateResearch()">
+                <i class="fas fa-sync-alt"></i>
+                Update Research Database
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Related Research -->
+    {% if related_research %}
+    <div class="related-research">
+        <h3><i class="fas fa-link me-2"></i>Related Research</h3>
+        <div class="row">
+            {% for item in related_research %}
+            <div class="col-md-6 mb-3">
+                <div class="related-item">
+                    <h5><a href="{% url 'research_detail' item.id %}" class="text-decoration-none">{{ item.headline|truncatechars:80 }}</a></h5>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-calendar me-1"></i>{{ item.date|date:"M d, Y" }}
+                        <span class="ms-3"><i class="fas fa-star me-1"></i>{{ item.relevance_score|floatformat:1 }}</span>
+                        {% if item.is_high_impact %}
+                        <span class="ms-2 badge bg-warning">High Impact</span>
+                        {% endif %}
+                    </p>
+                    {% if item.abstract %}
+                    <p class="small text-muted">{{ item.abstract|truncatechars:150 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if user.is_staff %}
+<script>
+function updateResearch() {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+    btn.disabled = true;
+    
+    fetch("{% url 'trigger_research_update' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Research database updated successfully!');
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Update failed'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating research database');
+    })
+    .finally(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
+</script>
+{% endif %}
+{% endblock %}

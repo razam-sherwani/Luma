@@ -1,0 +1,440 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Medical Research Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+.research-dashboard {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+.dashboard-header {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.research-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.research-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.research-card.high-impact {
+    border-left-color: #ff6b6b;
+    background: linear-gradient(135deg, #fff 0%, #fff5f5 100%);
+}
+
+.research-card.normal-impact {
+    border-left-color: #4ecdc4;
+}
+
+.research-title {
+    color: #2d3748;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.research-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.meta-tag {
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.specialty-tag {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.date-tag {
+    background-color: #e2e8f0;
+    color: #4a5568;
+}
+
+.relevance-tag {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    color: white;
+}
+
+.high-impact-tag {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+.filter-section {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.section-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.btn-research {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-research:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+.loading-skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="research-dashboard">
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <h1><i class="fas fa-microscope me-3"></i>Medical Research Dashboard</h1>
+            <p class="text-muted mb-0">Latest medical research personalized for your specialty</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ total_research }}</div>
+                <div class="stat-label">Total Research Articles</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ high_impact_research|length }}</div>
+                <div class="stat-label">High Impact Studies</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ specialties|length }}</div>
+                <div class="stat-label">Medical Specialties</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ personalized_research|length }}</div>
+                <div class="stat-label">Personalized Articles</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-section">
+            <h4><i class="fas fa-filter me-2"></i>Filter Research</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="specialty-filter" class="form-label">Specialty</label>
+                    <select id="specialty-filter" class="form-select">
+                        <option value="">All Specialties</option>
+                        {% for specialty in specialties %}
+                        <option value="{{ specialty }}" {% if user_profile.specialty == specialty %}selected{% endif %}>
+                            {{ specialty }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="impact-filter" class="form-label">Impact Level</label>
+                    <select id="impact-filter" class="form-select">
+                        <option value="">All Research</option>
+                        <option value="high">High Impact Only</option>
+                        <option value="normal">Normal Impact</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Actions</label>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-research" onclick="applyFilters()">
+                            <i class="fas fa-search me-2"></i>Filter
+                        </button>
+                        {% if user.is_staff %}
+                        <button class="btn btn-research" onclick="updateResearch()">
+                            <i class="fas fa-sync-alt me-2"></i>Update
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Personalized Research -->
+            <div class="col-lg-8">
+                <div class="section-header">
+                    <h3><i class="fas fa-user-md me-2"></i>
+                        {% if user_profile.specialty %}
+                        Research for {{ user_profile.specialty }}
+                        {% else %}
+                        High-Impact Research
+                        {% endif %}
+                    </h3>
+                </div>
+                
+                <div id="research-list">
+                    {% for research in personalized_research %}
+                    <div class="research-card {% if research.is_high_impact %}high-impact{% else %}normal-impact{% endif %}">
+                        <h5 class="research-title">
+                            <a href="{% url 'research_detail' research.id %}" class="text-decoration-none">
+                                {{ research.headline }}
+                            </a>
+                        </h5>
+                        
+                        <div class="research-meta">
+                            <span class="meta-tag specialty-tag">{{ research.specialty }}</span>
+                            <span class="meta-tag date-tag">{{ research.date|date:"M d, Y" }}</span>
+                            <span class="meta-tag relevance-tag">
+                                <i class="fas fa-star me-1"></i>{{ research.relevance_score|floatformat:1 }}
+                            </span>
+                            {% if research.is_high_impact %}
+                            <span class="meta-tag high-impact-tag">
+                                <i class="fas fa-fire me-1"></i>High Impact
+                            </span>
+                            {% endif %}
+                        </div>
+                        
+                        {% if research.abstract %}
+                        <p class="text-muted mb-2">{{ research.abstract|truncatechars:200 }}</p>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="fas fa-book me-1"></i>{{ research.source }}
+                            </small>
+                            <a href="{% url 'research_detail' research.id %}" class="btn btn-sm btn-outline-primary">
+                                Read More <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="research-card">
+                        <div class="text-center py-4">
+                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                            <h5>No research found</h5>
+                            <p class="text-muted">Try adjusting your filters or check back later for new research.</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+                <!-- Specialty Statistics -->
+                <div class="research-card">
+                    <h5><i class="fas fa-chart-pie me-2"></i>Research by Specialty</h5>
+                    {% for stat in specialty_stats|slice:":8" %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <small>{{ stat.specialty|truncatechars:25 }}</small>
+                        <span class="badge bg-primary">{{ stat.count }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Recent High Impact -->
+                <div class="research-card">
+                    <h5><i class="fas fa-fire me-2"></i>Recent High Impact</h5>
+                    {% for research in high_impact_research|slice:":5" %}
+                    <div class="mb-3">
+                        <h6 class="mb-1">
+                            <a href="{% url 'research_detail' research.id %}" class="text-decoration-none">
+                                {{ research.headline|truncatechars:60 }}
+                            </a>
+                        </h6>
+                        <small class="text-muted">
+                            {{ research.date|date:"M d" }} • {{ research.specialty|truncatechars:20 }}
+                        </small>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted small">No high-impact research available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function applyFilters() {
+    const specialty = document.getElementById('specialty-filter').value;
+    const impact = document.getElementById('impact-filter').value;
+    
+    const params = new URLSearchParams();
+    if (specialty) params.append('specialty', specialty);
+    if (impact) params.append('impact', impact);
+    
+    // Show loading state
+    const researchList = document.getElementById('research-list');
+    researchList.innerHTML = '<div class="loading-skeleton" style="height: 200px; border-radius: 8px;"></div>';
+    
+    fetch(`{% url 'research_by_specialty' %}?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+            renderResearch(data.research);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            researchList.innerHTML = '<div class="alert alert-danger">Error loading research data</div>';
+        });
+}
+
+function renderResearch(research) {
+    const researchList = document.getElementById('research-list');
+    
+    if (research.length === 0) {
+        researchList.innerHTML = `
+            <div class="research-card">
+                <div class="text-center py-4">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h5>No research found</h5>
+                    <p class="text-muted">Try adjusting your filters or check back later for new research.</p>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    researchList.innerHTML = research.map(item => `
+        <div class="research-card ${item.is_high_impact ? 'high-impact' : 'normal-impact'}">
+            <h5 class="research-title">
+                <a href="/research/${item.id}/" class="text-decoration-none">
+                    ${item.headline}
+                </a>
+            </h5>
+            
+            <div class="research-meta">
+                <span class="meta-tag specialty-tag">${item.specialty}</span>
+                <span class="meta-tag date-tag">${new Date(item.date).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})}</span>
+                <span class="meta-tag relevance-tag">
+                    <i class="fas fa-star me-1"></i>${item.relevance_score.toFixed(1)}
+                </span>
+                ${item.is_high_impact ? '<span class="meta-tag high-impact-tag"><i class="fas fa-fire me-1"></i>High Impact</span>' : ''}
+            </div>
+            
+            ${item.abstract ? `<p class="text-muted mb-2">${item.abstract}</p>` : ''}
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">
+                    <i class="fas fa-book me-1"></i>${item.source}
+                </small>
+                <a href="/research/${item.id}/" class="btn btn-sm btn-outline-primary">
+                    Read More <i class="fas fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    `).join('');
+}
+
+{% if user.is_staff %}
+function updateResearch() {
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
+    btn.disabled = true;
+    
+    fetch("{% url 'trigger_research_update' %}", {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Research database updated successfully!');
+            location.reload();
+        } else {
+            alert('Error: ' + (data.error || 'Update failed'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating research database');
+    })
+    .finally(() => {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    });
+}
+{% endif %}
+</script>
+{% endblock %}

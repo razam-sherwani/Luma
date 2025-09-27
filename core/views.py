@@ -13,6 +13,7 @@ from .models import (HCP, ResearchUpdate, EMRData, Engagement, UserProfile, HCRR
                     PatientCohort, TreatmentOutcome, CohortRecommendation, ActionableInsight,
                     AnonymizedPatient, PatientCluster, ClusterMembership, PatientOutcome, 
                     EMRDataPoint, ClusterInsight, DrugRecommendation)
+from .research_generator import SimplifiedResearchGenerator
 
 def generate_actionable_insights():
     """Generate intelligent insights for HCRs based on data analysis"""
@@ -185,8 +186,8 @@ def hcr_dashboard(request, user_profile):
         if not last_engagement or last_engagement.date < thirty_days_ago:
             overdue_hcps.append(hcp)
     
-    # Get recent research updates
-    recent_research = ResearchUpdate.objects.order_by('-date')[:5]
+    # Get recent high-impact research updates
+    recent_research = ResearchUpdate.objects.filter(is_high_impact=True).order_by('-relevance_score', '-date')[:5]
     
     # Get recent EMR flags
     recent_emr_data = EMRData.objects.order_by('-date')[:5]
@@ -269,15 +270,17 @@ def hcp_dashboard(request, user_profile):
     # Get limited recommendations for display (now slice)
     recommendations = all_recommendations_query[:10]
     
-    # Get research relevant to HCP's specialty
-    specialty_research = ResearchUpdate.objects.filter(
-        specialty=user_profile.specialty
-    ).order_by('-date')[:5] if user_profile.specialty else ResearchUpdate.objects.order_by('-date')[:5]
-    
-    # Get general research updates
-    general_research = ResearchUpdate.objects.exclude(
-        specialty=user_profile.specialty
-    ).order_by('-date')[:3] if user_profile.specialty else []
+    # Get personalized research using the enhanced generator
+    research_generator = SimplifiedResearchGenerator()
+    if user_profile.specialty:
+        all_research = research_generator.get_personalized_research(user_profile.specialty, 8)
+        # Split into specialty and general research for display
+        specialty_research = [r for r in all_research if r.specialty == user_profile.specialty][:5]
+        general_research = [r for r in all_research if r.specialty != user_profile.specialty][:3]
+    else:
+        # Fallback for users without specialty
+        specialty_research = ResearchUpdate.objects.filter(is_high_impact=True).order_by('-relevance_score', '-date')[:5]
+        general_research = ResearchUpdate.objects.exclude(id__in=[r.id for r in specialty_research]).order_by('-relevance_score', '-date')[:3]
     
     # Get patient statistics for this HCP
     patient_stats = {}

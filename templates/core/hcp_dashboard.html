@@ -15,6 +15,9 @@
         {% if unread_count > 0 %}
             <span class="badge bg-danger fs-6">{{ unread_count }} New Recommendations</span>
         {% endif %}
+        <a href="{% url 'research_dashboard' %}" class="btn btn-info ms-2">
+            <i class="fas fa-microscope me-1"></i>Research
+        </a>
         <a href="{% url 'patient_database' %}" class="btn btn-primary ms-2">My Patients</a>
         {% if user.userprofile.role == 'HCP' %}
             <a href="{% url 'add_patient' %}" class="btn btn-success ms-2">
@@ -103,26 +106,60 @@
     <!-- Research Updates for Your Specialty -->
     <div class="col-md-6">
         <div class="card h-100">
-            <div class="card-header bg-info text-white">
-                <h5 class="mb-0">🔬 Research Updates</h5>
-                {% if user_profile.specialty %}
-                    <small>For {{ user_profile.specialty }}</small>
-                {% else %}
-                    <small>Latest medical research</small>
-                {% endif %}
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-0">🔬 Research Updates</h5>
+                    {% if user_profile.specialty %}
+                        <small>For {{ user_profile.specialty }}</small>
+                    {% else %}
+                        <small>Latest medical research</small>
+                    {% endif %}
+                </div>
+                <a href="{% url 'research_dashboard' %}" class="btn btn-sm btn-light">
+                    <i class="fas fa-external-link-alt"></i>
+                </a>
             </div>
             <div class="card-body" style="max-height: 400px; overflow-y: auto;">
                 {% if specialty_research %}
                     {% for research in specialty_research %}
                         <div class="mb-2">
-                            <strong>{{ research.headline }}</strong>
+                            <strong>
+                                <a href="{% url 'research_detail' research.id %}" class="text-decoration-none">
+                                    {{ research.headline|truncatechars:80 }}
+                                </a>
+                            </strong>
+                            {% if research.is_high_impact %}
+                                <span class="badge bg-warning text-dark ms-1">High Impact</span>
+                            {% endif %}
                             <br>
-                            <small class="text-muted">{{ research.date }}</small>
+                            <small class="text-muted">
+                                {{ research.date|date:"M d, Y" }} • {{ research.source }}
+                                {% if research.relevance_score %}
+                                    • <i class="fas fa-star text-warning"></i> {{ research.relevance_score|floatformat:1 }}
+                                {% endif %}
+                            </small>
+                            {% if research.abstract %}
+                                <p class="small text-muted mt-1 mb-0">{{ research.abstract|truncatechars:100 }}</p>
+                            {% endif %}
                         </div>
                         {% if not forloop.last %}<hr class="my-2">{% endif %}
                     {% endfor %}
                 {% else %}
-                    <p class="text-muted">No recent research updates for your specialty.</p>
+                    <div class="text-center py-3">
+                        <i class="fas fa-microscope fa-2x text-muted mb-2"></i>
+                        <p class="text-muted mb-2">No recent research updates available.</p>
+                        <a href="{% url 'research_dashboard' %}" class="btn btn-sm btn-outline-info">
+                            Browse All Research
+                        </a>
+                    </div>
+                {% endif %}
+                
+                {% if specialty_research %}
+                <div class="card-footer text-center">
+                    <a href="{% url 'research_dashboard' %}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-plus me-1"></i>View All Research
+                    </a>
+                </div>
                 {% endif %}
             </div>
         </div>
