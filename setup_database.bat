@@ -1,61 +1,63 @@
 @echo off
-echo ============================================
-echo ProviderPulse Database Setup - Clustering Branch
-echo ============================================
+REM ProviderPulse Complete Setup Script for Main Branch
+REM Run this to get the exact same database as the main development environment
+
+echo 🚀 ProviderPulse Complete Setup Starting...
+echo ================================================
 echo.
 
-echo Step 1: Installing required packages...
-pip install pandas requests faker
+echo 📦 Step 1: Installing dependencies...
+pip install -r requirements.txt
 if %errorlevel% neq 0 (
-    echo ERROR: Failed to install packages
+    echo ❌ Failed to install dependencies
     pause
     exit /b 1
 )
-echo ✅ Packages installed
+echo ✅ Dependencies installed
 echo.
 
-echo Step 2: Setting up database...
+echo 🗄️ Step 2: Setting up database...
 python manage.py makemigrations
 python manage.py migrate
 if %errorlevel% neq 0 (
-    echo ERROR: Database setup failed
+    echo ❌ Database setup failed
     pause
     exit /b 1
 )
-echo ✅ Database setup complete
+echo ✅ Database initialized
 echo.
 
-echo Step 3: Downloading real healthcare data...
+echo 📥 Step 3: Downloading healthcare data...
 python download_emr_data.py
 if %errorlevel% neq 0 (
-    echo ERROR: Healthcare data download failed
+    echo ❌ Failed to download EMR data
     pause
     exit /b 1
 )
-echo ✅ Real healthcare data downloaded
+echo ✅ Healthcare data downloaded
 echo.
 
-echo Step 4: Populating with real EMR data...
+echo 🏥 Step 4: Creating healthcare providers...
 python seed_real_emr.py
 if %errorlevel% neq 0 (
-    echo ERROR: EMR data population failed
+    echo ❌ Failed to create HCP data
     pause
     exit /b 1
 )
-echo ✅ EMR data populated
+echo ✅ Healthcare providers created
 echo.
 
-echo Step 5: Generating clustering features...
+echo 🧠 Step 5: Generating AI clustering features...
 python seed_clustering.py
 if %errorlevel% neq 0 (
-    echo ERROR: Clustering features failed
+    echo ❌ Failed to generate clustering data
     pause
     exit /b 1
 )
-echo ✅ Clustering features generated
+echo ✅ AI clustering features generated
 echo.
 
-echo Step 6: Creating HCP login accounts...
+echo 🔐 Step 6: Creating login accounts...
 python create_hcp_accounts.py
 if %errorlevel% neq 0 (
     echo ERROR: HCP account creation failed
