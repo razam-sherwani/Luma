@@ -169,6 +169,7 @@
 
 {% block content %}
 <div class="research-dashboard">
+    {% csrf_token %}
     <div class="container-fluid">
         <!-- Header -->
         <div class="dashboard-header">
@@ -402,7 +403,7 @@ function renderResearch(research) {
     `).join('');
 }
 
-{% if user.is_staff %}
+// Research update function (admin only)
 function updateResearch() {
     const btn = event.target;
     const originalText = btn.innerHTML;
@@ -410,10 +411,10 @@ function updateResearch() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Updating...';
     btn.disabled = true;
     
-    fetch("{% url 'trigger_research_update' %}", {
+    fetch('/dashboard/api/research/update/', {
         method: 'POST',
         headers: {
-            'X-CSRFToken': '{{ csrf_token }}',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
             'Content-Type': 'application/json',
         },
     })
@@ -435,6 +436,5 @@ function updateResearch() {
         btn.disabled = false;
     });
 }
-{% endif %}
 </script>
 {% endblock %}
