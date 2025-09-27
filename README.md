@@ -48,17 +48,32 @@ ProviderPulse is an intelligent dashboard that acts as a co-pilot for healthcare
    python manage.py migrate
    ```
 
-4. **Load dummy data into the database**
+4. **Load realistic EMR data into the database** (RECOMMENDED)
    ```bash
-   # Run the seed script to populate the database with sample data
-   python seed.py
+   # First install required packages for data processing
+   pip install pandas requests faker
+   
+   # Download real healthcare data from CMS and generate realistic EMR dataset
+   python download_emr_data.py
+   
+   # Populate your database with real EMR data
+   python seed_real_emr.py
    ```
    
-   This will create:
-   - 5 sample Healthcare Providers (HCPs) with different specialties
-   - Research updates relevant to each specialty
-   - EMR data with metrics like patient volume and top diagnoses
-   - Sample engagement history for each HCP
+   This will create realistic data based on **real CMS provider data**:
+   - 50 Healthcare Providers from real CMS database with authentic specialties
+   - 15 Patient Cohorts with real medical conditions (ICD-10 codes)
+   - 228 EMR Records with realistic patient volumes and outcomes
+   - 40 Treatment Outcomes with evidence-based success rates
+   - 10 Research Updates based on current medical literature
+   - 98 HCP-Cohort relationships based on specialty alignment
+   - 50 Actionable Insights for clinical decision support
+   
+   **OR load basic sample data** (alternative):
+   ```bash
+   # Run the basic seed script for simple test data
+   python seed.py
+   ```
 
 5. **Create a superuser** (optional, for admin access)
    ```bash
@@ -103,6 +118,13 @@ The `seed.py` script creates the following sample data:
 - Varied engagement dates to demonstrate overdue alerts
 - Different types of contact methods (calls, emails, meetings)
 
+### Patient Cohorts & Network Data
+- **15+ Patient Cohorts** across different medical conditions
+- **Treatment Outcomes** with success rates and effectiveness data
+- **HCP-Cohort Relationships** showing treatment patterns
+- **Actionable Insights** for healthcare reps
+- **Network Connections** demonstrating influence patterns
+
 ## Usage
 
 1. **Landing Page**: Visit the homepage to learn about ProviderPulse
@@ -117,6 +139,11 @@ The `seed.py` script creates the following sample data:
    - EMR data and trends
    - Complete engagement history
    - Form to log new interactions
+5. **Network Visualization**: Access the interactive network view to:
+   - Visualize HCP-patient cohort relationships
+   - Identify high-priority engagement opportunities
+   - Filter networks by condition, specialty, or region
+   - Analyze treatment patterns and success rates
 
 ## Project Structure
 
