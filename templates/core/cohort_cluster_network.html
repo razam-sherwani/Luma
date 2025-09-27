@@ -203,6 +203,7 @@ if (!nodes || !Array.isArray(nodes) || nodes.length === 0) {
     document.getElementById('network-svg').innerHTML = '<text x="50%" y="50%" text-anchor="middle" font-size="16" fill="#666">No cluster data available for treatment similarity analysis</text>';
 } else {
     // Initialize the network
+    console.log("About to initialize network with nodes:", nodes.length, "and links:", links.length);
     initializeNetwork();
 }
 
@@ -233,10 +234,23 @@ function initializeNetwork() {
         .selectAll("line")
         .data(links)
         .enter().append("line")
-        .attr("class", d => `link similarity-${d.strength}`)
+        .attr("class", d => `link similarity-${d.strength} clickable`)
         .attr("stroke", d => d.color)
         .attr("stroke-width", d => d.strength === 'strong' ? 4 : d.strength === 'medium' ? 3 : 2)
-        .attr("opacity", 0.7);
+        .attr("opacity", 0.7)
+        .style("cursor", "pointer")
+        .on("click", function(event, d) {
+            console.log("Connection clicked:", d);
+            showConnectionDetails(d);
+        })
+        .on("mouseover", function(event, d) {
+            d3.select(this).attr("opacity", 1);
+            showLinkTooltip(d);
+        })
+        .on("mouseout", function(event, d) {
+            d3.select(this).attr("opacity", 0.7);
+            hideLinkTooltip();
+        });
     
     // Create nodes
     const node = container.append("g")
@@ -252,9 +266,16 @@ function initializeNetwork() {
         .attr("stroke", "#fff")
         .attr("stroke-width", 3)
         .style("cursor", "pointer")
-        .on("click", showClusterDetails)
-        .on("mouseover", showTooltip)
-        .on("mouseout", hideTooltip);
+        .on("click", function(event, d) {
+            console.log("Node clicked:", d);
+            showNodeDetails(d);
+        })
+        .on("mouseover", function(event, d) {
+            showTooltip(d);
+        })
+        .on("mouseout", function(event, d) {
+            hideTooltip();
+        });
     
     // Create labels
     const label = container.append("g")
@@ -363,21 +384,22 @@ function showClusterDetails(d) {
 }
 
 function showTooltip(d) {
-    const tooltip = d3.select("#tooltip");
-    tooltip
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
         .style("display", "block")
         .html(`
             <strong>${d.name}</strong><br/>
             Patients: ${d.patient_count}<br/>
-            Risk: ${d.risk_level}<br/>
-            Treatments: ${d.treatments.length}
+            Success Rate: ${d.success_rate}%<br/>
+            Specialty: ${d.specialty}<br/>
+            Click for details
         `)
         .style("left", (d3.event.pageX + 10) + "px")
         .style("top", (d3.event.pageY - 10) + "px");
 }
 
 function hideTooltip() {
-    d3.select("#tooltip").style("display", "none");
+    d3.selectAll(".tooltip").remove();
 }
 
 function centerGraph() {
@@ -469,6 +491,196 @@ function applyFilters() {
     
     window.location.href = '?' + params.toString();
 }
+
+// Show detailed connection information
+function showConnectionDetails(d) {
+    console.log("showConnectionDetails called with:", d);
+    const sourceNode = nodes.find(n => n.id === d.source.id);
+    const targetNode = nodes.find(n => n.id === d.target.id);
+    console.log("Source node:", sourceNode);
+    console.log("Target node:", targetNode);
+    
+    const content = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-primary">Connection Overview</h6>
+                <p><strong>Overall Similarity:</strong> ${d.similarity}%</p>
+                <p><strong>Connection Strength:</strong> <span class="badge bg-${d.strength === 'strong' ? 'danger' : d.strength === 'medium' ? 'warning' : 'success'}">${d.strength.toUpperCase()}</span></p>
+                <p><strong>Why Connected:</strong> ${d.connection_reasons}</p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-primary">Detailed Similarity Breakdown</h6>
+                <div class="mb-2">
+                    <small>Treatment Similarity: ${d.treatment_similarity}%</small>
+                    <div class="progress" style="height: 5px;">
+                        <div class="progress-bar" style="width: ${d.treatment_similarity}%"></div>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <small>Diagnosis Similarity: ${d.diagnosis_similarity}%</small>
+                    <div class="progress" style="height: 5px;">
+                        <div class="progress-bar" style="width: ${d.diagnosis_similarity}%"></div>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <small>Demographic Similarity: ${d.demographic_similarity}%</small>
+                    <div class="progress" style="height: 5px;">
+                        <div class="progress-bar" style="width: ${d.demographic_similarity}%"></div>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <small>Comorbidity Similarity: ${d.comorbidity_similarity}%</small>
+                    <div class="progress" style="height: 5px;">
+                        <div class="progress-bar" style="width: ${d.comorbidity_similarity}%"></div>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <small>Geographic Similarity: ${d.geographic_similarity}%</small>
+                    <div class="progress" style="height: 5px;">
+                        <div class="progress-bar" style="width: ${d.geographic_similarity}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <hr>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="text-success">Shared Treatments (${d.shared_treatments.length})</h6>
+                <div class="d-flex flex-wrap gap-1">
+                    ${d.shared_treatments.map(t => `<span class="badge bg-success">${t}</span>`).join('')}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-info">Shared Diagnoses (${d.shared_diagnoses.length})</h6>
+                <div class="d-flex flex-wrap gap-1">
+                    ${d.shared_diagnoses.map(diag => `<span class="badge bg-info">${diag}</span>`).join('')}
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <h6 class="text-warning">Shared Age Groups (${d.shared_age_groups.length})</h6>
+                <div class="d-flex flex-wrap gap-1">
+                    ${d.shared_age_groups.map(age => `<span class="badge bg-warning">${age}</span>`).join('')}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-secondary">Shared Zip Codes (${d.shared_zip_codes.length})</h6>
+                <div class="d-flex flex-wrap gap-1">
+                    ${d.shared_zip_codes.map(zip => `<span class="badge bg-secondary">${zip}</span>`).join('')}
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <h6 class="text-primary">Source Cluster: ${sourceNode.name}</h6>
+                <p><small>Patients: ${sourceNode.patient_count} | Specialty: ${sourceNode.specialty}</small></p>
+            </div>
+            <div class="col-md-6">
+                <h6 class="text-primary">Target Cluster: ${targetNode.name}</h6>
+                <p><small>Patients: ${targetNode.patient_count} | Specialty: ${targetNode.specialty}</small></p>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('connection-details').innerHTML = content;
+    console.log("About to show connection modal");
+    const modal = new bootstrap.Modal(document.getElementById('connectionModal'));
+    modal.show();
+}
+
+// Show detailed node information
+function showNodeDetails(d) {
+    const content = `
+        <div class="row">
+            <div class="col-md-8">
+                <h5 class="text-primary">${d.name}</h5>
+                <p class="text-muted">${d.description}</p>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-success">Patient Statistics</h6>
+                        <p><strong>Total Patients:</strong> ${d.patient_count}</p>
+                        <p><strong>Success Rate:</strong> ${d.success_rate}%</p>
+                        <p><strong>Specialty:</strong> ${d.specialty}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-info">Common Treatments</h6>
+                        <div class="d-flex flex-wrap gap-1">
+                            ${d.common_treatments.slice(0, 10).map(t => `<span class="badge bg-info">${t}</span>`).join('')}
+                            ${d.common_treatments.length > 10 ? `<span class="badge bg-secondary">+${d.common_treatments.length - 10} more</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h6 class="text-warning">Primary Diagnoses</h6>
+                        <div class="d-flex flex-wrap gap-1">
+                            ${d.diagnoses.slice(0, 8).map(diag => `<span class="badge bg-warning">${diag}</span>`).join('')}
+                            ${d.diagnoses.length > 8 ? `<span class="badge bg-secondary">+${d.diagnoses.length - 8} more</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-secondary">Treatment Distribution</h6>
+                        <div class="small">
+                            ${Object.entries(d.treatment_counts).slice(0, 5).map(([treatment, count]) => 
+                                `<div class="d-flex justify-content-between">
+                                    <span>${treatment}</span>
+                                    <span class="badge bg-light text-dark">${count}</span>
+                                </div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h6 class="text-primary">Cluster Insights</h6>
+                <div class="alert alert-info">
+                    <small>
+                        <strong>Clinical Relevance:</strong> This cluster represents patients with similar 
+                        treatment patterns, demographics, and clinical outcomes. The high similarity 
+                        suggests these patients may benefit from similar care protocols.
+                    </small>
+                </div>
+                
+                <h6 class="text-success">Connection Summary</h6>
+                <p class="small">
+                    This cluster is connected to other clusters based on shared treatments, 
+                    similar patient demographics, and overlapping diagnoses. Click on the 
+                    connections to see detailed similarity analysis.
+                </p>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('node-details').innerHTML = content;
+    const modal = new bootstrap.Modal(document.getElementById('nodeModal'));
+    modal.show();
+}
+
+// Link tooltip functions
+function showLinkTooltip(d) {
+    const tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("display", "block")
+        .html(`
+            <strong>Connection Details</strong><br/>
+            Similarity: ${d.similarity}%<br/>
+            Strength: ${d.strength}<br/>
+            Click for detailed analysis
+        `)
+        .style("left", (d3.event.pageX + 10) + "px")
+        .style("top", (d3.event.pageY - 10) + "px");
+}
+
+function hideLinkTooltip() {
+    d3.selectAll(".tooltip").remove();
+}
 </script>
 
 <style>
@@ -498,5 +710,54 @@ function applyFilters() {
     font-size: 12px;
     z-index: 1000;
 }
+
+.clickable {
+    cursor: pointer;
+}
+
+.clickable:hover {
+    opacity: 0.8;
+}
 </style>
+
+<!-- Connection Details Modal -->
+<div class="modal fade" id="connectionModal" tabindex="-1" aria-labelledby="connectionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="connectionModalLabel">Connection Analysis</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="connection-details">
+                    <!-- Connection details will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Node Details Modal -->
+<div class="modal fade" id="nodeModal" tabindex="-1" aria-labelledby="nodeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="nodeModalLabel">Cluster Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="node-details">
+                    <!-- Node details will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

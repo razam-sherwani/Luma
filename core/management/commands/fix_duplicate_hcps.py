@@ -43,3 +43,4 @@ class Command(BaseCommand):
             print(f"{hcp.name}: {patient_count} patients")
 
 
+

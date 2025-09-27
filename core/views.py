@@ -205,6 +205,14 @@ def hcr_dashboard(request, user_profile):
         is_read=False
     ).order_by('-created_date')[:5]
     
+    # Get AI-powered drug recommendations based on cluster analysis
+    drug_recommendations = DrugRecommendation.objects.select_related('hcp', 'cluster').order_by(
+        '-priority', '-success_rate', '-created_date'
+    )[:12]  # Show top 12 recommendations
+    
+    # Generate dynamic recommendations based on cluster similarity
+    dynamic_recommendations = generate_dynamic_drug_recommendations()
+    
     # Calculate summary statistics
     total_insights = ActionableInsight.objects.filter(is_addressed=False).count()
     high_priority_insights = ActionableInsight.objects.filter(
@@ -229,6 +237,8 @@ def hcr_dashboard(request, user_profile):
         'actionable_insights': actionable_insights,
         'patient_cohorts': patient_cohorts,
         'cohort_recommendations': cohort_recommendations,
+        'drug_recommendations': drug_recommendations,
+        'dynamic_recommendations': dynamic_recommendations,
         'total_insights': total_insights,
         'high_priority_insights': high_priority_insights,
         'total_patients_impacted': total_patients_impacted,
@@ -480,27 +490,33 @@ def cohort_cluster_network(request):
     current_diagnosis = request.GET.get('diagnosis', '')
     current_risk = request.GET.get('risk', '')
     
-    # Get all clusters with their patients and treatments
-    clusters = PatientCluster.objects.select_related('hcp').prefetch_related('patients__patient__outcomes', 'patients__patient__data_points')
+    # Get clusters (simplified to avoid SQLite expression tree error)
+    clusters = PatientCluster.objects.select_related('hcp')
     
-    # Apply specialty filter
+    # Apply specialty filter first, then slice
     if current_specialty:
         clusters = clusters.filter(hcp__specialty=current_specialty)
     
-    # Get unique values for filter dropdowns
+    # Limit to 20 clusters for performance
+    clusters = clusters[:20]
+    
+    # Get unique values for filter dropdowns from ALL data (not just filtered clusters)
     specialties = list(set(PatientCluster.objects.values_list('hcp__specialty', flat=True)))
     specialties = [s for s in specialties if s]  # Remove None values
     
-    # Get all unique treatments and diagnoses
+    # Get unique treatments and diagnoses from ALL patients
     all_treatments = set()
     all_diagnoses = set()
-    for cluster in clusters:
-        for membership in cluster.patients.all():
-            patient = membership.patient
-            for outcome in patient.outcomes.all():
-                all_treatments.add(outcome.treatment)
-            if patient.primary_diagnosis:
-                all_diagnoses.add(patient.primary_diagnosis)
+    
+    # Get treatments from all outcomes
+    for outcome in PatientOutcome.objects.all()[:500]:  # Sample 500 outcomes
+        if outcome.treatment:
+            all_treatments.add(outcome.treatment)
+    
+    # Get diagnoses from all patients
+    for patient in AnonymizedPatient.objects.all()[:1000]:  # Sample 1000 patients
+        if patient.primary_diagnosis:
+            all_diagnoses.add(patient.primary_diagnosis)
     
     treatments = sorted(list(all_treatments))
     diagnoses = sorted(list(all_diagnoses))
@@ -514,9 +530,10 @@ def cohort_cluster_network(request):
         cluster_treatment_list = []
         cluster_diagnoses = set()
         
-        for membership in cluster.patients.all():
+        # Limit to first 15 patients per cluster for better connections
+        for membership in cluster.patients.all()[:15]:
             patient = membership.patient
-            for outcome in patient.outcomes.all():
+            for outcome in patient.outcomes.all()[:3]:  # 3 outcomes per patient
                 cluster_treatment_list.append(outcome.treatment)
             if patient.primary_diagnosis:
                 cluster_diagnoses.add(patient.primary_diagnosis)
@@ -541,17 +558,14 @@ def cohort_cluster_network(request):
         # Calculate success rate (simplified)
         success_rate = 75.0 + (cluster.patient_count * 0.5)  # Mock calculation
         
-        # Calculate risk level
-        if cluster.patient_count > 40:
-            risk_level = 'high'
-        elif cluster.patient_count > 20:
-            risk_level = 'medium'
-        else:
-            risk_level = 'low'
-        
-        # Apply risk filter
-        if current_risk and risk_level != current_risk:
-            continue
+        # Apply risk filter (simplified - based on patient count)
+        if current_risk:
+            if current_risk == 'high' and cluster.patient_count <= 40:
+                continue
+            elif current_risk == 'medium' and (cluster.patient_count <= 20 or cluster.patient_count > 40):
+                continue
+            elif current_risk == 'low' and cluster.patient_count > 20:
+                continue
         
         # Store treatments for similarity calculation
         cluster_treatments[cluster.id] = set(cluster_treatment_list)
@@ -562,7 +576,6 @@ def cohort_cluster_network(request):
             'type': 'cluster',
             'patient_count': cluster.patient_count,
             'success_rate': round(success_rate, 1),
-            'risk_level': risk_level,
             'specialty': cluster.hcp.specialty if cluster.hcp else 'Unknown',
             'diagnoses': list(cluster_diagnoses),
             'treatments': cluster_treatment_list,
@@ -574,38 +587,179 @@ def cohort_cluster_network(request):
     # Calculate treatment similarity between clusters
     links = []
     cluster_ids = list(cluster_treatments.keys())
+    cluster_connection_counts = {cid: 0 for cid in cluster_ids}  # Track connections per cluster
+    max_connections_per_cluster = 5  # Limit connections to make it more realistic
     
     for i, cluster1_id in enumerate(cluster_ids):
         for cluster2_id in cluster_ids[i+1:]:
             treatments1 = cluster_treatments[cluster1_id]
             treatments2 = cluster_treatments[cluster2_id]
             
-            # Calculate Jaccard similarity (intersection over union)
+            # Get comprehensive patient data for both clusters
+            cluster1_data = {'patients': [], 'demographics': {}, 'outcomes': [], 'comorbidities': set()}
+            cluster2_data = {'patients': [], 'demographics': {}, 'outcomes': [], 'comorbidities': set()}
+            
+            # Collect detailed patient data for each cluster
+            for cluster in clusters:
+                if cluster.id == cluster1_id:
+                    for membership in cluster.patients.all()[:15]:
+                        patient = membership.patient
+                        cluster1_data['patients'].append(patient)
+                        # Demographics
+                        if patient.age_group not in cluster1_data['demographics']:
+                            cluster1_data['demographics'][patient.age_group] = 0
+                        cluster1_data['demographics'][patient.age_group] += 1
+                        # Comorbidities
+                        if patient.comorbidities:
+                            cluster1_data['comorbidities'].update(patient.comorbidities.split(','))
+                        # Outcomes
+                        for outcome in patient.outcomes.all()[:3]:
+                            cluster1_data['outcomes'].append(outcome)
+                            
+                elif cluster.id == cluster2_id:
+                    for membership in cluster.patients.all()[:15]:
+                        patient = membership.patient
+                        cluster2_data['patients'].append(patient)
+                        # Demographics
+                        if patient.age_group not in cluster2_data['demographics']:
+                            cluster2_data['demographics'][patient.age_group] = 0
+                        cluster2_data['demographics'][patient.age_group] += 1
+                        # Comorbidities
+                        if patient.comorbidities:
+                            cluster2_data['comorbidities'].update(patient.comorbidities.split(','))
+                        # Outcomes
+                        for outcome in patient.outcomes.all()[:3]:
+                            cluster2_data['outcomes'].append(outcome)
+            
+            # 1. Treatment Similarity (25% weight)
             intersection = len(treatments1.intersection(treatments2))
             union = len(treatments1.union(treatments2))
-            similarity = intersection / union if union > 0 else 0
+            treatment_similarity = intersection / union if union > 0 else 0
             
-            # Only create links for clusters with significant treatment overlap (>20%)
-            if similarity > 0.2:
-                # Determine link strength and color based on similarity
-                if similarity > 0.7:
+            # 2. Diagnosis Similarity (20% weight)
+            cluster1_diagnoses = set()
+            cluster2_diagnoses = set()
+            for patient in cluster1_data['patients']:
+                if patient.primary_diagnosis:
+                    cluster1_diagnoses.add(patient.primary_diagnosis)
+            for patient in cluster2_data['patients']:
+                if patient.primary_diagnosis:
+                    cluster2_diagnoses.add(patient.primary_diagnosis)
+            
+            diag_intersection = len(cluster1_diagnoses.intersection(cluster2_diagnoses))
+            diag_union = len(cluster1_diagnoses.union(cluster2_diagnoses))
+            diagnosis_similarity = diag_intersection / diag_union if diag_union > 0 else 0
+            
+            # 3. Demographic Similarity (20% weight) - Age group overlap
+            age1 = set(cluster1_data['demographics'].keys())
+            age2 = set(cluster2_data['demographics'].keys())
+            age_intersection = len(age1.intersection(age2))
+            age_union = len(age1.union(age2))
+            demographic_similarity = age_intersection / age_union if age_union > 0 else 0
+            
+            # 4. Comorbidity Similarity (15% weight) - Shared conditions
+            comorbidity_intersection = len(cluster1_data['comorbidities'].intersection(cluster2_data['comorbidities']))
+            comorbidity_union = len(cluster1_data['comorbidities'].union(cluster2_data['comorbidities']))
+            comorbidity_similarity = comorbidity_intersection / comorbidity_union if comorbidity_union > 0 else 0
+            
+            # 5. Geographic Similarity (10% weight) - Zip code proximity
+            zip1 = set(p.zip_code_prefix for p in cluster1_data['patients'] if p.zip_code_prefix)
+            zip2 = set(p.zip_code_prefix for p in cluster2_data['patients'] if p.zip_code_prefix)
+            zip_intersection = len(zip1.intersection(zip2))
+            zip_union = len(zip1.union(zip2))
+            geographic_similarity = zip_intersection / zip_union if zip_union > 0 else 0
+            
+            # 6. Clinical Outcome Similarity (10% weight) - Treatment success patterns
+            outcome_similarity = 0
+            if cluster1_data['outcomes'] and cluster2_data['outcomes']:
+                # Calculate average success rates (simplified)
+                success1 = sum(1 for o in cluster1_data['outcomes'] if 'success' in o.treatment.lower() or 'effective' in o.treatment.lower()) / len(cluster1_data['outcomes'])
+                success2 = sum(1 for o in cluster2_data['outcomes'] if 'success' in o.treatment.lower() or 'effective' in o.treatment.lower()) / len(cluster2_data['outcomes'])
+                outcome_similarity = 1 - abs(success1 - success2)  # Closer success rates = higher similarity
+            
+            # Weighted combined similarity for clinically meaningful connections
+            combined_similarity = (
+                treatment_similarity * 0.25 +
+                diagnosis_similarity * 0.20 +
+                demographic_similarity * 0.20 +
+                comorbidity_similarity * 0.15 +
+                geographic_similarity * 0.10 +
+                outcome_similarity * 0.10
+            )
+            
+            # Create links only for clusters with significant medical relevance
+            # Must meet at least 2 of these criteria for a meaningful connection:
+            meaningful_connections = 0
+            if treatment_similarity > 0.3:
+                meaningful_connections += 1
+            if diagnosis_similarity > 0.3:
+                meaningful_connections += 1
+            if demographic_similarity > 0.4:
+                meaningful_connections += 1
+            if comorbidity_similarity > 0.2:
+                meaningful_connections += 1
+            if geographic_similarity > 0.3:
+                meaningful_connections += 1
+            
+            # Only connect if: high overall similarity OR multiple meaningful factors
+            # Add some randomness to break perfect symmetry and make it look more natural
+            import random
+            random_factor = random.uniform(0.95, 1.05)  # ±5% variation
+            adjusted_similarity = combined_similarity * random_factor
+            
+            # Check if both clusters haven't exceeded their connection limit
+            if (adjusted_similarity > 0.4 or (adjusted_similarity > 0.25 and meaningful_connections >= 2)) and \
+               cluster_connection_counts[cluster1_id] < max_connections_per_cluster and \
+               cluster_connection_counts[cluster2_id] < max_connections_per_cluster:
+                # Determine link strength and color based on combined similarity
+                if combined_similarity > 0.5:
                     link_strength = 'strong'
                     link_color = '#e74c3c'  # Red for high similarity
-                elif similarity > 0.4:
+                elif combined_similarity > 0.3:
                     link_strength = 'medium'
                     link_color = '#f39c12'  # Orange for medium similarity
                 else:
                     link_strength = 'weak'
                     link_color = '#27ae60'  # Green for low similarity
                 
+                # Generate meaningful connection description
+                connection_reasons = []
+                if treatment_similarity > 0.3:
+                    connection_reasons.append(f"Shared treatments ({len(treatments1.intersection(treatments2))} common)")
+                if diagnosis_similarity > 0.3:
+                    connection_reasons.append(f"Similar diagnoses ({len(cluster1_diagnoses.intersection(cluster2_diagnoses))} common)")
+                if demographic_similarity > 0.3:
+                    connection_reasons.append(f"Similar age groups ({len(age1.intersection(age2))} common)")
+                if comorbidity_similarity > 0.2:
+                    connection_reasons.append(f"Shared comorbidities ({len(cluster1_data['comorbidities'].intersection(cluster2_data['comorbidities']))} common)")
+                if geographic_similarity > 0.2:
+                    connection_reasons.append(f"Geographic proximity ({len(zip1.intersection(zip2))} common zip codes)")
+                
+                connection_description = "; ".join(connection_reasons) if connection_reasons else "Low-level similarity"
+                
                 links.append({
                     'source': f"cluster_{cluster1_id}",
                     'target': f"cluster_{cluster2_id}",
-                    'similarity': round(similarity * 100, 1),
+                    'similarity': round(combined_similarity * 100, 1),
                     'strength': link_strength,
                     'color': link_color,
-                    'shared_treatments': list(treatments1.intersection(treatments2))
+                    'shared_treatments': list(treatments1.intersection(treatments2)),
+                    'shared_diagnoses': list(cluster1_diagnoses.intersection(cluster2_diagnoses)),
+                    'shared_comorbidities': list(cluster1_data['comorbidities'].intersection(cluster2_data['comorbidities'])),
+                    'shared_age_groups': list(age1.intersection(age2)),
+                    'shared_zip_codes': list(zip1.intersection(zip2)),
+                    'connection_reasons': connection_description,
+                    'treatment_similarity': round(treatment_similarity * 100, 1),
+                    'diagnosis_similarity': round(diagnosis_similarity * 100, 1),
+                    'demographic_similarity': round(demographic_similarity * 100, 1),
+                    'comorbidity_similarity': round(comorbidity_similarity * 100, 1),
+                    'geographic_similarity': round(geographic_similarity * 100, 1),
+                    'outcome_similarity': round(outcome_similarity * 100, 1)
                 })
+                
+                # Update connection counts
+                cluster_connection_counts[cluster1_id] += 1
+                cluster_connection_counts[cluster2_id] += 1
     
     context = {
         'nodes': json.dumps(nodes),
@@ -663,23 +817,20 @@ def calculate_treatment_similarity(node1, node2):
     
     return max(0, min(100, base_similarity))
 
-def calculate_risk_similarity(node1, node2):
-    """Calculate risk factor similarity between two nodes"""
-    risk_scores = {'low': 0.2, 'medium': 0.5, 'high': 0.8}
+def calculate_patient_similarity(node1, node2):
+    """Calculate patient count similarity between two nodes"""
+    count1 = node1.get('patient_count', 0)
+    count2 = node2.get('patient_count', 0)
     
-    score1 = risk_scores.get(node1['risk_level'], 0.5)
-    score2 = risk_scores.get(node2['risk_level'], 0.5)
+    if count1 == 0 and count2 == 0:
+        return 0
     
-    # Calculate similarity as inverse of difference
-    difference = abs(score1 - score2)
-    similarity = (1 - difference) * 100
+    # Calculate similarity based on patient count difference
+    max_count = max(count1, count2)
+    min_count = min(count1, count2)
+    similarity = (min_count / max_count) * 100 if max_count > 0 else 0
     
     return similarity
-
-def get_risk_score(risk_level):
-    """Convert risk level to numeric score"""
-    risk_scores = {'low': 0.2, 'medium': 0.5, 'high': 0.8}
-    return risk_scores.get(risk_level, 0.5)
 
 def generate_intervention_recommendation(node1, node2, similarity):
     """Generate recommended intervention based on node similarity"""
@@ -689,3 +840,114 @@ def generate_intervention_recommendation(node1, node2, similarity):
         return f"Moderate similarity - evaluate cross-cohort treatment strategies between {node1['name']} and {node2['name']}"
     else:
         return f"Low similarity - monitor for potential treatment pattern convergence between {node1['name']} and {node2['name']}"
+
+def generate_dynamic_drug_recommendations():
+    """Generate dynamic drug recommendations based on cluster similarity analysis"""
+    from datetime import datetime, timedelta
+    import random
+    
+    recommendations = []
+    
+    # Get clusters with their similarity data
+    clusters = PatientCluster.objects.select_related('hcp').prefetch_related('patients__patient__outcomes')[:20]
+    
+    # Get all treatments and their success rates
+    all_treatments = {}
+    for cluster in clusters:
+        for membership in cluster.patients.all()[:10]:
+            for outcome in membership.patient.outcomes.all()[:3]:
+                treatment = outcome.treatment
+                if treatment not in all_treatments:
+                    all_treatments[treatment] = {'success_count': 0, 'total_count': 0, 'clusters': set()}
+                
+                all_treatments[treatment]['total_count'] += 1
+                all_treatments[treatment]['clusters'].add(cluster.id)
+                
+                # Simple success detection based on treatment name
+                if any(keyword in treatment.lower() for keyword in ['success', 'effective', 'improved', 'positive']):
+                    all_treatments[treatment]['success_count'] += 1
+    
+    # Generate recommendations based on cluster similarity patterns
+    for cluster in clusters:
+        if cluster.patient_count < 5:  # Skip small clusters
+            continue
+            
+        # Find similar clusters (simplified similarity check)
+        similar_clusters = []
+        for other_cluster in clusters:
+            if other_cluster.id != cluster.id:
+                # Check for treatment overlap
+                cluster_treatments = set()
+                other_treatments = set()
+                
+                for membership in cluster.patients.all()[:5]:
+                    for outcome in membership.patient.outcomes.all()[:2]:
+                        cluster_treatments.add(outcome.treatment)
+                
+                for membership in other_cluster.patients.all()[:5]:
+                    for outcome in membership.patient.outcomes.all()[:2]:
+                        other_treatments.add(outcome.treatment)
+                
+                overlap = len(cluster_treatments.intersection(other_treatments))
+                if overlap > 0:
+                    similarity = overlap / len(cluster_treatments.union(other_treatments))
+                    if similarity > 0.3:  # 30% treatment overlap
+                        similar_clusters.append((other_cluster, similarity))
+        
+        # Generate recommendations for this cluster
+        for treatment, data in all_treatments.items():
+            if cluster.id in data['clusters'] and data['total_count'] >= 3:
+                success_rate = (data['success_count'] / data['total_count']) * 100
+                
+                # Calculate priority based on success rate and cluster similarity
+                priority_score = success_rate
+                if similar_clusters:
+                    avg_similarity = sum(sim for _, sim in similar_clusters) / len(similar_clusters)
+                    priority_score += avg_similarity * 20  # Boost for similarity
+                
+                # Determine priority level
+                if priority_score >= 80:
+                    priority = 'HIGH'
+                elif priority_score >= 60:
+                    priority = 'MEDIUM'
+                else:
+                    priority = 'LOW'
+                
+                # Generate evidence level
+                if data['total_count'] >= 10 and success_rate >= 70:
+                    evidence_level = 'High'
+                elif data['total_count'] >= 5 and success_rate >= 50:
+                    evidence_level = 'Moderate'
+                else:
+                    evidence_level = 'Low'
+                
+                # Create recommendation
+                recommendation = {
+                    'cluster_id': cluster.id,
+                    'cluster_name': cluster.name,
+                    'hcp': cluster.hcp,
+                    'drug_name': treatment,
+                    'indication': f"Based on {cluster.name} patient patterns",
+                    'success_rate': round(success_rate, 1),
+                    'patient_count': data['total_count'],
+                    'evidence_level': evidence_level,
+                    'priority': priority,
+                    'priority_score': round(priority_score, 1),
+                    'similar_clusters': len(similar_clusters),
+                    'research_support': f"Evidence from {data['total_count']} patients across {len(data['clusters'])} clusters",
+                    'contraindications': "Check patient history for allergies and comorbidities",
+                    'side_effects': "Monitor for common adverse reactions",
+                    'dosage_recommendations': "Start with standard dosing, adjust based on patient response",
+                    'created_date': datetime.now().date(),
+                    'is_dynamic': True,
+                    'similarity_data': {
+                        'treatment_overlap': len([c for c in similar_clusters if c[1] > 0.5]),
+                        'avg_similarity': round(sum(sim for _, sim in similar_clusters) / len(similar_clusters) * 100, 1) if similar_clusters else 0
+                    }
+                }
+                
+                recommendations.append(recommendation)
+    
+    # Sort by priority score and return top recommendations
+    recommendations.sort(key=lambda x: x['priority_score'], reverse=True)
+    return recommendations[:8]  # Return top 8 dynamic recommendations

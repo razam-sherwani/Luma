@@ -115,3 +115,4 @@ class Command(BaseCommand):
         print(f"\n🎉 Database now has exactly 100 patients!")
 
 
+

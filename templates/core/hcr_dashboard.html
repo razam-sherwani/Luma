@@ -173,47 +173,119 @@
 <div class="row mt-4">
     <div class="col-12">
         <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">💊 AI-Powered Drug Recommendations</h5>
-                <small>Evidence-based drug suggestions based on patient clustering and success rates</small>
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-0">💊 AI-Powered Drug Recommendations</h5>
+                    <small>Evidence-based drug suggestions based on patient clustering and success rates</small>
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-outline-light" onclick="refreshRecommendations()">
+                        🔄 Refresh
+                    </button>
+                    <button class="btn btn-sm btn-outline-light" onclick="toggleAutoRefresh()">
+                        <span id="auto-refresh-text">⏸️ Auto-Refresh</span>
+                    </button>
+                </div>
             </div>
             <div class="card-body">
-                {% if drug_recommendations %}
-                    <div class="row">
-                        {% for rec in drug_recommendations %}
-                            <div class="col-md-6 mb-3">
-                                <div class="card border-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %}">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
-                                        <h6 class="mb-0">
-                                            💊 {{ rec.drug_name }}
-                                        </h6>
-                                        <div>
-                                            <span class="badge bg-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %}">
-                                                {{ rec.priority }}
-                                            </span>
-                                            <span class="badge bg-success">{{ rec.success_rate|floatformat:1 }}% Success</span>
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        <p class="card-text">
-                                            <strong>Indication:</strong> {{ rec.indication }}<br>
-                                            <strong>Evidence Level:</strong> {{ rec.evidence_level }}<br>
-                                            <strong>Patient Count:</strong> {{ rec.patient_count }} similar patients<br>
-                                            <strong>Research Support:</strong> {{ rec.research_support|truncatewords:15 }}
-                                        </p>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <small class="text-muted">{{ rec.hcp.name }} - {{ rec.hcp.specialty }}</small>
+                <!-- Dynamic Recommendations (Real-time) -->
+                {% if dynamic_recommendations %}
+                    <div class="mb-4">
+                        <h6 class="text-success">🔄 Live Recommendations (Updated in Real-time)</h6>
+                        <div class="row" id="dynamic-recommendations">
+                            {% for rec in dynamic_recommendations %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %} dynamic-card" data-cluster-id="{{ rec.cluster_id }}">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">
+                                                💊 {{ rec.drug_name }}
+                                                <span class="badge bg-success">LIVE</span>
+                                            </h6>
                                             <div>
-                                                <a href="{% url 'hcp_profile' rec.hcp.id %}" class="btn btn-sm btn-outline-primary">View HCP</a>
-                                                <a href="{% url 'mark_recommendation_reviewed' rec.id %}" class="btn btn-sm btn-outline-success">Mark Reviewed</a>
+                                                <span class="badge bg-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %}">
+                                                    {{ rec.priority }}
+                                                </span>
+                                                <span class="badge bg-success">{{ rec.success_rate }}% Success</span>
+                                                <span class="badge bg-info">{{ rec.priority_score }} Score</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="card-text">
+                                                <strong>Cluster:</strong> {{ rec.cluster_name }}<br>
+                                                <strong>Indication:</strong> {{ rec.indication }}<br>
+                                                <strong>Evidence Level:</strong> {{ rec.evidence_level }}<br>
+                                                <strong>Patient Count:</strong> {{ rec.patient_count }} similar patients<br>
+                                                <strong>Similar Clusters:</strong> {{ rec.similar_clusters }} clusters with similar patterns<br>
+                                                <strong>Research Support:</strong> {{ rec.research_support }}
+                                            </p>
+                                            
+                                            <!-- Similarity Data -->
+                                            <div class="mb-2">
+                                                <small class="text-muted">
+                                                    <strong>Cluster Similarity:</strong> {{ rec.similarity_data.avg_similarity }}% 
+                                                    | <strong>Treatment Overlap:</strong> {{ rec.similarity_data.treatment_overlap }} clusters
+                                                </small>
+                                            </div>
+                                            
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">{{ rec.hcp.name }} - {{ rec.hcp.specialty }}</small>
+                                                <div>
+                                                    <a href="{% url 'hcp_profile' rec.hcp.id %}" class="btn btn-sm btn-outline-primary">View HCP</a>
+                                                    <a href="{% url 'cohort_cluster_network' %}?cluster={{ rec.cluster_id }}" class="btn btn-sm btn-outline-info">View Network</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        {% endfor %}
+                            {% endfor %}
+                        </div>
                     </div>
-                {% else %}
+                {% endif %}
+                
+                <!-- Static Recommendations (Database) -->
+                {% if drug_recommendations %}
+                    <div class="mb-4">
+                        <h6 class="text-info">📊 Database Recommendations</h6>
+                        <div class="row">
+                            {% for rec in drug_recommendations %}
+                                <div class="col-md-6 mb-3">
+                                    <div class="card border-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %}">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">
+                                                💊 {{ rec.drug_name }}
+                                            </h6>
+                                            <div>
+                                                <span class="badge bg-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %}">
+                                                    {{ rec.priority }}
+                                                </span>
+                                                <span class="badge bg-success">{{ rec.success_rate|floatformat:1 }}% Success</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="card-text">
+                                                <strong>Indication:</strong> {{ rec.indication }}<br>
+                                                <strong>Evidence Level:</strong> {{ rec.evidence_level }}<br>
+                                                <strong>Patient Count:</strong> {{ rec.patient_count }} similar patients<br>
+                                                <strong>Research Support:</strong> {{ rec.research_support|truncatewords:15 }}
+                                            </p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <small class="text-muted">{{ rec.hcp.name }} - {{ rec.hcp.specialty }}</small>
+                                                <div>
+                                                    <a href="{% url 'hcp_profile' rec.hcp.id %}" class="btn btn-sm btn-outline-primary">View HCP</a>
+                                                    {% if rec.cluster %}
+                                                        <a href="{% url 'cohort_cluster_network' %}?cluster={{ rec.cluster.id }}" class="btn btn-sm btn-outline-info">View Network</a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                
+                {% if not drug_recommendations and not dynamic_recommendations %}
                     <p class="text-muted">No drug recommendations available. Run clustering analysis to generate recommendations.</p>
                 {% endif %}
             </div>
@@ -435,4 +507,115 @@
         </div>
     </div>
 </div>
+
+<script>
+// Auto-refresh functionality
+let autoRefreshInterval = null;
+let isAutoRefreshEnabled = false;
+
+function refreshRecommendations() {
+    // Show loading state
+    const refreshBtn = document.querySelector('button[onclick="refreshRecommendations()"]');
+    const originalText = refreshBtn.innerHTML;
+    refreshBtn.innerHTML = '🔄 Refreshing...';
+    refreshBtn.disabled = true;
+    
+    // Reload the page to get fresh data
+    setTimeout(() => {
+        window.location.reload();
+    }, 1000);
+}
+
+function toggleAutoRefresh() {
+    const toggleBtn = document.querySelector('button[onclick="toggleAutoRefresh()"]');
+    const textSpan = document.getElementById('auto-refresh-text');
+    
+    if (isAutoRefreshEnabled) {
+        // Disable auto-refresh
+        clearInterval(autoRefreshInterval);
+        isAutoRefreshEnabled = false;
+        textSpan.innerHTML = '▶️ Auto-Refresh';
+        toggleBtn.classList.remove('btn-success');
+        toggleBtn.classList.add('btn-outline-light');
+    } else {
+        // Enable auto-refresh (every 30 seconds)
+        autoRefreshInterval = setInterval(() => {
+            refreshRecommendations();
+        }, 30000);
+        isAutoRefreshEnabled = true;
+        textSpan.innerHTML = '⏸️ Auto-Refresh';
+        toggleBtn.classList.remove('btn-outline-light');
+        toggleBtn.classList.add('btn-success');
+    }
+}
+
+// Add visual effects for dynamic cards
+document.addEventListener('DOMContentLoaded', function() {
+    // Add pulsing animation to live recommendations
+    const dynamicCards = document.querySelectorAll('.dynamic-card');
+    dynamicCards.forEach(card => {
+        card.style.animation = 'pulse 2s infinite';
+    });
+    
+    // Add click handlers for cluster network links
+    const networkLinks = document.querySelectorAll('a[href*="cohort_cluster_network"]');
+    networkLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const clusterId = this.getAttribute('href').split('cluster=')[1];
+            if (clusterId) {
+                // Open network view in new tab with cluster highlighted
+                window.open(this.href, '_blank');
+            }
+        });
+    });
+    
+    // Add hover effects for recommendation cards
+    const recommendationCards = document.querySelectorAll('.card');
+    recommendationCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+            this.style.transition = 'all 0.3s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = 'none';
+        });
+    });
+});
+
+// Add CSS for animations
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.7; }
+        100% { opacity: 1; }
+    }
+    
+    .dynamic-card {
+        border-left: 4px solid #28a745 !important;
+    }
+    
+    .dynamic-card:hover {
+        border-left-color: #20c997 !important;
+    }
+    
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    .badge {
+        font-size: 0.75em;
+    }
+    
+    .btn-outline-light:hover {
+        background-color: rgba(255,255,255,0.1);
+        border-color: rgba(255,255,255,0.3);
+    }
+`;
+document.head.appendChild(style);
+</script>
 {% endblock %}
