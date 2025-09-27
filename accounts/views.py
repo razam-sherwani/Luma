@@ -5,6 +5,10 @@ from django.contrib import messages
 from core.forms import CustomUserCreationForm
 
 def login_view(request):
+    # If user is already authenticated, redirect to dashboard
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+        
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -19,6 +23,10 @@ def login_view(request):
     return render(request, 'accounts/login.html', {'form': form})
 
 def signup_view(request):
+    # If user is already authenticated, redirect to dashboard
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+        
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
