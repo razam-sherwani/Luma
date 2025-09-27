@@ -12,4 +12,5 @@ urlpatterns = [
     path('cluster/<int:cluster_id>/', views.cluster_detail, name='cluster_detail'),
     path('add-patient/', views.add_patient, name='add_patient'),
     path('cohort-cluster-network/', views.cohort_cluster_network, name='cohort_cluster_network'),
+    path('ai-cohort-identification/', views.ai_cohort_identification, name='ai_cohort_identification'),
 ]

@@ -689,3 +689,85 @@ def generate_intervention_recommendation(node1, node2, similarity):
         return f"Moderate similarity - evaluate cross-cohort treatment strategies between {node1['name']} and {node2['name']}"
     else:
         return f"Low similarity - monitor for potential treatment pattern convergence between {node1['name']} and {node2['name']}"
+
+
+@login_required
+def ai_cohort_identification(request):
+    """
+    Advanced AI-powered cohort identification dashboard
+    Identifies high-potential patient cohorts using real clinical logic
+    """
+    from .cohort_identification import cohort_identifier
+    
+    # Get user profile
+    user_profile, created = UserProfile.objects.get_or_create(
+        user=request.user,
+        defaults={'role': 'HCR'}
+    )
+    
+    # For HCPs, only show their patients
+    hcp = None
+    if user_profile.role == 'HCP':
+        try:
+            hcp = HCP.objects.get(user=request.user)
+        except HCP.DoesNotExist:
+            hcp = None
+    
+    # Get filter parameters
+    cohort_type = request.GET.get('type', 'all')
+    min_priority = int(request.GET.get('priority', 70))
+    
+    # Get all cohorts using AI identification
+    all_cohorts = cohort_identifier.get_all_cohorts(hcp)
+    
+    # Apply filters
+    if cohort_type != 'all':
+        all_cohorts = [c for c in all_cohorts if c['type'] == cohort_type]
+    
+    all_cohorts = [c for c in all_cohorts if c['priority_score'] >= min_priority]
+    
+    # Get statistics
+    total_patients_identified = sum(c['count'] for c in all_cohorts)
+    high_priority_cohorts = len([c for c in all_cohorts if c['priority_score'] >= 85])
+    
+    # Group cohorts by type for display
+    cohorts_by_type = {}
+    for cohort in all_cohorts:
+        cohort_type_key = cohort['type']
+        if cohort_type_key not in cohorts_by_type:
+            cohorts_by_type[cohort_type_key] = []
+        cohorts_by_type[cohort_type_key].append(cohort)
+    
+    # Prepare cohorts for JSON serialization
+    cohorts_for_display = all_cohorts[:20]  # Top 20 cohorts
+    cohorts_json = []
+    for cohort in cohorts_for_display:
+        cohort_json = {
+            'type': cohort['type'],
+            'name': cohort['name'],
+            'description': cohort['description'],
+            'count': cohort['count'],
+            'clinical_impact': cohort['clinical_impact'],
+            'recommended_action': cohort['recommended_action'],
+            'priority_score': cohort['priority_score'],
+            'diagnosis': cohort.get('diagnosis', ''),
+            'evidence_level': cohort.get('evidence_level', ''),
+            'ai_confidence': cohort.get('ai_confidence', 0),
+            'supporting_data': cohort.get('supporting_data', {})
+        }
+        cohorts_json.append(cohort_json)
+    
+    context = {
+        'user_role': user_profile.role,
+        'cohorts': cohorts_for_display,
+        'cohorts_json': json.dumps(cohorts_json),
+        'cohorts_by_type': cohorts_by_type,
+        'total_cohorts': len(all_cohorts),
+        'total_patients_identified': total_patients_identified,
+        'high_priority_cohorts': high_priority_cohorts,
+        'current_type': request.GET.get('type', 'all'),
+        'current_priority': min_priority,
+        'page_title': 'AI Cohort Identification'
+    }
+    
+    return render(request, 'core/ai_cohort_identification.html', context)

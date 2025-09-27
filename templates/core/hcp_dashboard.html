@@ -16,6 +16,9 @@
             <span class="badge bg-danger fs-6">{{ unread_count }} New Recommendations</span>
         {% endif %}
         <a href="{% url 'patient_database' %}" class="btn btn-primary ms-2">My Patients</a>
+        <a href="{% url 'ai_cohort_identification' %}" class="btn btn-info ms-2">
+            <i class="fas fa-robot"></i> AI Cohorts
+        </a>
         {% if user.userprofile.role == 'HCP' %}
             <a href="{% url 'add_patient' %}" class="btn btn-success ms-2">+ Add Patient</a>
         {% endif %}
@@ -168,20 +171,35 @@
                 <div class="row text-center">
                     <div class="col-md-3">
                         <div class="p-3">
-                            <h6>📧 Contact Reps</h6>
-                            <p class="small text-muted">Reach out to healthcare representatives for more information</p>
+                            <a href="{% url 'ai_cohort_identification' %}" class="text-decoration-none">
+                                <div class="mb-2">
+                                    <i class="fas fa-robot fa-2x text-primary"></i>
+                                </div>
+                                <h6 class="text-primary">🤖 AI Cohort Identification</h6>
+                                <p class="small text-muted">Find treatment gaps and high-risk patients using clinical AI</p>
+                            </a>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="p-3">
-                            <h6>📋 Update Profile</h6>
-                            <p class="small text-muted">Keep your specialty and preferences current</p>
+                            <a href="{% url 'patient_database' %}" class="text-decoration-none">
+                                <div class="mb-2">
+                                    <i class="fas fa-users fa-2x text-success"></i>
+                                </div>
+                                <h6 class="text-success">👥 My Patients</h6>
+                                <p class="small text-muted">View and manage your patient database</p>
+                            </a>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="p-3">
-                            <h6>🔔 Notifications</h6>
-                            <p class="small text-muted">Manage your alert preferences</p>
+                            <a href="{% url 'cohort_cluster_network' %}" class="text-decoration-none">
+                                <div class="mb-2">
+                                    <i class="fas fa-network-wired fa-2x text-info"></i>
+                                </div>
+                                <h6 class="text-info">🕸️ Cluster Network</h6>
+                                <p class="small text-muted">Explore treatment similarity networks</p>
+                            </a>
                         </div>
                     </div>
                     <div class="col-md-3">
