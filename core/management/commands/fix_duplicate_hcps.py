@@ -42,3 +42,4 @@ class Command(BaseCommand):
             patient_count = AnonymizedPatient.objects.filter(hcp=hcp).count()
             print(f"{hcp.name}: {patient_count} patients")
 
+

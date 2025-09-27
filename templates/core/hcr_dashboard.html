@@ -362,6 +362,66 @@
     </div>
 </div>
 
+<!-- Cohort-Cluster Network Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">🕸️ Cohort-Cluster Network</h5>
+                <small>Interactive visualization of patient cohorts and AI-discovered clusters</small>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="network-preview">
+                            <div class="d-flex align-items-center justify-content-center" style="height: 200px; background: #f8f9fa; border-radius: 8px; border: 2px dashed #dee2e6;">
+                                <div class="text-center">
+                                    <i class="fas fa-project-diagram fa-3x text-muted mb-3"></i>
+                                    <h6 class="text-muted">Interactive Network Visualization</h6>
+                                    <p class="text-muted mb-3">Explore relationships between clinical cohorts and AI-identified patient clusters</p>
+                                    <a href="{% url 'cohort_cluster_network' %}" class="btn btn-info">
+                                        <i class="fas fa-external-link-alt me-2"></i>Open Network View
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-info mb-3">Key Insights</h6>
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="me-2" style="width: 12px; height: 12px; background: #3498db; border-radius: 50%;"></div>
+                                <small><strong>Clinical Cohorts</strong></small>
+                            </div>
+                            <small class="text-muted">Predefined patient groups based on clinical criteria</small>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="me-2" style="width: 12px; height: 12px; background: #e74c3c; border-radius: 50%;"></div>
+                                <small><strong>AI Clusters</strong></small>
+                            </div>
+                            <small class="text-muted">Machine learning-discovered patient subgroups</small>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="me-2" style="width: 20px; height: 8px; background: #bdc3c7; border-radius: 2px;"></div>
+                                <small><strong>Connections</strong></small>
+                            </div>
+                            <small class="text-muted">Show overlap and similarity between groups</small>
+                        </div>
+                        <div class="alert alert-info alert-sm">
+                            <small>
+                                <i class="fas fa-lightbulb me-1"></i>
+                                <strong>Pro Tip:</strong> Hover over nodes to see detailed insights and treatment recommendations.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row mt-4">
     <div class="col-12">
         <div class="card">

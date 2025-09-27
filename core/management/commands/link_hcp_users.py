@@ -41,3 +41,4 @@ class Command(BaseCommand):
             self.style.SUCCESS('Successfully linked HCPs to users!')
         )
 
+

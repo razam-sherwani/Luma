@@ -32,3 +32,4 @@ class Command(BaseCommand):
             self.style.SUCCESS(f'Total HCPs with accounts: {hcps.count()}')
         )
 
+
