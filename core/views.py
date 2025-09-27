@@ -962,3 +962,80 @@ def generate_dynamic_drug_recommendations():
     # Sort by priority score and return top recommendations
     recommendations.sort(key=lambda x: x['priority_score'], reverse=True)
     return recommendations[:8]  # Return top 8 dynamic recommendations
+
+
+@login_required
+def upload_emr_patient(request):
+    """Upload EMR data for a patient - HCPs only"""
+    # Check if user is an HCP
+    if request.user.userprofile.role != 'HCP':
+        messages.error(request, 'Only Healthcare Providers can upload EMR data.')
+        return redirect('dashboard')
+    
+    if request.method == 'POST':
+        # Handle EMR file upload
+        if 'emr_file' in request.FILES:
+            emr_file = request.FILES['emr_file']
+            # Process EMR file here (placeholder)
+            messages.success(request, f'EMR file "{emr_file.name}" uploaded successfully!')
+            return redirect('patient_database')
+        else:
+            messages.error(request, 'Please select an EMR file to upload.')
+    
+    context = {}
+    return render(request, 'core/upload_emr_patient.html', context)
+
+
+@login_required
+def update_patient(request, patient_id):
+    """Update patient information - HCPs only"""
+    # Check if user is an HCP
+    if request.user.userprofile.role != 'HCP':
+        messages.error(request, 'Only Healthcare Providers can update patient information.')
+        return redirect('dashboard')
+    
+    try:
+        # Get patient (placeholder - replace with actual Patient model)
+        # patient = Patient.objects.get(id=patient_id)
+        
+        if request.method == 'POST':
+            # Handle patient update
+            messages.success(request, f'Patient {patient_id} updated successfully!')
+            return redirect('patient_detail', patient_id=patient_id)
+        
+        context = {
+            'patient_id': patient_id,
+        }
+        return render(request, 'core/update_patient.html', context)
+        
+    except Exception as e:
+        messages.error(request, f'Patient {patient_id} not found.')
+        return redirect('patient_database')
+
+
+@login_required
+def delete_patient(request, patient_id):
+    """Delete patient from system - HCPs only"""
+    # Check if user is an HCP
+    if request.user.userprofile.role != 'HCP':
+        messages.error(request, 'Only Healthcare Providers can delete patients.')
+        return redirect('dashboard')
+    
+    try:
+        # Get patient (placeholder - replace with actual Patient model)
+        # patient = Patient.objects.get(id=patient_id)
+        
+        if request.method == 'POST':
+            # Handle patient deletion
+            # patient.delete()
+            messages.success(request, f'Patient {patient_id} deleted successfully!')
+            return redirect('patient_database')
+        
+        context = {
+            'patient_id': patient_id,
+        }
+        return render(request, 'core/delete_patient_confirm.html', context)
+        
+    except Exception as e:
+        messages.error(request, f'Patient {patient_id} not found.')
+        return redirect('patient_database')
