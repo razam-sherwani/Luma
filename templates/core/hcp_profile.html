@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ hcp.name }} - HCR Hub{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1>{{ hcp.name }}</h1>
+        <p class="text-muted mb-0">{{ hcp.specialty }} | {{ hcp.contact_info }}</p>
+    </div>
+    <a href="{% url 'dashboard' %}" class="btn btn-outline-primary">← Back to Dashboard</a>
+</div>
+
+<div class="row">
+    <!-- HCP Details and Engagement Form -->
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Log New Engagement</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="note" class="form-label">Engagement Note</label>
+                        <textarea name="note" id="note" class="form-control" rows="3" 
+                                  placeholder="e.g., Called today to discuss new trial data..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Log Engagement</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- EMR Data -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📊 EMR Data</h5>
+            </div>
+            <div class="card-body">
+                {% if emr_data %}
+                    {% for emr in emr_data %}
+                        <div class="mb-2">
+                            <strong>{{ emr.metric_name }}:</strong> {{ emr.value }}
+                            <br>
+                            <small class="text-muted">{{ emr.date }}</small>
+                        </div>
+                        {% if not forloop.last %}<hr class="my-2">{% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No EMR data available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Relevant Research and Engagement History -->
+    <div class="col-md-6">
+        <!-- Relevant Research -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">🔬 Relevant Research</h5>
+                <small class="text-muted">For {{ hcp.specialty }}</small>
+            </div>
+            <div class="card-body">
+                {% if relevant_research %}
+                    {% for research in relevant_research %}
+                        <div class="mb-2">
+                            <strong>{{ research.headline }}</strong>
+                            <br>
+                            <small class="text-muted">{{ research.date }}</small>
+                        </div>
+                        {% if not forloop.last %}<hr class="my-2">{% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No relevant research updates.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Engagement History -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">📝 Engagement History</h5>
+            </div>
+            <div class="card-body">
+                {% if engagements %}
+                    {% for engagement in engagements %}
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between">
+                                <strong>{{ engagement.date }}</strong>
+                            </div>
+                            <p class="mb-0">{{ engagement.note }}</p>
+                        </div>
+                        {% if not forloop.last %}<hr class="my-2">{% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No engagement history yet. Log your first engagement above!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

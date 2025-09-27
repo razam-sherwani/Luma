@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - HCR Hub{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Your Dashboard</h1>
+    <p class="text-muted mb-0">Welcome back, {{ user.username }}!</p>
+</div>
+
+<div class="row">
+    <!-- Overdue Engagements Section -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">⚠️ Overdue Engagements</h5>
+                <small>HCPs not contacted in 30+ days</small>
+            </div>
+            <div class="card-body">
+                {% if overdue_hcps %}
+                    {% for hcp in overdue_hcps %}
+                        <div class="mb-2">
+                            <a href="{% url 'hcp_profile' hcp.id %}" class="text-decoration-none">
+                                <strong>{{ hcp.name }}</strong>
+                            </a>
+                            <br>
+                            <small class="text-muted">{{ hcp.specialty }}</small>
+                        </div>
+                        {% if not forloop.last %}<hr class="my-2">{% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">All HCPs are up to date! 🎉</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- New Research Alerts Section -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">🔬 New Research Alerts</h5>
+                <small>Latest studies and findings</small>
+            </div>
+            <div class="card-body">
+                {% for research in recent_research %}
+                    <div class="mb-2">
+                        <strong>{{ research.headline }}</strong>
+                        <br>
+                        <small class="text-muted">{{ research.specialty }} - {{ research.date }}</small>
+                    </div>
+                    {% if not forloop.last %}<hr class="my-2">{% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- EMR Flags Section -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">📊 EMR Flags</h5>
+                <small>Recent data changes</small>
+            </div>
+            <div class="card-body">
+                {% for emr in recent_emr_data %}
+                    <div class="mb-2">
+                        <a href="{% url 'hcp_profile' emr.hcp.id %}" class="text-decoration-none">
+                            <strong>{{ emr.hcp.name }}</strong>
+                        </a>
+                        <br>
+                        <small>{{ emr.metric_name }}: {{ emr.value }}</small>
+                        <br>
+                        <small class="text-muted">{{ emr.date }}</small>
+                    </div>
+                    {% if not forloop.last %}<hr class="my-2">{% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <p>Select an HCP from the alerts above to view their profile and log new engagements.</p>
+                <p class="text-muted mb-0">Your intelligent co-pilot is ready to help you prioritize your outreach efforts!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
