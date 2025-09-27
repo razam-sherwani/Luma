@@ -492,3 +492,4 @@ class Command(BaseCommand):
             {'name': 'Supportive therapy', 'indication': 'Symptom management'}
         ]
 
+

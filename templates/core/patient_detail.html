@@ -147,7 +147,7 @@
 </div>
 
 <!-- EMR Data Points -->
-{% if emr_data_points %}
+{% if emr_data %}
 <div class="row mb-4">
     <div class="col-12">
         <div class="card">
@@ -168,7 +168,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for data_point in emr_data_points %}
+                            {% for data_point in emr_data %}
                             <tr>
                                 <td>{{ data_point.date_recorded }}</td>
                                 <td>{{ data_point.get_data_type_display }}</td>
@@ -286,9 +286,12 @@
         <div class="card">
             <div class="card-body text-center">
                 <a href="{% url 'patient_database' %}" class="btn btn-secondary me-2">← Back to Patients</a>
-                <a href="{% url 'add_patient' %}" class="btn btn-primary">Add Another Patient</a>
+                {% if user.userprofile.role == 'HCP' %}
+                    <a href="{% url 'add_patient' %}" class="btn btn-primary">Add Another Patient</a>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
+

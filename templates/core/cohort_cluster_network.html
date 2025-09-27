@@ -1,0 +1,502 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Treatment Similarity Network - ProviderPulse{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1>Treatment Similarity Network</h1>
+            <p class="text-muted mb-0">Explore how patient clusters share similar treatment patterns</p>
+        </div>
+        <div class="text-end">
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-3">
+                            <label for="specialty-filter" class="form-label">Specialty</label>
+                            <select id="specialty-filter" class="form-select">
+                                <option value="">All Specialties</option>
+                                {% for specialty in specialties %}
+                                    <option value="{{ specialty }}" {% if specialty == current_specialty %}selected{% endif %}>{{ specialty }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="treatment-filter" class="form-label">Treatment</label>
+                            <select id="treatment-filter" class="form-select">
+                                <option value="">All Treatments</option>
+                                {% for treatment in treatments %}
+                                    <option value="{{ treatment }}" {% if treatment == current_treatment %}selected{% endif %}>{{ treatment }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="diagnosis-filter" class="form-label">Diagnosis</label>
+                            <select id="diagnosis-filter" class="form-select">
+                                <option value="">All Diagnoses</option>
+                                {% for diagnosis in diagnoses %}
+                                    <option value="{{ diagnosis }}" {% if diagnosis == current_diagnosis %}selected{% endif %}>{{ diagnosis }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="risk-filter" class="form-label">Risk Level</label>
+                            <select id="risk-filter" class="form-select">
+                                <option value="">All Risk Levels</option>
+                                <option value="high" {% if current_risk == 'high' %}selected{% endif %}>High Risk</option>
+                                <option value="medium" {% if current_risk == 'medium' %}selected{% endif %}>Medium Risk</option>
+                                <option value="low" {% if current_risk == 'low' %}selected{% endif %}>Low Risk</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Network Visualization -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Treatment Similarity Network</h5>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-sm btn-outline-success" onclick="exportNetworkData()">📊 Export JSON</button>
+                        <button class="btn btn-sm btn-outline-info" onclick="exportNetworkCSV()">📋 Export CSV</button>
+                        <button class="btn btn-sm btn-outline-warning" onclick="exportNetworkImage()">🖼️ Export PNG</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="network-container" style="width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 4px;">
+                        <svg id="network-svg" width="100%" height="100%"></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-primary" id="node-count">0</h3>
+                    <p class="card-text">Clusters</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-success" id="link-count">0</h3>
+                    <p class="card-text">Connections</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-warning" id="treatment-count">0</h3>
+                    <p class="card-text">Unique Treatments</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h3 class="text-info" id="patient-count">0</h3>
+                    <p class="card-text">Total Patients</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Connection Strength</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="me-3" style="width: 40px; height: 4px; background: #e74c3c;"></div>
+                        <span>High Similarity (70%+)</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="me-3" style="width: 30px; height: 3px; background: #f39c12;"></div>
+                        <span>Medium Similarity (40-70%)</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3" style="width: 20px; height: 2px; background: #27ae60;"></div>
+                        <span>Low Similarity (20-40%)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h6 class="mb-0">Cluster Risk Levels</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="me-3" style="width: 20px; height: 20px; background: #e74c3c; border-radius: 50%;"></div>
+                        <span>High Risk Clusters</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="me-3" style="width: 20px; height: 20px; background: #f39c12; border-radius: 50%;"></div>
+                        <span>Medium Risk Clusters</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="me-3" style="width: 20px; height: 20px; background: #27ae60; border-radius: 50%;"></div>
+                        <span>Low Risk Clusters</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cluster Details Modal -->
+<div class="modal fade" id="clusterDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clusterDetailsTitle">Cluster Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="clusterDetailsBody">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tooltip -->
+<div id="tooltip" class="tooltip" style="display: none;"></div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script>
+// Network data from Django
+const nodes = {{ nodes|safe }};
+const links = {{ links|safe }};
+
+console.log('Treatment similarity network data loaded:', { nodes: nodes.length, links: links.length });
+
+// Global variables
+let selectedNode = null;
+let labelsVisible = true;
+
+// Check if we have data
+if (!nodes || !Array.isArray(nodes) || nodes.length === 0) {
+    console.warn('No nodes data available for network visualization');
+    document.getElementById('network-svg').innerHTML = '<text x="50%" y="50%" text-anchor="middle" font-size="16" fill="#666">No cluster data available for treatment similarity analysis</text>';
+} else {
+    // Initialize the network
+    initializeNetwork();
+}
+
+function initializeNetwork() {
+    console.log('Initializing treatment similarity network with', nodes.length, 'clusters and', links.length, 'connections');
+    
+    const svg = d3.select("#network-svg");
+    const container = svg.append("g");
+    
+    // Set up zoom
+    const zoom = d3.zoom()
+        .scaleExtent([0.1, 4])
+        .on("zoom", (event) => {
+            container.attr("transform", event.transform);
+        });
+    
+    svg.call(zoom);
+    
+    // Create force simulation
+    const simulation = d3.forceSimulation(nodes)
+        .force("link", d3.forceLink(links).id(d => d.id).distance(150))
+        .force("charge", d3.forceManyBody().strength(-500))
+        .force("center", d3.forceCenter(svg.node().clientWidth / 2, svg.node().clientHeight / 2))
+        .force("collision", d3.forceCollide().radius(40));
+    
+    // Create links
+    const link = container.append("g")
+        .selectAll("line")
+        .data(links)
+        .enter().append("line")
+        .attr("class", d => `link similarity-${d.strength}`)
+        .attr("stroke", d => d.color)
+        .attr("stroke-width", d => d.strength === 'strong' ? 4 : d.strength === 'medium' ? 3 : 2)
+        .attr("opacity", 0.7);
+    
+    // Create nodes
+    const node = container.append("g")
+        .selectAll("circle")
+        .data(nodes)
+        .enter().append("circle")
+        .attr("r", d => Math.sqrt(d.patient_count) * 2 + 15)
+        .attr("fill", d => {
+            if (d.risk_level === 'high') return '#e74c3c';
+            if (d.risk_level === 'medium') return '#f39c12';
+            return '#27ae60';
+        })
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 3)
+        .style("cursor", "pointer")
+        .on("click", showClusterDetails)
+        .on("mouseover", showTooltip)
+        .on("mouseout", hideTooltip);
+    
+    // Create labels
+    const label = container.append("g")
+        .selectAll("text")
+        .data(nodes)
+        .enter().append("text")
+        .text(d => d.name)
+        .attr("font-size", "12px")
+        .attr("text-anchor", "middle")
+        .attr("dy", "0.35em")
+        .style("pointer-events", "none")
+        .style("opacity", labelsVisible ? 1 : 0)
+        .style("fill", "#333");
+    
+    // Update positions on simulation tick
+    simulation.on("tick", () => {
+        link
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
+        
+        node
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y);
+        
+        label
+            .attr("x", d => d.x)
+            .attr("y", d => d.y);
+    });
+    
+    // Update statistics
+    updateStatistics();
+    
+    // Center the graph after a short delay
+    setTimeout(() => {
+        centerGraph();
+    }, 2000);
+}
+
+function updateStatistics() {
+    const totalPatients = nodes.reduce((sum, d) => sum + d.patient_count, 0);
+    const uniqueTreatments = new Set();
+    nodes.forEach(d => {
+        d.treatments.forEach(t => uniqueTreatments.add(t));
+    });
+    
+    document.getElementById('node-count').textContent = nodes.length;
+    document.getElementById('link-count').textContent = links.length;
+    document.getElementById('treatment-count').textContent = uniqueTreatments.size;
+    document.getElementById('patient-count').textContent = totalPatients;
+}
+
+function showClusterDetails(d) {
+    selectedNode = d;
+    
+    const modal = new bootstrap.Modal(document.getElementById('clusterDetailsModal'));
+    document.getElementById('clusterDetailsTitle').textContent = d.name;
+    
+    const content = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6>Cluster Information</h6>
+                <p><strong>Patient Count:</strong> ${d.patient_count}</p>
+                <p><strong>Risk Level:</strong> <span class="badge bg-${d.risk_level === 'high' ? 'danger' : d.risk_level === 'medium' ? 'warning' : 'success'}">${d.risk_level.toUpperCase()}</span></p>
+                <p><strong>Specialty:</strong> ${d.specialty}</p>
+                <p><strong>Success Rate:</strong> ${d.success_rate}%</p>
+                <p><strong>Description:</strong> ${d.description}</p>
+            </div>
+            <div class="col-md-6">
+                <h6>Treatment Patterns</h6>
+                <p><strong>Common Treatments:</strong></p>
+                <ul>
+                    ${d.common_treatments.map(t => `<li>${t}</li>`).join('')}
+                </ul>
+                <p><strong>Diagnoses:</strong></p>
+                <ul>
+                    ${d.diagnoses.map(diag => `<li>${diag}</li>`).join('')}
+                </ul>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <h6>Treatment Frequency</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Treatment</th>
+                                <th>Frequency</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${Object.entries(d.treatment_counts).map(([treatment, count]) => 
+                                `<tr><td>${treatment}</td><td>${count}</td></tr>`
+                            ).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('clusterDetailsBody').innerHTML = content;
+    modal.show();
+}
+
+function showTooltip(d) {
+    const tooltip = d3.select("#tooltip");
+    tooltip
+        .style("display", "block")
+        .html(`
+            <strong>${d.name}</strong><br/>
+            Patients: ${d.patient_count}<br/>
+            Risk: ${d.risk_level}<br/>
+            Treatments: ${d.treatments.length}
+        `)
+        .style("left", (d3.event.pageX + 10) + "px")
+        .style("top", (d3.event.pageY - 10) + "px");
+}
+
+function hideTooltip() {
+    d3.select("#tooltip").style("display", "none");
+}
+
+function centerGraph() {
+    const svg = d3.select("#network-svg");
+    const container = svg.select("g");
+    const width = svg.node().clientWidth;
+    const height = svg.node().clientHeight;
+    
+    const zoom = d3.zoom()
+        .scaleExtent([0.1, 4])
+        .on("zoom", (event) => {
+            container.attr("transform", event.transform);
+        });
+    
+    // Center the graph properly
+    const centerX = width / 2;
+    const centerY = height / 2;
+    
+    svg.transition().duration(750).call(
+        zoom.transform,
+        d3.zoomIdentity.translate(centerX, centerY).scale(0.8)
+    );
+}
+
+function exportNetworkData() {
+    const data = { nodes, links };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'treatment_similarity_network.json';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function exportNetworkCSV() {
+    const csvContent = "data:text/csv;charset=utf-8," + 
+        "Cluster,Patient Count,Risk Level,Specialty,Common Treatments,Success Rate\n" +
+        nodes.map(d => `${d.name},${d.patient_count},${d.risk_level},${d.specialty},"${d.common_treatments.join(';')}",${d.success_rate}`).join("\n");
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "treatment_similarity_network.csv");
+    link.click();
+}
+
+function exportNetworkImage() {
+    const svg = document.getElementById('network-svg');
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    canvas.width = svg.clientWidth;
+    canvas.height = svg.clientHeight;
+    
+    img.onload = function() {
+        ctx.drawImage(img, 0, 0);
+        const pngFile = canvas.toDataURL('image/png');
+        const downloadLink = document.createElement('a');
+        downloadLink.download = 'treatment_similarity_network.png';
+        downloadLink.href = pngFile;
+        downloadLink.click();
+    };
+    
+    img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+}
+
+// Filter functionality
+document.getElementById('specialty-filter').addEventListener('change', applyFilters);
+document.getElementById('treatment-filter').addEventListener('change', applyFilters);
+document.getElementById('diagnosis-filter').addEventListener('change', applyFilters);
+document.getElementById('risk-filter').addEventListener('change', applyFilters);
+
+function applyFilters() {
+    const specialty = document.getElementById('specialty-filter').value;
+    const treatment = document.getElementById('treatment-filter').value;
+    const diagnosis = document.getElementById('diagnosis-filter').value;
+    const risk = document.getElementById('risk-filter').value;
+    
+    console.log('Applying filters:', { specialty, treatment, diagnosis, risk });
+    
+    const params = new URLSearchParams();
+    if (specialty) params.append('specialty', specialty);
+    if (treatment) params.append('treatment', treatment);
+    if (diagnosis) params.append('diagnosis', diagnosis);
+    if (risk) params.append('risk', risk);
+    
+    window.location.href = '?' + params.toString();
+}
+</script>
+
+<style>
+.link {
+    stroke-opacity: 0.7;
+}
+
+.link.similarity-strong {
+    stroke-width: 4px;
+}
+
+.link.similarity-medium {
+    stroke-width: 3px;
+}
+
+.link.similarity-weak {
+    stroke-width: 2px;
+}
+
+.tooltip {
+    position: absolute;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 4px;
+    pointer-events: none;
+    font-size: 12px;
+    z-index: 1000;
+}
+</style>
+{% endblock %}
