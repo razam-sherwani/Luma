@@ -121,14 +121,18 @@ def research_dashboard(request):
         is_high_impact=True
     ).order_by('-date')[:10]
     
-    # Get available specialties for filtering
-    specialties = ResearchUpdate.objects.values_list('specialty', flat=True).distinct()
+    # Get available specialties for filtering (using proper aggregation)
+    from django.db.models import Count
+    specialty_data = ResearchUpdate.objects.values('specialty').annotate(
+        count=Count('specialty')
+    ).order_by('specialty')
+    specialties = [item['specialty'] for item in specialty_data]
     
     context = {
         'personalized_research': personalized_research,
         'high_impact_research': high_impact_research,
         'specialty_stats': specialty_stats,
-        'specialties': sorted(specialties),
+        'specialties': specialties,
         'user_profile': user_profile,
         'total_research': ResearchUpdate.objects.count(),
     }
