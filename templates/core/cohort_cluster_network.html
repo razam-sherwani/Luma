@@ -19,7 +19,7 @@
                     </svg>
                     Back to Dashboard
                 </a>
-        </div>
+            </div>
     </div>
 
         <!-- Controls Section -->
@@ -270,6 +270,7 @@ function initializeNetwork() {
         .style("cursor", "pointer")
         .on("click", function(event, d) {
             console.log("Node clicked:", d);
+            selectedNode = d;
             showNodeDetails(d);
         })
         .on("mouseover", function(event, d) {

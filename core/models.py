@@ -1,6 +1,8 @@
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
+import json
 
 class UserProfile(models.Model):
     ROLE_CHOICES = [
@@ -336,3 +338,135 @@ class DrugRecommendation(models.Model):
     
     def __str__(self):
         return f"{self.drug_name} for {self.hcp.name} - {self.success_rate}% success"
+
+
+# New models for the research and messaging system
+
+class PatientIssueAnalysis(models.Model):
+    """Analysis of common issues across a doctor's patients"""
+    hcp = models.ForeignKey(HCP, on_delete=models.CASCADE, related_name='issue_analyses')
+    analysis_date = models.DateTimeField(auto_now_add=True)
+    total_patients_analyzed = models.IntegerField()
+    common_issues = models.JSONField()  # List of common issues with frequencies
+    top_diagnoses = models.JSONField()  # Most frequent diagnoses
+    treatment_gaps = models.JSONField()  # Areas where treatments might be missing
+    risk_factors = models.JSONField()  # Common risk factors
+    analysis_summary = models.TextField()
+    
+    class Meta:
+        ordering = ['-analysis_date']
+    
+    def __str__(self):
+        return f"Issue Analysis for {self.hcp.name} - {self.analysis_date.strftime('%Y-%m-%d')}"
+
+
+class ScrapedResearch(models.Model):
+    """Research articles scraped from medical databases"""
+    title = models.CharField(max_length=500)
+    authors = models.TextField(blank=True)
+    journal = models.CharField(max_length=200, blank=True)
+    publication_date = models.DateField(null=True, blank=True)
+    abstract = models.TextField()
+    keywords = models.JSONField(default=list)  # List of keywords
+    specialties = models.JSONField(default=list)  # Relevant specialties
+    conditions_mentioned = models.JSONField(default=list)  # Medical conditions mentioned
+    treatments_mentioned = models.JSONField(default=list)  # Treatments mentioned
+    source_url = models.URLField(blank=True)
+    source_database = models.CharField(max_length=100, default='PubMed')
+    relevance_score = models.FloatField(default=0.0)  # AI-calculated relevance
+    scraped_date = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-relevance_score', '-publication_date']
+        indexes = [
+            models.Index(fields=['-relevance_score']),
+            models.Index(fields=['publication_date']),
+        ]
+    
+    def __str__(self):
+        return self.title
+
+
+class IntelligentRecommendation(models.Model):
+    """Combined recommendations based on patient analysis and research"""
+    PRIORITY_CHOICES = [
+        ('HIGH', 'High Priority'),
+        ('MEDIUM', 'Medium Priority'),
+        ('LOW', 'Low Priority'),
+    ]
+    
+    STATUS_CHOICES = [
+        ('DRAFT', 'Draft'),
+        ('SENT', 'Sent'),
+        ('VIEWED', 'Viewed'),
+        ('ACCEPTED', 'Accepted'),
+        ('DECLINED', 'Declined'),
+    ]
+    
+    hcp = models.ForeignKey(HCP, on_delete=models.CASCADE, related_name='intelligent_recommendations')
+    hcr_sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_recommendations')
+    patient_analysis = models.ForeignKey(PatientIssueAnalysis, on_delete=models.CASCADE)
+    relevant_research = models.ManyToManyField(ScrapedResearch, blank=True)
+    cluster_insights = models.ForeignKey(PatientCluster, on_delete=models.CASCADE, null=True, blank=True)
+    
+    recommendation_title = models.CharField(max_length=200)
+    recommendation_summary = models.TextField()
+    evidence_summary = models.TextField()  # Combined evidence from all sources
+    patient_data_evidence = models.JSONField()  # Specific patient data supporting the recommendation
+    research_evidence = models.JSONField()  # Research articles supporting the recommendation
+    cluster_evidence = models.JSONField()  # Cluster analysis evidence
+    
+    priority = models.CharField(max_length=6, choices=PRIORITY_CHOICES, default='MEDIUM')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='DRAFT')
+    
+    created_date = models.DateTimeField(auto_now_add=True)
+    sent_date = models.DateTimeField(null=True, blank=True)
+    viewed_date = models.DateTimeField(null=True, blank=True)
+    response_date = models.DateTimeField(null=True, blank=True)
+    hcp_response = models.TextField(blank=True)
+    
+    class Meta:
+        ordering = ['-created_date']
+    
+    def __str__(self):
+        return f"{self.recommendation_title} for {self.hcp.name}"
+
+
+class HCRMessage(models.Model):
+    """Messages between HCRs and HCPs"""
+    MESSAGE_TYPES = [
+        ('RECOMMENDATION', 'Recommendation'),
+        ('GENERAL', 'General Message'),
+        ('FOLLOW_UP', 'Follow-up'),
+    ]
+    
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
+    recipient_hcp = models.ForeignKey(HCP, on_delete=models.CASCADE, related_name='received_messages')
+    message_type = models.CharField(max_length=15, choices=MESSAGE_TYPES, default='GENERAL')
+    subject = models.CharField(max_length=200)
+    message_content = models.TextField()
+    recommendation = models.ForeignKey(IntelligentRecommendation, on_delete=models.CASCADE, null=True, blank=True)
+    
+    is_read = models.BooleanField(default=False)
+    read_date = models.DateTimeField(null=True, blank=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_date']
+    
+    def __str__(self):
+        return f"{self.subject} - {self.sender.username} to {self.recipient_hcp.name}"
+
+
+class RecommendationFeedback(models.Model):
+    """Feedback from HCPs on recommendations"""
+    recommendation = models.OneToOneField(IntelligentRecommendation, on_delete=models.CASCADE, related_name='feedback')
+    hcp = models.ForeignKey(HCP, on_delete=models.CASCADE)
+    rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])  # 1-5 star rating
+    feedback_text = models.TextField(blank=True)
+    was_helpful = models.BooleanField()
+    will_implement = models.BooleanField()
+    created_date = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Feedback for {self.recommendation.recommendation_title} - {self.rating} stars"
