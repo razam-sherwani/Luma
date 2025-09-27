@@ -1,0 +1,48 @@
+# Django Framework
+Django==5.0.*
+
+# Data Analysis and Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# HTTP Requests
+requests>=2.28.0
+
+# Fake Data Generation (for seeding/testing)
+Faker>=18.0.0
+
+# Optional: Database Drivers (uncomment as needed)
+# PostgreSQL
+# psycopg2-binary>=2.9.0
+
+# MySQL
+# mysqlclient>=2.1.0
+
+# Optional: Production Server (uncomment if deploying)
+# gunicorn>=20.1.0
+# whitenoise>=6.4.0
+
+# Optional: Environment Management
+# python-decouple>=3.6
+
+# Optional: Development Tools (uncomment for development)
+# django-debug-toolbar>=4.0.0
+# django-extensions>=3.2.0
+
+# Optional: API Development (uncomment if building APIs)
+# djangorestframework>=3.14.0
+# django-cors-headers>=4.0.0
+
+# Optional: Task Queue (uncomment if using background tasks)
+# celery>=5.2.0
+# redis>=4.5.0
+
+# Optional: File Upload/Storage (uncomment if handling file uploads)
+# Pillow>=9.5.0
+# django-storages>=1.13.0
+# boto3>=1.26.0  # for AWS S3
+
+# Optional: Testing (uncomment for testing)
+# pytest>=7.3.0
+# pytest-django>=4.5.0
+# factory-boy>=3.2.0
