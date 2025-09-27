@@ -7,7 +7,12 @@
     <div>
         <h1>Healthcare Rep Dashboard</h1>
         <p class="text-muted mb-0">Welcome back, {{ user.username }}!</p>
-        <small class="text-muted">Manage your HCP engagements and track opportunities</small>
+        <small class="text-muted">Your intelligent co-pilot for HCP engagement and patient care optimization</small>
+    </div>
+    <div class="text-end">
+        <div class="badge bg-primary fs-6">{{ total_insights }} Active Insights</div>
+        <div class="badge bg-warning fs-6">{{ high_priority_insights }} High Priority</div>
+        <div class="badge bg-success fs-6">{{ total_patients_impacted }} Patients Impacted</div>
     </div>
 </div>
 
@@ -83,15 +88,127 @@
     </div>
 </div>
 
+<!-- Actionable Insights Section -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">🎯 Actionable Insights</h5>
+                <small>High-priority opportunities based on patient data analysis</small>
+            </div>
+            <div class="card-body">
+                {% if actionable_insights %}
+                    <div class="row">
+                        {% for insight in actionable_insights %}
+                            <div class="col-md-6 mb-3">
+                                <div class="card border-{% if insight.priority_score >= 80 %}danger{% elif insight.priority_score >= 60 %}warning{% else %}info{% endif %}">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">
+                                            {% if insight.insight_type == 'MISSING_TREATMENT' %}💊
+                                            {% elif insight.insight_type == 'NEW_RESEARCH' %}🔬
+                                            {% elif insight.insight_type == 'PATIENT_COHORT' %}👥
+                                            {% elif insight.insight_type == 'ENGAGEMENT_OVERDUE' %}⏰
+                                            {% elif insight.insight_type == 'TREATMENT_GAP' %}⚠️
+                                            {% endif %}
+                                            {{ insight.title }}
+                                        </h6>
+                                        <div>
+                                            <span class="badge bg-{% if insight.priority_score >= 80 %}danger{% elif insight.priority_score >= 60 %}warning{% else %}info{% endif %}">
+                                                {{ insight.priority_score }}%
+                                            </span>
+                                            <span class="badge bg-secondary">{{ insight.patient_impact }} patients</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">{{ insight.description }}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">{{ insight.hcp.name }} - {{ insight.hcp.specialty }}</small>
+                                            <div>
+                                                <a href="{% url 'hcp_profile' insight.hcp.id %}" class="btn btn-sm btn-outline-primary">View HCP</a>
+                                                <a href="{% url 'mark_insight_addressed' insight.id %}" class="btn btn-sm btn-outline-success">Mark Addressed</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No active insights at this time. Check back later!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Patient Cohort Analysis Section -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">👥 Patient Cohort Analysis</h5>
+                <small>Groups of patients with similar conditions</small>
+            </div>
+            <div class="card-body">
+                {% if patient_cohorts %}
+                    {% for cohort in patient_cohorts %}
+                        <div class="mb-3">
+                            <h6>{{ cohort.name }}</h6>
+                            <p class="text-muted mb-1">{{ cohort.description }}</p>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">{{ cohort.condition }} - {{ cohort.specialty }}</small>
+                                <span class="badge bg-primary">{{ cohort.patient_count }} patients</span>
+                            </div>
+                        </div>
+                        {% if not forloop.last %}<hr>{% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No patient cohorts available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">💡 Cohort Recommendations</h5>
+                <small>Treatment optimization opportunities</small>
+            </div>
+            <div class="card-body">
+                {% if cohort_recommendations %}
+                    {% for rec in cohort_recommendations %}
+                        <div class="mb-3">
+                            <h6 class="text-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %}">
+                                {{ rec.title }}
+                            </h6>
+                            <p class="text-muted mb-1">{{ rec.message|truncatewords:20 }}</p>
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">{{ rec.hcp.name }}</small>
+                                <span class="badge bg-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %}">
+                                    {{ rec.priority }}
+                                </span>
+                            </div>
+                        </div>
+                        {% if not forloop.last %}<hr>{% endif %}
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No cohort recommendations available.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="row mt-4">
     <div class="col-12">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">Quick Actions</h5>
+                <h5 class="mb-0">🚀 Quick Actions</h5>
             </div>
             <div class="card-body">
-                <p>Select an HCP from the alerts above to view their profile and log new engagements.</p>
-                <p class="text-muted mb-0">Your intelligent co-pilot is ready to help you prioritize your outreach efforts!</p>
+                <p>Use the actionable insights above to prioritize your outreach efforts. Each insight is backed by real patient data and research.</p>
+                <p class="text-muted mb-0">Your intelligent co-pilot analyzes EMR patterns, treatment outcomes, and research updates to guide your conversations with HCPs!</p>
             </div>
         </div>
     </div>
