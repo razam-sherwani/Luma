@@ -4,180 +4,181 @@
 {% block title %}Treatment Similarity Network - ProviderPulse{% endblock %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1>Treatment Similarity Network</h1>
-            <p class="text-muted mb-0">Explore how patient clusters share similar treatment patterns</p>
-        </div>
-        <div class="text-end">
-            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">← Back to Dashboard</a>
+<div class="min-h-screen bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header Section -->
+        <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8">
+            <div class="mb-4 lg:mb-0">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Treatment Similarity Network</h1>
+                <p class="text-gray-600">Explore how patient clusters share similar treatment patterns</p>
+            </div>
+            <div class="flex-shrink-0">
+                <a href="{% url 'dashboard' %}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors duration-200">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    Back to Dashboard
+                </a>
         </div>
     </div>
 
-    <!-- Controls -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-md-3">
-                            <label for="specialty-filter" class="form-label">Specialty</label>
-                            <select id="specialty-filter" class="form-select">
+        <!-- Controls Section -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div>
+                    <label for="specialty-filter" class="block text-sm font-medium text-gray-700 mb-2">Specialty</label>
+                    <select id="specialty-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
                                 <option value="">All Specialties</option>
                                 {% for specialty in specialties %}
                                     <option value="{{ specialty }}" {% if specialty == current_specialty %}selected{% endif %}>{{ specialty }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <label for="treatment-filter" class="form-label">Treatment</label>
-                            <select id="treatment-filter" class="form-select">
+                <div>
+                    <label for="treatment-filter" class="block text-sm font-medium text-gray-700 mb-2">Treatment</label>
+                    <select id="treatment-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
                                 <option value="">All Treatments</option>
                                 {% for treatment in treatments %}
                                     <option value="{{ treatment }}" {% if treatment == current_treatment %}selected{% endif %}>{{ treatment }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <label for="diagnosis-filter" class="form-label">Diagnosis</label>
-                            <select id="diagnosis-filter" class="form-select">
+                <div>
+                    <label for="diagnosis-filter" class="block text-sm font-medium text-gray-700 mb-2">Diagnosis</label>
+                    <select id="diagnosis-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
                                 <option value="">All Diagnoses</option>
                                 {% for diagnosis in diagnoses %}
                                     <option value="{{ diagnosis }}" {% if diagnosis == current_diagnosis %}selected{% endif %}>{{ diagnosis }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="col-md-3">
-                            <label for="risk-filter" class="form-label">Risk Level</label>
-                            <select id="risk-filter" class="form-select">
+                <div>
+                    <label for="risk-filter" class="block text-sm font-medium text-gray-700 mb-2">Risk Level</label>
+                    <select id="risk-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
                                 <option value="">All Risk Levels</option>
                                 <option value="high" {% if current_risk == 'high' %}selected{% endif %}>High Risk</option>
                                 <option value="medium" {% if current_risk == 'medium' %}selected{% endif %}>Medium Risk</option>
                                 <option value="low" {% if current_risk == 'low' %}selected{% endif %}>Low Risk</option>
                             </select>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
 
     <!-- Network Visualization -->
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">Treatment Similarity Network</h5>
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-sm btn-outline-success" onclick="exportNetworkData()">📊 Export JSON</button>
-                        <button class="btn btn-sm btn-outline-info" onclick="exportNetworkCSV()">📋 Export CSV</button>
-                        <button class="btn btn-sm btn-outline-warning" onclick="exportNetworkImage()">🖼️ Export PNG</button>
-                    </div>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center p-6 border-b border-gray-200">
+                <h5 class="text-lg font-semibold text-gray-900 mb-4 sm:mb-0">Treatment Similarity Network</h5>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="exportNetworkData()" class="inline-flex items-center px-3 py-2 bg-green-50 border border-green-200 rounded-lg text-green-700 hover:bg-green-100 hover:border-green-300 transition-colors duration-200 text-sm">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        Export JSON
+                    </button>
+                    <button onclick="exportNetworkCSV()" class="inline-flex items-center px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg text-blue-700 hover:bg-blue-100 hover:border-blue-300 transition-colors duration-200 text-sm">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Export CSV
+                    </button>
+                    <button onclick="exportNetworkImage()" class="inline-flex items-center px-3 py-2 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 hover:bg-yellow-100 hover:border-yellow-300 transition-colors duration-200 text-sm">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        Export PNG
+                    </button>
                 </div>
-                <div class="card-body">
-                    <div id="network-container" style="width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 4px;">
+            </div>
+            <div class="p-6">
+                <div id="network-container" class="w-full h-96 border border-gray-200 rounded-lg bg-gray-50">
                         <svg id="network-svg" width="100%" height="100%"></svg>
-                    </div>
+                </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Statistics -->
-    <div class="row mt-4">
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h3 class="text-primary" id="node-count">0</h3>
-                    <p class="card-text">Clusters</p>
+<div class="mt-8 grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
+        <h3 class="text-2xl font-bold text-blue-600 mb-2" id="node-count">0</h3>
+        <p class="text-gray-600">Clusters</p>
                 </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
+        <h3 class="text-2xl font-bold text-green-600 mb-2" id="link-count">0</h3>
+        <p class="text-gray-600">Connections</p>
             </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
+        <h3 class="text-2xl font-bold text-yellow-600 mb-2" id="treatment-count">0</h3>
+        <p class="text-gray-600">Unique Treatments</p>
         </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h3 class="text-success" id="link-count">0</h3>
-                    <p class="card-text">Connections</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h3 class="text-warning" id="treatment-count">0</h3>
-                    <p class="card-text">Unique Treatments</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <h3 class="text-info" id="patient-count">0</h3>
-                    <p class="card-text">Total Patients</p>
-                </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
+        <h3 class="text-2xl font-bold text-purple-600 mb-2" id="patient-count">0</h3>
+        <p class="text-gray-600">Total Patients</p>
             </div>
         </div>
     </div>
 
     <!-- Legend -->
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h6 class="mb-0">Connection Strength</h6>
+<div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div class="p-6 border-b border-gray-200">
+            <h6 class="text-lg font-semibold text-gray-900">Connection Strength</h6>
                 </div>
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="me-3" style="width: 40px; height: 4px; background: #e74c3c;"></div>
-                        <span>High Similarity (70%+)</span>
+        <div class="p-6">
+            <div class="flex items-center mb-3">
+                <div class="w-10 h-1 bg-red-500 mr-3 rounded"></div>
+                <span class="text-gray-700">High Similarity (70%+)</span>
                     </div>
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="me-3" style="width: 30px; height: 3px; background: #f39c12;"></div>
-                        <span>Medium Similarity (40-70%)</span>
+            <div class="flex items-center mb-3">
+                <div class="w-8 h-1 bg-orange-500 mr-3 rounded"></div>
+                <span class="text-gray-700">Medium Similarity (40-70%)</span>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <div class="me-3" style="width: 20px; height: 2px; background: #27ae60;"></div>
-                        <span>Low Similarity (20-40%)</span>
-                    </div>
-                </div>
+            <div class="flex items-center">
+                <div class="w-6 h-1 bg-green-500 mr-3 rounded"></div>
+                <span class="text-gray-700">Low Similarity (20-40%)</span>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h6 class="mb-0">Cluster Risk Levels</h6>
                 </div>
-                <div class="card-body">
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="me-3" style="width: 20px; height: 20px; background: #e74c3c; border-radius: 50%;"></div>
-                        <span>High Risk Clusters</span>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div class="p-6 border-b border-gray-200">
+            <h6 class="text-lg font-semibold text-gray-900">Cluster Sizes</h6>
                     </div>
-                    <div class="d-flex align-items-center mb-2">
-                        <div class="me-3" style="width: 20px; height: 20px; background: #f39c12; border-radius: 50%;"></div>
-                        <span>Medium Risk Clusters</span>
+        <div class="p-6">
+            <div class="flex items-center mb-3">
+                <div class="w-5 h-5 bg-blue-500 rounded-full mr-3"></div>
+                <span class="text-gray-700">Large Groups (100+ patients)</span>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <div class="me-3" style="width: 20px; height: 20px; background: #27ae60; border-radius: 50%;"></div>
-                        <span>Low Risk Clusters</span>
+            <div class="flex items-center mb-3">
+                <div class="w-4 h-4 bg-green-500 rounded-full mr-3"></div>
+                <span class="text-gray-700">Medium Groups (50-99 patients)</span>
                     </div>
-                </div>
+            <div class="flex items-center">
+                <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                <span class="text-gray-700">Small Groups (5-49 patients)</span>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Cluster Details Modal -->
-<div class="modal fade" id="clusterDetailsModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="clusterDetailsTitle">Cluster Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+<div id="clusterDetailsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center p-6 border-b">
+            <h5 class="text-xl font-semibold text-gray-900" id="clusterDetailsTitle">Cluster Details</h5>
+            <button id="closeClusterModal" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
             </div>
-            <div class="modal-body" id="clusterDetailsBody">
+        <div class="p-6">
+            <div id="clusterDetailsBody">
                 <!-- Content will be populated by JavaScript -->
             </div>
+        </div>
+        <div class="flex justify-end p-6 border-t">
+            <button id="closeClusterModalBtn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Close</button>
         </div>
     </div>
 </div>
@@ -259,9 +260,10 @@ function initializeNetwork() {
         .enter().append("circle")
         .attr("r", d => Math.sqrt(d.patient_count) * 2 + 15)
         .attr("fill", d => {
-            if (d.risk_level === 'high') return '#e74c3c';
-            if (d.risk_level === 'medium') return '#f39c12';
-            return '#27ae60';
+            // Color nodes by patient count (group size)
+            if (d.patient_count >= 100) return '#007bff'; // Blue for large groups
+            if (d.patient_count >= 50) return '#28a745';  // Green for medium groups
+            return '#ffc107'; // Yellow for small groups
         })
         .attr("stroke", "#fff")
         .attr("stroke-width", 3)
@@ -332,55 +334,87 @@ function updateStatistics() {
 function showClusterDetails(d) {
     selectedNode = d;
     
-    const modal = new bootstrap.Modal(document.getElementById('clusterDetailsModal'));
     document.getElementById('clusterDetailsTitle').textContent = d.name;
     
     const content = `
-        <div class="row">
-            <div class="col-md-6">
-                <h6>Cluster Information</h6>
-                <p><strong>Patient Count:</strong> ${d.patient_count}</p>
-                <p><strong>Risk Level:</strong> <span class="badge bg-${d.risk_level === 'high' ? 'danger' : d.risk_level === 'medium' ? 'warning' : 'success'}">${d.risk_level.toUpperCase()}</span></p>
-                <p><strong>Specialty:</strong> ${d.specialty}</p>
-                <p><strong>Success Rate:</strong> ${d.success_rate}%</p>
-                <p><strong>Description:</strong> ${d.description}</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h6 class="text-lg font-semibold text-gray-900 mb-4">Cluster Information</h6>
+                <div class="space-y-3">
+                    <p><span class="font-medium text-gray-700">Patient Count:</span> <span class="text-blue-600">${d.patient_count}</span></p>
+                    <p><span class="font-medium text-gray-700">Success Rate:</span> <span class="text-green-600">${d.success_rate}%</span></p>
+                    <p><span class="font-medium text-gray-700">Specialty:</span> <span class="text-purple-600">${d.specialty}</span></p>
+                    <p><span class="font-medium text-gray-700">Description:</span> <span class="text-gray-600">${d.description}</span></p>
+                </div>
             </div>
-            <div class="col-md-6">
-                <h6>Treatment Patterns</h6>
-                <p><strong>Common Treatments:</strong></p>
-                <ul>
-                    ${d.common_treatments.map(t => `<li>${t}</li>`).join('')}
-                </ul>
-                <p><strong>Diagnoses:</strong></p>
-                <ul>
-                    ${d.diagnoses.map(diag => `<li>${diag}</li>`).join('')}
-                </ul>
+            <div>
+                <h6 class="text-lg font-semibold text-gray-900 mb-4">Treatment Patterns</h6>
+                <div class="space-y-3">
+                    <div>
+                        <p class="font-medium text-gray-700 mb-2">Common Treatments:</p>
+                        <div class="flex flex-wrap gap-2">
+                            ${d.common_treatments.map(t => `<span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">${t}</span>`).join('')}
+                        </div>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-700 mb-2">Diagnoses:</p>
+                        <div class="flex flex-wrap gap-2">
+                            ${d.diagnoses.map(diag => `<span class="px-2 py-1 bg-green-100 text-green-800 rounded text-sm">${diag}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row mt-3">
-            <div class="col-12">
-                <h6>Treatment Frequency</h6>
-                <div class="table-responsive">
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>Treatment</th>
-                                <th>Frequency</th>
+        <div class="mt-6">
+            <h6 class="text-lg font-semibold text-gray-900 mb-4">Treatment Frequency</h6>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-200 rounded-lg">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b">Treatment</th>
+                            <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b">Frequency</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${Object.entries(d.treatment_counts).map(([treatment, count]) => 
-                                `<tr><td>${treatment}</td><td>${count}</td></tr>`
+                            `<tr class="hover:bg-gray-50">
+                                <td class="px-4 py-2 text-sm text-gray-900 border-b">${treatment}</td>
+                                <td class="px-4 py-2 text-sm text-gray-600 border-b">${count}</td>
+                            </tr>`
                             ).join('')}
                         </tbody>
                     </table>
-                </div>
             </div>
         </div>
     `;
     
     document.getElementById('clusterDetailsBody').innerHTML = content;
-    modal.show();
+    
+    // Show modal using Tailwind CSS approach
+    const modal = document.getElementById('clusterDetailsModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // Add backdrop
+    const backdrop = document.createElement('div');
+    backdrop.id = 'cluster-modal-backdrop';
+    backdrop.className = 'fixed inset-0 bg-black bg-opacity-50 z-40';
+    document.body.appendChild(backdrop);
+    
+    // Close modal when clicking backdrop
+    backdrop.addEventListener('click', closeClusterModal);
+    
+    // Close modal when clicking close buttons
+    document.getElementById('closeClusterModal').addEventListener('click', closeClusterModal);
+    document.getElementById('closeClusterModalBtn').addEventListener('click', closeClusterModal);
+    
+    function closeClusterModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        if (document.getElementById('cluster-modal-backdrop')) {
+            document.body.removeChild(document.getElementById('cluster-modal-backdrop'));
+        }
+    }
 }
 
 function showTooltip(d) {
@@ -589,78 +623,149 @@ function showConnectionDetails(d) {
     
     document.getElementById('connection-details').innerHTML = content;
     console.log("About to show connection modal");
-    const modal = new bootstrap.Modal(document.getElementById('connectionModal'));
-    modal.show();
+    
+    // Show modal using Tailwind CSS approach
+    const modal = document.getElementById('connectionModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // Add backdrop
+    const backdrop = document.createElement('div');
+    backdrop.id = 'connection-modal-backdrop';
+    backdrop.className = 'fixed inset-0 bg-black bg-opacity-50 z-40';
+    document.body.appendChild(backdrop);
+    
+    // Close modal when clicking backdrop
+    backdrop.addEventListener('click', closeConnectionModal);
+    
+    // Close modal when clicking close buttons
+    document.getElementById('closeConnectionModal').addEventListener('click', closeConnectionModal);
+    document.getElementById('closeConnectionModalBtn').addEventListener('click', closeConnectionModal);
+    
+    function closeConnectionModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        if (document.getElementById('connection-modal-backdrop')) {
+            document.body.removeChild(document.getElementById('connection-modal-backdrop'));
+        }
+    }
 }
 
 // Show detailed node information
 function showNodeDetails(d) {
+    console.log("showNodeDetails called with:", d);
+    
+    // Add error handling for missing properties
+    const safeCommonTreatments = d.common_treatments || [];
+    const safeDiagnoses = d.diagnoses || [];
+    const safeTreatmentCounts = d.treatment_counts || {};
+    
     const content = `
-        <div class="row">
-            <div class="col-md-8">
-                <h5 class="text-primary">${d.name}</h5>
-                <p class="text-muted">${d.description}</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <h5 class="text-blue-600 text-lg font-semibold mb-2">${d.name || 'Unknown Cluster'}</h5>
+                <p class="text-gray-600 mb-4">${d.description || 'No description available'}</p>
                 
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6 class="text-success">Patient Statistics</h6>
-                        <p><strong>Total Patients:</strong> ${d.patient_count}</p>
-                        <p><strong>Success Rate:</strong> ${d.success_rate}%</p>
-                        <p><strong>Specialty:</strong> ${d.specialty}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="text-info">Common Treatments</h6>
-                        <div class="d-flex flex-wrap gap-1">
-                            ${d.common_treatments.slice(0, 10).map(t => `<span class="badge bg-info">${t}</span>`).join('')}
-                            ${d.common_treatments.length > 10 ? `<span class="badge bg-secondary">+${d.common_treatments.length - 10} more</span>` : ''}
+                <div class="space-y-4">
+                    <div>
+                        <h6 class="text-green-600 font-semibold mb-2">Patient Statistics</h6>
+                        <div class="space-y-1">
+                            <p><span class="font-medium">Total Patients:</span> ${d.patient_count || 0}</p>
+                            <p><span class="font-medium">Success Rate:</span> ${d.success_rate || 0}%</p>
+                            <p><span class="font-medium">Specialty:</span> ${d.specialty || 'Unknown'}</p>
                         </div>
                     </div>
-                </div>
-                
-                <div class="row mt-3">
-                    <div class="col-md-6">
-                        <h6 class="text-warning">Primary Diagnoses</h6>
-                        <div class="d-flex flex-wrap gap-1">
-                            ${d.diagnoses.slice(0, 8).map(diag => `<span class="badge bg-warning">${diag}</span>`).join('')}
-                            ${d.diagnoses.length > 8 ? `<span class="badge bg-secondary">+${d.diagnoses.length - 8} more</span>` : ''}
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="text-secondary">Treatment Distribution</h6>
-                        <div class="small">
-                            ${Object.entries(d.treatment_counts).slice(0, 5).map(([treatment, count]) => 
-                                `<div class="d-flex justify-content-between">
-                                    <span>${treatment}</span>
-                                    <span class="badge bg-light text-dark">${count}</span>
-                                </div>`
-                            ).join('')}
+                    
+                    <div>
+                        <h6 class="text-blue-600 font-semibold mb-2">Common Treatments</h6>
+                        <div class="flex flex-wrap gap-2">
+                            ${safeCommonTreatments.length > 0 ? 
+                                safeCommonTreatments.slice(0, 10).map(t => `<span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-sm">${t}</span>`).join('') +
+                                (safeCommonTreatments.length > 10 ? `<span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-sm">+${safeCommonTreatments.length - 10} more</span>` : '') :
+                                '<span class="text-gray-500 text-sm">No treatment data available</span>'
+                            }
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
-                <h6 class="text-primary">Cluster Insights</h6>
-                <div class="alert alert-info">
-                    <small>
-                        <strong>Clinical Relevance:</strong> This cluster represents patients with similar 
-                        treatment patterns, demographics, and clinical outcomes. The high similarity 
-                        suggests these patients may benefit from similar care protocols.
-                    </small>
+            
+            <div class="space-y-4">
+                <div>
+                    <h6 class="text-yellow-600 font-semibold mb-2">Primary Diagnoses</h6>
+                    <div class="flex flex-wrap gap-2">
+                        ${safeDiagnoses.length > 0 ? 
+                            safeDiagnoses.slice(0, 8).map(diag => `<span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded text-sm">${diag}</span>`).join('') +
+                            (safeDiagnoses.length > 8 ? `<span class="px-2 py-1 bg-gray-100 text-gray-600 rounded text-sm">+${safeDiagnoses.length - 8} more</span>` : '') :
+                            '<span class="text-gray-500 text-sm">No diagnosis data available</span>'
+                        }
+                    </div>
                 </div>
                 
-                <h6 class="text-success">Connection Summary</h6>
-                <p class="small">
-                    This cluster is connected to other clusters based on shared treatments, 
-                    similar patient demographics, and overlapping diagnoses. Click on the 
-                    connections to see detailed similarity analysis.
-                </p>
+                <div>
+                    <h6 class="text-gray-600 font-semibold mb-2">Treatment Distribution</h6>
+                    <div class="space-y-2">
+                        ${Object.keys(safeTreatmentCounts).length > 0 ? 
+                            Object.entries(safeTreatmentCounts).slice(0, 5).map(([treatment, count]) => 
+                                `<div class="flex justify-between items-center">
+                                    <span class="text-sm">${treatment}</span>
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">${count}</span>
+                                </div>`
+                            ).join('') :
+                            '<span class="text-gray-500 text-sm">No treatment distribution data available</span>'
+                        }
+                    </div>
+                </div>
+                
+                <div>
+                    <h6 class="text-blue-600 font-semibold mb-2">Cluster Insights</h6>
+                    <div class="bg-blue-50 p-3 rounded">
+                        <p class="text-sm text-blue-800">
+                            <span class="font-medium">Clinical Relevance:</span> This cluster represents patients with similar 
+                            treatment patterns, demographics, and clinical outcomes. The high similarity 
+                            suggests these patients may benefit from similar care protocols.
+                        </p>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <h6 class="text-green-600 font-semibold mb-2">Connection Summary</h6>
+                        <p class="text-sm text-gray-600">
+                            This cluster is connected to other clusters based on shared treatments, 
+                            similar patient demographics, and overlapping diagnoses. Click on the 
+                            connections to see detailed similarity analysis.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     `;
     
     document.getElementById('node-details').innerHTML = content;
-    const modal = new bootstrap.Modal(document.getElementById('nodeModal'));
-    modal.show();
+    
+    // Show modal using Tailwind CSS approach
+    const modal = document.getElementById('nodeModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // Add backdrop
+    const backdrop = document.createElement('div');
+    backdrop.id = 'modal-backdrop';
+    backdrop.className = 'fixed inset-0 bg-black bg-opacity-50 z-40';
+    document.body.appendChild(backdrop);
+    
+    // Close modal when clicking backdrop
+    backdrop.addEventListener('click', closeModal);
+    
+    // Close modal when clicking close button
+    document.getElementById('closeModal').addEventListener('click', closeModal);
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    
+    function closeModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        if (document.getElementById('modal-backdrop')) {
+            document.body.removeChild(document.getElementById('modal-backdrop'));
+        }
+    }
 }
 
 // Link tooltip functions
@@ -721,41 +826,45 @@ function hideLinkTooltip() {
 </style>
 
 <!-- Connection Details Modal -->
-<div class="modal fade" id="connectionModal" tabindex="-1" aria-labelledby="connectionModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="connectionModalLabel">Connection Analysis</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div id="connectionModal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center p-6 border-b">
+            <h5 class="text-xl font-semibold text-gray-900" id="connectionModalLabel">Connection Analysis</h5>
+            <button id="closeConnectionModal" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="p-6">
+            <div id="connection-details">
+                <!-- Connection details will be populated here -->
             </div>
-            <div class="modal-body">
-                <div id="connection-details">
-                    <!-- Connection details will be populated here -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
+        </div>
+        <div class="flex justify-end p-6 border-t">
+            <button id="closeConnectionModalBtn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Close</button>
         </div>
     </div>
 </div>
 
 <!-- Node Details Modal -->
-<div class="modal fade" id="nodeModal" tabindex="-1" aria-labelledby="nodeModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="nodeModalLabel">Cluster Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<div id="nodeModal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center p-6 border-b">
+            <h5 class="text-xl font-semibold text-gray-900">Cluster Details</h5>
+            <button id="closeModal" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="p-6">
+            <div id="node-details">
+                <!-- Node details will be populated here -->
             </div>
-            <div class="modal-body">
-                <div id="node-details">
-                    <!-- Node details will be populated here -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
+        </div>
+        <div class="flex justify-end p-6 border-t">
+            <button id="closeModalBtn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Close</button>
         </div>
     </div>
 </div>

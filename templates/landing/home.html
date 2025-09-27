@@ -1,45 +1,81 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row">
-    <div class="col-lg-8 mx-auto text-center">
-        <div class="hero-section py-5">
-            <h1 class="display-4 fw-bold text-primary mb-4">ProviderPulse</h1>
-            <h2 class="h3 text-muted mb-4">The Intelligent Engagement Platform</h2>
-            <p class="lead mb-5">
-                Empower healthcare reps with intelligent insights from EMR data and latest research. 
-                Know exactly who to contact, what to discuss, and why it matters today.
-            </p>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                <a href="{% url 'signup' %}" class="btn btn-primary btn-lg px-4 me-md-2">Get Started</a>
-                <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg px-4">Sign In</a>
+<!-- Hero Section -->
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col justify-center">
+    <div class="container mx-auto px-4 py-16">
+        <div class="max-w-4xl mx-auto text-center">
+            <!-- Main Hero Content -->
+            <div class="mb-16">
+                <div class="mb-8">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full mb-6">
+                        <i class="fas fa-heartbeat text-white text-2xl"></i>
+                    </div>
+                    <h1 class="text-6xl md:text-7xl font-black text-gray-900 mb-4">
+                        Provider<span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Pulse</span>
+                    </h1>
+                    <h2 class="text-2xl md:text-3xl font-semibold text-gray-700 mb-6">
+                        The Intelligent Engagement Platform
+                    </h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                        Empower healthcare reps with intelligent insights from EMR data and latest research. 
+                        Know exactly who to contact, what to discuss, and why it matters today.
+                    </p>
+                </div>
+                
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <a href="{% url 'signup' %}" 
+                       class="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+                        <span class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                            <i class="fas fa-rocket text-blue-200 group-hover:text-blue-100"></i>
+                        </span>
+                        <span class="ml-6">Get Started</span>
+                    </a>
+                    <a href="{% url 'login' %}" 
+                       class="group relative px-8 py-4 bg-white text-gray-700 font-semibold rounded-xl border-2 border-gray-300 hover:border-blue-500 hover:text-blue-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+                        <span class="absolute left-4 top-1/2 transform -translate-y-1/2">
+                            <i class="fas fa-sign-in-alt text-gray-400 group-hover:text-blue-500"></i>
+                        </span>
+                        <span class="ml-6">Sign In</span>
+                    </a>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
-
-<div class="row mt-5">
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <h5 class="card-title">🎯 Smart Prioritization</h5>
-                <p class="card-text">Get prioritized alerts for overdue engagements and critical updates tailored to your HCPs.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <h5 class="card-title">📊 EMR Insights</h5>
-                <p class="card-text">Track patient volume changes and key metrics that matter to your healthcare providers.</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <h5 class="card-title">🔬 Research Updates</h5>
-                <p class="card-text">Stay informed with the latest research relevant to your HCPs' specialties and practice areas.</p>
+            
+            <!-- Features Grid -->
+            <div class="grid md:grid-cols-3 gap-8 mt-16">
+                <!-- Feature 1 -->
+                <div class="group bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-white/30 hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <div class="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-2xl">🎯</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Smart Prioritization</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Get prioritized alerts for overdue engagements and critical updates tailored to your HCPs.
+                    </p>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="group bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-white/30 hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <div class="w-16 h-16 bg-gradient-to-r from-green-400 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-2xl">📊</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">EMR Insights</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Track patient volume changes and key metrics that matter to your healthcare providers.
+                    </p>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="group bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-white/30 hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <div class="w-16 h-16 bg-gradient-to-r from-purple-400 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-2xl">🔬</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Research Updates</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Stay informed with the latest research relevant to your HCPs' specialties and practice areas.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
