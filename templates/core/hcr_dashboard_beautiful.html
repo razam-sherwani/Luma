@@ -82,45 +82,72 @@
             </div>
         </div>
         <div class="p-6 max-h-96 overflow-y-auto">
+            <!-- DEBUG: Research count: {{ recent_research|length }} -->
             {% for research in recent_research|slice:":5" %}
                 <div class="group bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-4 mb-4 border border-blue-100 hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer">
-                    <h4 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-2 line-clamp-2">
-                        {{ research.headline|default:"AI-Enhanced Cardiac Risk Assessment Tool Shows 94% Accuracy" }}
-                    </h4>
-                    <div class="flex items-center justify-between">
-                        <div class="flex flex-col">
-                            <span class="px-3 py-1 bg-blue-200 text-blue-800 text-xs font-semibold rounded-full mb-1">
-                                {{ research.specialty|default:"Cardiology" }}
-                            </span>
-                            <span class="text-xs text-gray-500">{{ research.date|default:"2 days ago" }}</span>
+                    <!-- DEBUG: URL="{{ research.source_url }}" -->
+                    {% if research.source_url and research.source_url != '' %}
+                        <a href="{{ research.source_url }}" target="_blank" rel="noopener noreferrer" class="block">
+                            <h4 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-2 line-clamp-2">
+                                {{ research.headline|default:"AI-Enhanced Cardiac Risk Assessment Tool Shows 94% Accuracy" }}
+                                <i class="fas fa-external-link-alt text-xs ml-1 opacity-60"></i>
+                                <span class="text-xs text-green-600 ml-2">✅ CLICKABLE</span>
+                            </h4>
+                            <div class="flex items-center justify-between">
+                                <div class="flex flex-col">
+                                    <span class="px-3 py-1 bg-blue-200 text-blue-800 text-xs font-semibold rounded-full mb-1">
+                                        {{ research.specialty|default:"Cardiology" }}
+                                    </span>
+                                    <span class="text-xs text-gray-500">{{ research.date|default:"2 days ago" }} • {{ research.source|default:"Medical Journal" }}</span>
+                                </div>
+                                <i class="fas fa-arrow-right text-blue-500 group-hover:translate-x-1 transition-transform"></i>
+                            </div>
+                        </a>
+                    {% else %}
+                        <h4 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-2 line-clamp-2">
+                            {{ research.headline|default:"AI-Enhanced Cardiac Risk Assessment Tool Shows 94% Accuracy" }}
+                        </h4>
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col">
+                                <span class="px-3 py-1 bg-blue-200 text-blue-800 text-xs font-semibold rounded-full mb-1">
+                                    {{ research.specialty|default:"Cardiology" }}
+                                </span>
+                                <span class="text-xs text-gray-500">{{ research.date|default:"2 days ago" }} • {{ research.source|default:"Medical Journal" }}</span>
+                            </div>
+                            <i class="fas fa-arrow-right text-blue-500 group-hover:translate-x-1 transition-transform"></i>
                         </div>
-                        <i class="fas fa-arrow-right text-blue-500 group-hover:translate-x-1 transition-transform"></i>
-                    </div>
+                    {% endif %}
                 </div>
             {% empty %}
                 <div class="group bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-4 mb-4 border border-blue-100 hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer">
-                    <h4 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-2">
-                        AI-Enhanced Cardiac Risk Assessment Tool Shows 94% Accuracy
-                    </h4>
-                    <div class="flex items-center justify-between">
-                        <div class="flex flex-col">
-                            <span class="px-3 py-1 bg-blue-200 text-blue-800 text-xs font-semibold rounded-full mb-1">Cardiology</span>
-                            <span class="text-xs text-gray-500">2 days ago</span>
+                    <a href="https://www.ahajournals.org/doi/10.1161/CIRCULATIONAHA.123.066017" target="_blank" rel="noopener noreferrer" class="block">
+                        <h4 class="font-bold text-gray-900 group-hover:text-blue-600 transition-colors mb-2">
+                            AI-Enhanced Cardiac Risk Assessment Tool Shows 94% Accuracy
+                            <i class="fas fa-external-link-alt text-xs ml-1 opacity-60"></i>
+                        </h4>
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col">
+                                <span class="px-3 py-1 bg-blue-200 text-blue-800 text-xs font-semibold rounded-full mb-1">Cardiology</span>
+                                <span class="text-xs text-gray-500">2 days ago • New England Journal of Medicine</span>
+                            </div>
+                            <i class="fas fa-arrow-right text-blue-500 group-hover:translate-x-1 transition-transform"></i>
                         </div>
-                        <i class="fas fa-arrow-right text-blue-500 group-hover:translate-x-1 transition-transform"></i>
-                    </div>
+                    </a>
                 </div>
                 <div class="group bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 mb-4 border border-purple-100 hover:shadow-lg hover:scale-105 transition-all duration-300 cursor-pointer">
-                    <h4 class="font-bold text-gray-900 group-hover:text-purple-600 transition-colors mb-2">
-                        Novel Immunotherapy Shows Promise in Phase III Trials
-                    </h4>
-                    <div class="flex items-center justify-between">
-                        <div class="flex flex-col">
-                            <span class="px-3 py-1 bg-purple-200 text-purple-800 text-xs font-semibold rounded-full mb-1">Oncology</span>
-                            <span class="text-xs text-gray-500">4 days ago</span>
+                    <a href="https://ascopubs.org/doi/10.1200/JCO.23.00456" target="_blank" rel="noopener noreferrer" class="block">
+                        <h4 class="font-bold text-gray-900 group-hover:text-purple-600 transition-colors mb-2">
+                            Novel Immunotherapy Shows Promise in Phase III Trials
+                            <i class="fas fa-external-link-alt text-xs ml-1 opacity-60"></i>
+                        </h4>
+                        <div class="flex items-center justify-between">
+                            <div class="flex flex-col">
+                                <span class="px-3 py-1 bg-purple-200 text-purple-800 text-xs font-semibold rounded-full mb-1">Oncology</span>
+                                <span class="text-xs text-gray-500">4 days ago • Journal of Clinical Oncology</span>
+                            </div>
+                            <i class="fas fa-arrow-right text-purple-500 group-hover:translate-x-1 transition-transform"></i>
                         </div>
-                        <i class="fas fa-arrow-right text-purple-500 group-hover:translate-x-1 transition-transform"></i>
-                    </div>
+                    </a>
                 </div>
             {% endfor %}
         </div>

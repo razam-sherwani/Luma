@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Research URL Debug - ProviderPulse{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">🔍 Research URL Debug Page</h1>
+    
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-xl font-bold mb-4">Dashboard Research Query Results</h2>
+        
+        {% for research in recent_research|slice:":5" %}
+        <div class="border-b border-gray-200 py-4">
+            <h3 class="font-bold text-lg text-blue-600">{{ forloop.counter }}. {{ research.headline }}</h3>
+            <div class="mt-2 space-y-1 text-sm">
+                <p><strong>Specialty:</strong> {{ research.specialty }}</p>
+                <p><strong>Date:</strong> {{ research.date }}</p>
+                <p><strong>High Impact:</strong> {{ research.is_high_impact|yesno:"Yes,No" }}</p>
+                <p><strong>Relevance Score:</strong> {{ research.relevance_score }}</p>
+                <p><strong>Source:</strong> {{ research.source }}</p>
+                <p><strong>Source URL:</strong> 
+                    {% if research.source_url and research.source_url != '' %}
+                        <a href="{{ research.source_url }}" target="_blank" class="text-blue-600 underline">
+                            {{ research.source_url }}
+                            <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    {% else %}
+                        <span class="text-red-500">NO URL</span>
+                    {% endif %}
+                </p>
+                <p><strong>URL Check:</strong> 
+                    {% if research.source_url and research.source_url != '' %}
+                        <span class="text-green-600">✅ HAS URL</span>
+                    {% else %}
+                        <span class="text-red-500">❌ NO URL</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-red-500">❌ No research articles found!</p>
+        {% endfor %}
+    </div>
+    
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <h3 class="font-bold text-yellow-800 mb-2">🔧 Debug Info</h3>
+        <p class="text-sm text-yellow-700">
+            This page shows the exact data that the dashboard is receiving. 
+            If URLs are showing here but not working on the main dashboard, 
+            there might be a caching or template issue.
+        </p>
+    </div>
+    
+    <div class="mt-6">
+        <a href="{% url 'hcr_dashboard' %}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+            ← Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endblock %}

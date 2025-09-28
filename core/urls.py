@@ -18,6 +18,8 @@ urlpatterns = [
     # Research URLs
     path('research/', research_views.research_dashboard, name='research_dashboard'),
     path('research/<int:research_id>/', research_views.research_detail, name='research_detail'),
+    path('research/debug/', views.research_debug, name='research_debug'),
+    path('url-test/', views.url_test, name='url_test'),
     path('api/research/by-specialty/', research_views.get_research_by_specialty, name='research_by_specialty'),
     path('api/research/update/', research_views.trigger_research_update, name='trigger_research_update'),
     # Intelligent Recommendation URLs

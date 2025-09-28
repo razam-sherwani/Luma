@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from typing import List, Dict
 from django.utils import timezone
 from .models import ResearchUpdate, HCP
+from .real_research_urls import get_real_research_url
 import logging
 
 logger = logging.getLogger(__name__)
@@ -15,6 +16,80 @@ class SimplifiedResearchGenerator:
     """Generates realistic medical research updates using templates and medical knowledge"""
     
     def __init__(self):
+        # Medical journal URLs for realistic linking
+        self.journal_urls = {
+            'CARDIOVASCULAR DISEASE (CARDIOLOGY)': [
+                'https://www.ahajournals.org/doi/full/',
+                'https://www.jacc.org/doi/',
+                'https://academic.oup.com/eurheartj/article/',
+                'https://www.onlinejacc.org/content/',
+                'https://www.ahajournals.org/doi/abs/'
+            ],
+            'INTERNAL MEDICINE': [
+                'https://www.nejm.org/doi/full/',
+                'https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/',
+                'https://www.acpjournals.org/doi/',
+                'https://www.bmj.com/content/',
+                'https://www.thelancet.com/journals/lancet/article/'
+            ],
+            'FAMILY PRACTICE': [
+                'https://www.aafp.org/pubs/afp/issues/',
+                'https://www.stfm.org/familymedicine/vol/',
+                'https://www.jabfm.org/content/',
+                'https://link.springer.com/article/',
+                'https://www.cfp.ca/content/'
+            ],
+            'GENERAL SURGERY': [
+                'https://www.journalacs.org/article/',
+                'https://journals.lww.com/annalsofsurgery/Abstract/',
+                'https://www.surgery.org/article/',
+                'https://www.elsevier.com/locate/surgery/article/',
+                'https://link.springer.com/article/'
+            ],
+            'ORTHOPEDIC SURGERY': [
+                'https://journals.lww.com/jbjsjournal/Abstract/',
+                'https://link.springer.com/article/',
+                'https://www.orthosurg.org.cn/EN/abstract/article/',
+                'https://www.clinorthop.org/article/',
+                'https://www.arthroscopyjournal.org/article/'
+            ],
+            'RADIATION ONCOLOGY': [
+                'https://www.redjournal.org/article/',
+                'https://ascopubs.org/doi/',
+                'https://aacrjournals.org/cancerres/article/',
+                'https://link.springer.com/article/',
+                'https://www.thelancet.com/journals/lanonc/article/'
+            ],
+            'INFECTIOUS DISEASE': [
+                'https://academic.oup.com/cid/article/',
+                'https://www.journalofdisease.org/article/',
+                'https://journals.asm.org/doi/',
+                'https://www.cambridge.org/core/journals/infection-control-and-hospital-epidemiology/article/',
+                'https://link.springer.com/article/'
+            ],
+            'UROLOGY': [
+                'https://www.auajournals.org/doi/',
+                'https://www.europeanurology.com/article/',
+                'https://www.goldjournal.net/article/',
+                'https://link.springer.com/article/',
+                'https://www.elsevier.com/locate/urology/article/'
+            ],
+            'PAIN MANAGEMENT': [
+                'https://journals.lww.com/painmedicine/Abstract/',
+                'https://www.painjournalonline.com/article/',
+                'https://www.springer.com/journal/12630/article/',
+                'https://onlinelibrary.wiley.com/doi/',
+                'https://www.anesthesia-analgesia.org/article/'
+            ],
+            'PHYSICAL MEDICINE AND REHABILITATION': [
+                'https://www.archives-pmr.org/article/',
+                'https://journals.lww.com/ajpmr/Abstract/',
+                'https://www.pmrjournal.org/article/',
+                'https://link.springer.com/article/',
+                'https://www.elsevier.com/locate/pmr/article/'
+            ]
+        }
+        
         # Enhanced medical specialty templates with real medical terminology
         self.research_templates = {
             'CARDIOVASCULAR DISEASE (CARDIOLOGY)': [
@@ -191,6 +266,11 @@ class SimplifiedResearchGenerator:
                 }
             ]
         }
+    
+    def _generate_realistic_url(self, specialty: str) -> str:
+        """Generate a realistic journal URL for the given specialty"""
+        # Use real research URLs from our database
+        return get_real_research_url(specialty)
 
     def generate_research_for_specialty(self, specialty: str, count: int = 3) -> List[Dict]:
         """Generate realistic research articles for a specific specialty"""
@@ -226,6 +306,7 @@ class SimplifiedResearchGenerator:
                 'specialty': specialty,
                 'date': research_date,
                 'source': random.choice(['Clinical Research Network', 'Medical Journal Database', 'International Medical Consortium', 'Academic Medical Centers']),
+                'source_url': self._generate_realistic_url(specialty),
                 'relevance_score': random.uniform(0.7, 1.0),
                 'is_high_impact': random.choice([True, False, False])  # 33% chance of high impact
             })
@@ -262,6 +343,7 @@ class SimplifiedResearchGenerator:
                         existing.date = article['date']
                         existing.abstract = article['abstract']
                         existing.source = article['source']
+                        existing.source_url = article.get('source_url', '')
                         existing.relevance_score = article['relevance_score']
                         existing.is_high_impact = article['is_high_impact']
                         existing.save()
@@ -274,6 +356,7 @@ class SimplifiedResearchGenerator:
                             date=article['date'],
                             abstract=article['abstract'],
                             source=article['source'],
+                            source_url=article.get('source_url', ''),
                             relevance_score=article['relevance_score'],
                             is_high_impact=article['is_high_impact']
                         )

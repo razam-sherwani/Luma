@@ -32,6 +32,7 @@ class ResearchUpdate(models.Model):
 	date = models.DateField()
 	abstract = models.TextField(blank=True, null=True)
 	source = models.CharField(max_length=100, default='Manual')
+	source_url = models.URLField(blank=True, null=True)  # URL to original article
 	relevance_score = models.FloatField(default=0.0)  # AI-calculated relevance
 	is_high_impact = models.BooleanField(default=False)
 	created_at = models.DateTimeField(auto_now_add=True)

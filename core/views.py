@@ -9,6 +9,8 @@ from django.utils import timezone
 from datetime import date, timedelta
 import json
 import csv
+import io
+import pandas as pd
 from collections import Counter
 from .models import (HCP, ResearchUpdate, EMRData, Engagement, UserProfile, HCRRecommendation, 
                     PatientCohort, TreatmentOutcome, CohortRecommendation, ActionableInsight,
@@ -266,6 +268,78 @@ def hcr_dashboard(request, user_profile):
         'recent_recommendations': recent_recommendations,
     }
     return render(request, 'core/hcr_dashboard_beautiful.html', context)
+
+@login_required
+def research_debug(request):
+    """Debug view to check research URLs"""
+    recent_research = ResearchUpdate.objects.filter(is_high_impact=True).order_by('-relevance_score', '-date')[:5]
+    
+    context = {
+        'recent_research': recent_research,
+    }
+    return render(request, 'core/research_debug.html', context)
+
+def url_test(request):
+    """Simple URL test page"""
+    from django.http import HttpResponse
+    
+    html = '''
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>URL Test - ProviderPulse</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body class="bg-gray-100 p-8">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl font-bold mb-8">🔗 URL Test Page</h1>
+            
+            <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4">Test Real Medical Research URLs</h2>
+                
+                <div class="space-y-4">
+                    <div class="border border-gray-200 rounded p-4">
+                        <h3 class="font-bold text-blue-600 mb-2">1. Lancet Infectious Diseases</h3>
+                        <a href="https://www.thelancet.com/journals/laninf/article/PIIS1473-3099(23)00198-4/fulltext" 
+                           target="_blank" 
+                           class="text-blue-600 underline hover:text-blue-800">
+                            Click to test Lancet URL →
+                        </a>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded p-4">
+                        <h3 class="font-bold text-blue-600 mb-2">2. American Heart Association</h3>
+                        <a href="https://www.ahajournals.org/doi/10.1161/HYPERTENSIONAHA.123.21394" 
+                           target="_blank" 
+                           class="text-blue-600 underline hover:text-blue-800">
+                            Click to test AHA URL →
+                        </a>
+                    </div>
+                    
+                    <div class="border border-gray-200 rounded p-4">
+                        <h3 class="font-bold text-blue-600 mb-2">3. BMJ</h3>
+                        <a href="https://www.bmj.com/content/383/bmj-2023-076067" 
+                           target="_blank" 
+                           class="text-blue-600 underline hover:text-blue-800">
+                            Click to test BMJ URL →
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <a href="/" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    ← Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </body>
+    </html>
+    '''
+    
+    return HttpResponse(html)
 
 def hcp_dashboard(request, user_profile):
     """Dashboard for Healthcare Providers"""
