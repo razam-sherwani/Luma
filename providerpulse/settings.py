@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'providerpulse.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# Default to SQLite for development
+# Use SQLite for both development and production
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -87,9 +87,9 @@ DATABASES = {
     }
 }
 
-# Override with PostgreSQL for production if DATABASE_URL is provided
-if 'DATABASE_URL' in os.environ:
-    DATABASES['default'] = dj_database_url.parse(os.environ.get('DATABASE_URL'))
+# Optional: Override with PostgreSQL if DATABASE_URL is explicitly provided
+# if 'DATABASE_URL' in os.environ:
+#     DATABASES['default'] = dj_database_url.parse(os.environ.get('DATABASE_URL'))
 
 
 # Password validation
