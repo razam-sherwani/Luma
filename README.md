@@ -1,68 +1,202 @@
-# Luma - The Intelligent Engagement Platform
+# 🏥 ProviderPulse - Intelligent Healthcare Management Platform
 
-Luma is an intelligent dashboard that acts as a co-pilot for healthcare engagement managers. By simulating insights from Electronic Medical Records (EMRs) and tracking the latest medical research, the platform generates prioritized, actionable alerts to help healthcare reps know exactly who to contact, what to talk about, and why it's critically relevant today.
+<div align="center">
 
-## Features
+![Django](https://img.shields.io/badge/Django-5.0-092E20?style=for-the-badge&logo=django&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5.0-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-3-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 
-- **Smart Dashboard**: View overdue engagements, new research alerts, and EMR flags in one place
-- **HCP Profile Management**: Detailed healthcare provider profiles with engagement history
-- **Research Tracking**: Stay updated with the latest medical research by specialty
-- **EMR Insights**: Monitor patient volume changes and key metrics
-- **Engagement Logging**: Easy-to-use forms for tracking interactions with HCPs
+**🚀 Live Demo:** [luma-444u.onrender.com](https://luma-444u.onrender.com)
 
-## Quick Setup
+*Revolutionizing healthcare through intelligent patient management, predictive analytics, and AI-powered clinical decision support.*
+
+</div>
+
+## 🌟 Overview
+
+ProviderPulse is a comprehensive healthcare management platform that leverages advanced analytics and AI to improve patient outcomes, streamline clinical workflows, and enhance healthcare provider decision-making. Built for the modern healthcare ecosystem, it combines patient management, clinical research integration, and predictive analytics in one seamless platform.
+
+## ✨ Key Features
+
+### 🔍 **Intelligent Patient Management**
+- **Modern Patient Profiles**: Comprehensive patient dashboards with medical history, demographics, and real-time health metrics
+- **Advanced Search & Filtering**: Find patients instantly by condition, provider, demographics, or treatment history
+- **Visual Health Analytics**: Interactive charts and graphs for patient health trends and outcomes
+
+### 🧠 **AI-Powered Clinical Decision Support**
+- **Treatment Recommendations**: AI-generated treatment suggestions based on patient cohorts and evidence-based medicine
+- **Risk Stratification**: Automated patient risk assessment using machine learning algorithms
+- **Outcome Prediction**: Predictive models for treatment success and patient prognosis
+
+### 📊 **Advanced Analytics & Clustering**
+- **Patient Cohort Analysis**: Automatic grouping of patients by conditions, treatments, and outcomes
+- **Provider Performance Metrics**: Track and analyze healthcare provider effectiveness
+- **Population Health Insights**: Aggregate health trends and population-level analytics
+
+### 🔬 **Research Integration**
+- **Real-time Clinical Research**: Live integration with medical journals and research databases
+- **Evidence-Based Alerts**: Automated notifications about new treatments and clinical guidelines
+- **Research Recommendation Engine**: Personalized research suggestions for healthcare providers
+
+### 🏥 **Multi-Specialty Support**
+- **Cardiology**: Specialized tools for cardiac patient management
+- **Neurology**: Brain health tracking and neurological assessments
+- **Oncology**: Cancer care coordination and treatment tracking
+- **Primary Care**: Comprehensive general practice management
+
+
+
+## 🚀 Quick Start
 
 ### Prerequisites
-
-- Python 3.8 or higher
-- Django 5.0
+- Python 3.11+
+- Node.js (for frontend dependencies)
 - Git
 
-### Installation & Setup
+### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/razam-sherwani/Luma.git
-   cd Luma
+   git clone https://github.com/razam-sherwani/ProviderPulse.git
+   cd ProviderPulse
    ```
 
-2. **Install dependencies** (optional: use virtual environment)
+2. **Set up virtual environment**
    ```bash
-   # Create virtual environment (recommended)
    python -m venv venv
-   
-   # Activate virtual environment
-   # On Windows:
-   venv\Scripts\activate
-   # On Mac/Linux:
-   source venv/bin/activate
-   
-   # Install Django (if not already installed)
-   pip install django
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
-3. **Install Node.js dependencies for Tailwind CSS**
+3. **Install dependencies**
    ```bash
-   # Install Node.js packages
+   pip install -r requirements.txt
    npm install
-   
-   # Build Tailwind CSS
-   npm run build-css
-   
-   # For development with auto-rebuild:
-   npm run watch-css
    ```
 
-4. **Set up the database**
+4. **Initialize database**
    ```bash
-   # Create and apply migrations
-   python manage.py makemigrations
    python manage.py migrate
+   python scripts/seed_enhanced.py  # Load sample data
    ```
 
-4. **Load realistic EMR data into the database** (RECOMMENDED)
+5. **Run the development server**
    ```bash
-   # First install required packages for data processing
+   python manage.py runserver
+   ```
+
+6. **Access the application**
+   Open your browser to `http://localhost:8000`
+
+### 🎯 Demo Login Credentials
+Use any of the healthcare provider credentials from `data/hcp_credentials.txt` to explore the platform with realistic data.
+
+## 📁 Project Structure
+
+```
+ProviderPulse/
+├── 🏠 Core Django Apps
+│   ├── accounts/          # User authentication & profiles
+│   ├── core/             # Main application logic
+│   ├── home/             # Landing pages
+│   └── landing/          # Marketing pages
+├── 📊 Data & Analytics
+│   ├── data/             # Credentials and configuration data
+│   ├── emr_data/         # Electronic Medical Records
+│   └── sample_data/      # Sample datasets for testing
+├── 🛠️ Scripts & Utilities
+│   ├── scripts/          # Database seeding, maintenance, research tools
+│   └── deployment/       # Production deployment configurations
+├── 🎨 Frontend Assets
+│   ├── static/           # CSS, JavaScript, images
+│   ├── templates/        # HTML templates
+│   └── staticfiles/      # Collected static files
+├── 📖 Documentation
+│   └── docs/             # Project documentation and guides
+└── ⚙️ Configuration
+    ├── providerpulse/    # Django settings and configuration
+    ├── requirements.txt  # Python dependencies
+    └── package.json      # Node.js dependencies
+```
+
+## 🔧 Technology Stack
+
+### Backend
+- **Django 5.0**: Web framework with ORM and admin interface
+- **Python 3.11**: Core programming language
+- **SQLite**: Database for development and deployment
+- **Django REST Framework**: API development
+
+### Frontend
+- **Bootstrap 5**: Responsive CSS framework
+- **JavaScript (ES6+)**: Interactive frontend functionality
+- **Chart.js**: Data visualization and analytics
+- **FontAwesome**: Professional iconography
+
+### Data & Analytics
+- **Pandas**: Data manipulation and analysis
+- **NumPy**: Numerical computing
+- **Scikit-learn**: Machine learning algorithms
+- **Matplotlib/Seaborn**: Data visualization
+
+### Deployment & DevOps
+- **Render**: Cloud hosting platform
+- **Gunicorn**: WSGI HTTP Server
+- **WhiteNoise**: Static file serving
+- **Git**: Version control
+
+## 🏆 Hackathon Highlights
+
+### 🎯 **Problem Solved**
+ProviderPulse addresses critical challenges in healthcare:
+- **Fragmented Patient Data**: Unifies patient information across multiple systems
+- **Clinical Decision Fatigue**: Provides AI-powered decision support
+- **Research Gap**: Bridges clinical practice with latest medical research
+- **Population Health Management**: Enables proactive care through predictive analytics
+
+### 💡 **Innovation & Impact**
+- **Real-time Research Integration**: Live medical journal feeds and evidence-based recommendations
+- **AI-Powered Clustering**: Advanced patient segmentation for personalized care
+- **Comprehensive Analytics**: Population health insights and provider performance metrics
+- **Modern UX/UI**: Professional healthcare interface designed for clinical workflows
+
+### 🔍 **Technical Excellence**
+- **Scalable Architecture**: Modular Django design for enterprise-scale deployment
+- **Data Security**: Healthcare-compliant data handling and privacy protection
+- **Performance Optimization**: Efficient database queries and caching strategies
+- **Cross-Platform Compatibility**: Responsive design for desktop, tablet, and mobile
+
+## 📈 Future Roadmap
+
+- **🔮 Advanced AI**: Integration with GPT-4 for clinical note generation
+- **📱 Mobile App**: Native iOS/Android applications
+- **🔗 EHR Integration**: Direct connection with major Electronic Health Record systems
+- **🌐 Telemedicine**: Built-in video consultation capabilities
+- **📋 Clinical Trials**: Patient matching for clinical trial recruitment
+
+## 🤝 Contributing
+
+We welcome contributions from the healthcare and technology communities! Please see our [Contributing Guide](docs/CONTRIBUTING.md) for details on how to get involved.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🎉 Acknowledgments
+
+- **Healthcare Providers**: For invaluable feedback and domain expertise
+- **Medical Research Community**: For open access to clinical guidelines and research
+- **Open Source Community**: For the excellent tools and frameworks that made this possible
+
+---
+
+<div align="center">
+
+**Built with ❤️ for better healthcare outcomes**
+
+*ProviderPulse - Where Technology Meets Compassionate Care*
+
+</div>
    pip install pandas requests faker
    
    # Download real healthcare data from CMS and generate realistic EMR dataset
@@ -113,132 +247,3 @@ The `seed.py` script creates the following sample data:
 - **Dr. David Kim** - Neurology
 - **Dr. Eva Patel** - Pediatrics
 
-### Research Updates
-- Immunotherapy advances in oncology
-- Cardiac stent technology breakthroughs
-- Diabetes management guidelines
-- Pediatric vaccine developments
-- Migraine treatment innovations
-
-### EMR Data
-- Patient volume trends (Increased/Stable/Decreased)
-- Top diagnoses by specialty
-- Recent metric changes with timestamps
-
-### Engagement History
-- Sample interaction notes for each HCP
-- Varied engagement dates to demonstrate overdue alerts
-- Different types of contact methods (calls, emails, meetings)
-
-### Patient Cohorts & Network Data
-- **15+ Patient Cohorts** across different medical conditions
-- **Treatment Outcomes** with success rates and effectiveness data
-- **HCP-Cohort Relationships** showing treatment patterns
-- **Actionable Insights** for healthcare reps
-- **Network Connections** demonstrating influence patterns
-
-## Usage
-
-1. **Landing Page**: Visit the homepage to learn about Luma
-2. **Sign Up/Login**: Create an account or sign in to access your dashboard
-3. **Dashboard**: View three key sections:
-   - **Overdue Engagements**: HCPs not contacted in 30+ days
-   - **New Research Alerts**: Latest studies by specialty
-   - **EMR Flags**: Recent data changes and patient metrics
-4. **HCP Profiles**: Click on any HCP name to view:
-   - Contact information and specialty
-   - Relevant research updates
-   - EMR data and trends
-   - Complete engagement history
-   - Form to log new interactions
-5. **Network Visualization**: Access the interactive network view to:
-   - Visualize HCP-patient cohort relationships
-   - Identify high-priority engagement opportunities
-   - Filter networks by condition, specialty, or region
-   - Analyze treatment patterns and success rates
-
-## UI & Styling
-
-Luma uses **Tailwind CSS 3.4.0** for modern, responsive design with beautiful glassmorphism effects and gradient styling.
-
-### Development Workflow
-
-```bash
-# Install dependencies
-npm install
-
-# Development mode (auto-rebuild CSS on changes)
-npm run watch-css
-
-# Production build (optimized CSS)
-npm run build-css
-
-# Run Django development server
-python manage.py runserver
-```
-
-### Design Features
-
-- **🎨 Glassmorphism UI**: Modern frosted glass effects with backdrop blur
-- **📱 Mobile-First**: Responsive design that works on all device sizes
-- **🌈 Gradient Elements**: Beautiful color gradients throughout the interface
-- **⚡ Smooth Animations**: Hover effects, transitions, and micro-interactions
-- **🎯 Accessible**: Keyboard navigation and proper contrast ratios
-- **💎 Modern Cards**: Elegant card-based layouts with hover transforms
-
-### Custom Styling
-
-The platform includes custom CSS components defined in `static/css/input.css`:
-- Glass-morphism cards and navigation
-- Gradient buttons and badges
-- Enhanced form controls
-- Floating animations
-- Beautiful alert messages
-
-### Tailwind Configuration
-
-Custom configuration in `tailwind.config.js` includes:
-- Luma brand colors
-- Custom gradient utilities
-- Enhanced animation keyframes
-- Typography scale optimization
-
-## Project Structure
-
-```
-Luma/
-├── core/                   # Main app with models and dashboard views
-├── landing/                # Landing page app
-├── accounts/               # User authentication app
-├── templates/              # HTML templates
-├── seed.py                 # Database seeding script
-├── manage.py              # Django management script
-└── Luma/         # Project settings
-```
-
-## Resetting the Database
-
-If you want to reset the database and reload fresh dummy data:
-
-```bash
-# Delete the database file (SQLite)
-rm db.sqlite3  # On Windows: del db.sqlite3
-
-# Recreate the database
-python manage.py migrate
-
-# Reload dummy data
-python seed.py
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## License
-
-This project is part of a hackathon MVP demonstration.

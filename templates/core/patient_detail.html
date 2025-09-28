@@ -2,61 +2,230 @@
 
 {% block title %}Patient {{ patient.patient_id }} - ProviderPulse{% endblock %}
 
+{% block extra_head %}
+<style>
+    .patient-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .info-card {
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        border: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+    }
+    
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    }
+    
+    .info-card .card-header {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        border: none;
+        border-radius: 15px 15px 0 0;
+        padding: 1rem 1.5rem;
+        margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+    }
+    
+    .demographics-card .card-header {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    
+    .medical-card .card-header {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+    
+    .insurance-card .card-header {
+        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    }
+    
+    .emr-card .card-header {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        color: #333;
+    }
+    
+    .outcome-card .card-header {
+        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        color: #333;
+    }
+    
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .info-item:last-child {
+        border-bottom: none;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #555;
+        min-width: 120px;
+    }
+    
+    .info-value {
+        color: #333;
+        text-align: right;
+    }
+    
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 500;
+        font-size: 0.85rem;
+    }
+    
+    .badge-excellent { background: #d4edda; color: #155724; }
+    .badge-good { background: #d1ecf1; color: #0c5460; }
+    .badge-fair { background: #fff3cd; color: #856404; }
+    .badge-poor { background: #f8d7da; color: #721c24; }
+    
+    .section-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-left: 20px;
+    }
+    
+    .section-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 4px;
+        height: 25px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 2px;
+    }
+    
+    .patient-id-badge {
+        background: rgba(255,255,255,0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+        display: inline-block;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-modern {
+        border-radius: 50px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    
+    .medical-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .medical-info-grid {
+            grid-template-columns: 1fr;
+        }
+        .action-buttons {
+            justify-content: center;
+        }
+        .patient-header {
+            text-align: center;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h1>Patient {{ patient.patient_id }}</h1>
-        <p class="text-muted mb-0">{{ patient.primary_diagnosis }}</p>
-    </div>
-    <div class="text-end">
-        {% if user_role == 'HCP' %}
-            <button type="button" class="btn btn-primary me-2" id="editPatientBtn">
-                <i class="fas fa-edit"></i> Edit Patient
-            </button>
-            <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deletePatientModal">
-                <i class="fas fa-trash"></i> Delete Patient
-            </button>
-        {% endif %}
-        <a href="{% url 'patient_database' %}" class="btn btn-outline-secondary">← Back to Patients</a>
+<!-- Patient Header -->
+<div class="patient-header">
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
+        <div>
+            <div class="patient-id-badge mb-2">
+                <i class="fas fa-user-injured me-2"></i>Patient {{ patient.patient_id }}
+            </div>
+            <h1 class="mb-2" style="font-size: 2.5rem; font-weight: 700;">{{ patient.primary_diagnosis }}</h1>
+            <p class="mb-0 opacity-75" style="font-size: 1.1rem;">
+                <i class="fas fa-calendar-alt me-2"></i>{{ patient.age_group }} • {{ patient.get_gender_display }} • {{ patient.get_race_display }}
+            </p>
+        </div>
+        <div class="action-buttons">
+            {% if user_role == 'HCP' %}
+                <button type="button" class="btn btn-light btn-modern" id="editPatientBtn">
+                    <i class="fas fa-edit me-2"></i>Edit Patient
+                </button>
+                <button type="button" class="btn btn-danger btn-modern" data-bs-toggle="modal" data-bs-target="#deletePatientModal">
+                    <i class="fas fa-trash me-2"></i>Delete
+                </button>
+            {% endif %}
+            <a href="{% url 'patient_database' %}" class="btn btn-outline-light btn-modern">
+                <i class="fas fa-arrow-left me-2"></i>Back to Patients
+            </a>
+        </div>
     </div>
 </div>
 
-<div class="row">
-    <!-- Patient Demographics -->
-    <div class="col-md-4 mb-4">
-        <div class="card">
+<!-- Patient Information Grid -->
+<div class="row g-4 mb-4">
+    <!-- Demographics Card -->
+    <div class="col-lg-4">
+        <div class="card info-card demographics-card">
             <div class="card-header">
-                <h5 class="mb-0">Demographics</h5>
+                <h5 class="mb-0"><i class="fas fa-user me-2"></i>Demographics</h5>
             </div>
             <div class="card-body">
                 <!-- View Mode -->
                 <div id="demographics-view" class="view-mode">
-                    <table class="table table-sm">
-                        <tr>
-                            <td><strong>Patient ID:</strong></td>
-                            <td>{{ patient.patient_id }}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Age Group:</strong></td>
-                            <td>{{ patient.age_group }}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Gender:</strong></td>
-                            <td>{{ patient.get_gender_display }}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Race:</strong></td>
-                            <td>{{ patient.get_race_display }}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Ethnicity:</strong></td>
-                            <td>{{ patient.get_ethnicity_display }}</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Zip Code:</strong></td>
-                            <td>{{ patient.zip_code_prefix }}</td>
-                        </tr>
-                    </table>
+                    <div class="info-item">
+                        <span class="info-label"><i class="fas fa-id-card me-2"></i>Patient ID</span>
+                        <span class="info-value">{{ patient.patient_id }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label"><i class="fas fa-birthday-cake me-2"></i>Age Group</span>
+                        <span class="info-value">{{ patient.age_group }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label"><i class="fas fa-venus-mars me-2"></i>Gender</span>
+                        <span class="info-value">{{ patient.get_gender_display }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label"><i class="fas fa-users me-2"></i>Race</span>
+                        <span class="info-value">{{ patient.get_race_display }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label"><i class="fas fa-globe me-2"></i>Ethnicity</span>
+                        <span class="info-value">{{ patient.get_ethnicity_display }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label"><i class="fas fa-map-marker-alt me-2"></i>Zip Code</span>
+                        <span class="info-value">{{ patient.zip_code_prefix }}</span>
+                    </div>
                 </div>
 
                 <!-- Edit Mode -->
@@ -117,39 +286,102 @@
         </div>
     </div>
 
-    <!-- Medical Information -->
-    <div class="col-md-8 mb-4">
-        <div class="card">
+    <!-- Medical Information Card -->
+    <div class="col-lg-8">
+        <div class="card info-card medical-card">
             <div class="card-header">
-                <h5 class="mb-0">Medical Information</h5>
+                <h5 class="mb-0"><i class="fas fa-stethoscope me-2"></i>Medical Information</h5>
             </div>
             <div class="card-body">
                 <!-- View Mode -->
                 <div id="medical-view" class="view-mode">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h6>Primary Diagnosis</h6>
-                            <p>{{ patient.primary_diagnosis }}</p>
+                    <div class="medical-info-grid">
+                        <div>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-diagnoses text-primary me-2"></i>
+                                    <h6 class="mb-0 fw-bold">Primary Diagnosis</h6>
+                                </div>
+                                <div class="bg-light p-3 rounded-3">
+                                    <strong>{{ patient.primary_diagnosis }}</strong>
+                                </div>
+                            </div>
 
                             {% if patient.secondary_diagnoses %}
-                            <h6>Secondary Diagnoses</h6>
-                            <p>{{ patient.secondary_diagnoses }}</p>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-list-ul text-info me-2"></i>
+                                    <h6 class="mb-0 fw-bold">Secondary Diagnoses</h6>
+                                </div>
+                                <div class="bg-light p-3 rounded-3">
+                                    {{ patient.secondary_diagnoses }}
+                                </div>
+                            </div>
                             {% endif %}
 
                             {% if patient.comorbidities %}
-                            <h6>Comorbidities</h6>
-                            <p>{{ patient.comorbidities }}</p>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                    <h6 class="mb-0 fw-bold">Comorbidities</h6>
+                                </div>
+                                <div class="bg-light p-3 rounded-3">
+                                    {{ patient.comorbidities }}
+                                </div>
+                            </div>
                             {% endif %}
                         </div>
-                        <div class="col-md-6">
-                            <h6>Current Treatments</h6>
-                            <p>{{ patient.current_treatments|default:"None recorded" }}</p>
+                        
+                        <div>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-pills text-success me-2"></i>
+                                    <h6 class="mb-0 fw-bold">Current Treatments</h6>
+                                </div>
+                                <div class="bg-light p-3 rounded-3">
+                                    {{ patient.current_treatments|default:"<em>None recorded</em>" }}
+                                </div>
+                            </div>
 
-                            <h6>Treatment History</h6>
-                            <p>{{ patient.treatment_history|default:"None recorded" }}</p>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-history text-secondary me-2"></i>
+                                    <h6 class="mb-0 fw-bold">Treatment History</h6>
+                                </div>
+                                <div class="bg-light p-3 rounded-3">
+                                    {{ patient.treatment_history|default:"<em>None recorded</em>" }}
+                                </div>
+                            </div>
 
-                            <h6>Medication Adherence</h6>
-                            <p>{{ patient.medication_adherence|default:"Not specified" }}</p>
+                            <div class="mb-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-chart-line text-primary me-2"></i>
+                                    <h6 class="mb-0 fw-bold">Medication Adherence</h6>
+                                </div>
+                                <div class="text-center">
+                                    {% if patient.medication_adherence == "Excellent" %}
+                                        <span class="status-badge badge-excellent">
+                                            <i class="fas fa-check-circle me-1"></i>Excellent
+                                        </span>
+                                    {% elif patient.medication_adherence == "Good" %}
+                                        <span class="status-badge badge-good">
+                                            <i class="fas fa-thumbs-up me-1"></i>Good
+                                        </span>
+                                    {% elif patient.medication_adherence == "Fair" %}
+                                        <span class="status-badge badge-fair">
+                                            <i class="fas fa-minus-circle me-1"></i>Fair
+                                        </span>
+                                    {% elif patient.medication_adherence == "Poor" %}
+                                        <span class="status-badge badge-poor">
+                                            <i class="fas fa-times-circle me-1"></i>Poor
+                                        </span>
+                                    {% else %}
+                                        <span class="status-badge bg-light text-dark">
+                                            <i class="fas fa-question-circle me-1"></i>Not specified
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -195,6 +427,130 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Additional Information Row -->
+<div class="row g-4 mb-4">
+    <!-- Insurance & Access Card -->
+    <div class="col-lg-6">
+        <div class="card info-card insurance-card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Insurance & Access</h5>
+            </div>
+            <div class="card-body">
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-credit-card me-2"></i>Insurance Type</span>
+                    <span class="info-value">
+                        {% if patient.insurance_type %}
+                            <span class="badge bg-primary">{{ patient.insurance_type }}</span>
+                        {% else %}
+                            <span class="text-muted">Not specified</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-pills me-2"></i>Medication Access</span>
+                    <span class="info-value">
+                        {% if patient.medication_access == "Excellent" %}
+                            <span class="status-badge badge-excellent">
+                                <i class="fas fa-check-circle me-1"></i>Excellent
+                            </span>
+                        {% elif patient.medication_access == "Good" %}
+                            <span class="status-badge badge-good">
+                                <i class="fas fa-thumbs-up me-1"></i>Good
+                            </span>
+                        {% elif patient.medication_access == "Limited" %}
+                            <span class="status-badge badge-fair">
+                                <i class="fas fa-exclamation-triangle me-1"></i>Limited
+                            </span>
+                        {% elif patient.medication_access == "Poor" %}
+                            <span class="status-badge badge-poor">
+                                <i class="fas fa-times-circle me-1"></i>Poor
+                            </span>
+                        {% else %}
+                            <span class="status-badge bg-light text-dark">
+                                <i class="fas fa-question-circle me-1"></i>Not specified
+                            </span>
+                        {% endif %}
+                    </span>
+                </div>
+                {% if patient.risk_factors %}
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-exclamation-triangle me-2"></i>Risk Factors</span>
+                    <div class="info-value text-start">
+                        <div class="bg-light p-3 rounded-3 mt-2">
+                            {{ patient.risk_factors }}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if patient.family_history %}
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-users me-2"></i>Family History</span>
+                    <div class="info-value text-start">
+                        <div class="bg-light p-3 rounded-3 mt-2">
+                            {{ patient.family_history }}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Healthcare Utilization Card -->
+    <div class="col-lg-6">
+        <div class="card info-card">
+            <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Healthcare Utilization</h5>
+            </div>
+            <div class="card-body">
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check me-2"></i>Visit Frequency</span>
+                    <span class="info-value">
+                        <span class="badge bg-info">{{ patient.visit_frequency|default:"Not specified" }}</span>
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-ambulance me-2"></i>Emergency Visits (6m)</span>
+                    <span class="info-value">
+                        {% if patient.emergency_visits_6m > 3 %}
+                            <span class="badge bg-danger">{{ patient.emergency_visits_6m }}</span>
+                        {% elif patient.emergency_visits_6m > 1 %}
+                            <span class="badge bg-warning">{{ patient.emergency_visits_6m }}</span>
+                        {% else %}
+                            <span class="badge bg-success">{{ patient.emergency_visits_6m|default:0 }}</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-hospital me-2"></i>Hospitalizations (6m)</span>
+                    <span class="info-value">
+                        {% if patient.hospitalizations_6m > 2 %}
+                            <span class="badge bg-danger">{{ patient.hospitalizations_6m }}</span>
+                        {% elif patient.hospitalizations_6m > 0 %}
+                            <span class="badge bg-warning">{{ patient.hospitalizations_6m }}</span>
+                        {% else %}
+                            <span class="badge bg-success">{{ patient.hospitalizations_6m|default:0 }}</span>
+                        {% endif %}
+                    </span>
+                </div>
+                {% if patient.last_visit_date %}
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock me-2"></i>Last Visit</span>
+                    <span class="info-value">{{ patient.last_visit_date }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EMR Data and Outcomes Section -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="section-title">Clinical Data & Outcomes</div>
     </div>
 </div>
 
@@ -321,38 +677,42 @@
 
 <!-- EMR Data Points -->
 {% if emr_data %}
-<div class="row mb-4">
+<div class="row g-4 mb-4">
     <div class="col-12">
-        <div class="card">
+        <div class="card info-card emr-card">
             <div class="card-header">
-                <h5 class="mb-0">EMR Data Points</h5>
+                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>EMR Data Points</h5>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
+                    <table class="table table-hover">
+                        <thead class="table-light">
                             <tr>
-                                <th>Date</th>
-                                <th>Type</th>
-                                <th>Metric</th>
-                                <th>Value</th>
-                                <th>Unit</th>
-                                <th>Status</th>
+                                <th><i class="fas fa-calendar me-1"></i>Date</th>
+                                <th><i class="fas fa-tag me-1"></i>Type</th>
+                                <th><i class="fas fa-heartbeat me-1"></i>Metric</th>
+                                <th><i class="fas fa-chart-bar me-1"></i>Value</th>
+                                <th><i class="fas fa-ruler me-1"></i>Unit</th>
+                                <th><i class="fas fa-check-circle me-1"></i>Status</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for data_point in emr_data %}
                             <tr>
-                                <td>{{ data_point.date_recorded }}</td>
-                                <td>{{ data_point.get_data_type_display }}</td>
-                                <td>{{ data_point.metric_name }}</td>
-                                <td>{{ data_point.value }}</td>
+                                <td><span class="badge bg-light text-dark">{{ data_point.date_recorded }}</span></td>
+                                <td><span class="badge bg-primary">{{ data_point.get_data_type_display }}</span></td>
+                                <td class="fw-semibold">{{ data_point.metric_name }}</td>
+                                <td class="fw-bold text-primary">{{ data_point.value }}</td>
                                 <td>{{ data_point.unit|default:"-" }}</td>
                                 <td>
                                     {% if data_point.is_abnormal %}
-                                        <span class="badge bg-warning">Abnormal</span>
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>Abnormal
+                                        </span>
                                     {% else %}
-                                        <span class="badge bg-success">Normal</span>
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>Normal
+                                        </span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -368,52 +728,73 @@
 
 <!-- Patient Outcomes -->
 {% if outcomes %}
-<div class="row mb-4">
+<div class="row g-4 mb-4">
     <div class="col-12">
-        <div class="card">
+        <div class="card info-card treatment-card">
             <div class="card-header">
-                <h5 class="mb-0">Treatment Outcomes</h5>
+                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Treatment Outcomes</h5>
             </div>
             <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Treatment</th>
-                                <th>Outcome</th>
-                                <th>Duration</th>
-                                <th>Side Effects</th>
-                                <th>Notes</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for outcome in outcomes %}
-                            <tr>
-                                <td>{{ outcome.outcome_date }}</td>
-                                <td>{{ outcome.treatment }}</td>
-                                <td>
-                                    <span class="badge 
-                                        {% if outcome.outcome == 'IMPROVED' %}bg-success
-                                        {% elif outcome.outcome == 'STABLE' %}bg-info
-                                        {% elif outcome.outcome == 'DETERIORATED' %}bg-danger
-                                        {% else %}bg-secondary{% endif %}">
-                                        {{ outcome.get_outcome_display }}
-                                    </span>
-                                </td>
-                                <td>
-                                    {% if outcome.duration_months %}
-                                        {{ outcome.duration_months }} months
-                                    {% else %}
-                                        -
-                                    {% endif %}
-                                </td>
-                                <td>{{ outcome.side_effects|default:"None" }}</td>
-                                <td>{{ outcome.notes|default:"-" }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <div class="row g-3">
+                    {% for outcome in outcomes %}
+                    <div class="col-lg-6 col-md-12">
+                        <div class="treatment-outcome-card bg-light p-3 rounded-3 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="mb-0 text-primary">
+                                    <i class="fas fa-pills me-2"></i>{{ outcome.treatment }}
+                                </h6>
+                                <span class="badge 
+                                    {% if outcome.outcome == 'IMPROVED' %}bg-success
+                                    {% elif outcome.outcome == 'STABLE' %}bg-info
+                                    {% elif outcome.outcome == 'DETERIORATED' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ outcome.get_outcome_display }}
+                                </span>
+                            </div>
+                            
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <div class="info-item">
+                                        <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                        <strong>Date:</strong>
+                                    </div>
+                                    <div class="ps-4">{{ outcome.outcome_date }}</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="info-item">
+                                        <i class="fas fa-clock text-primary me-2"></i>
+                                        <strong>Duration:</strong>
+                                    </div>
+                                    <div class="ps-4">
+                                        {% if outcome.duration_months %}
+                                            {{ outcome.duration_months }} months
+                                        {% else %}
+                                            Not specified
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="info-item mb-2">
+                                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                    <strong>Side Effects:</strong>
+                                </div>
+                                <div class="ps-4 text-muted">{{ outcome.side_effects|default:"None reported" }}</div>
+                            </div>
+
+                            {% if outcome.notes %}
+                            <div class="mb-0">
+                                <div class="info-item mb-2">
+                                    <i class="fas fa-sticky-note text-info me-2"></i>
+                                    <strong>Notes:</strong>
+                                </div>
+                                <div class="ps-4 text-muted small">{{ outcome.notes }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -423,25 +804,45 @@
 
 <!-- Cluster Memberships -->
 {% if cluster_memberships %}
-<div class="row mb-4">
+<div class="row g-4 mb-4">
     <div class="col-12">
-        <div class="card">
+        <div class="card info-card cluster-card">
             <div class="card-header">
-                <h5 class="mb-0">Patient Clusters</h5>
+                <h5 class="mb-0"><i class="fas fa-project-diagram me-2"></i>Patient Clusters</h5>
             </div>
             <div class="card-body">
-                <div class="row">
+                <div class="row g-3">
                     {% for membership in cluster_memberships %}
-                    <div class="col-md-6 mb-3">
-                        <div class="card border-primary">
-                            <div class="card-body">
-                                <h6 class="card-title">{{ membership.cluster.name }}</h6>
-                                <p class="card-text">{{ membership.cluster.description }}</p>
-                                <small class="text-muted">
-                                    Similarity Score: {{ membership.similarity_score|floatformat:2 }}<br>
-                                    Type: {{ membership.cluster.get_cluster_type_display }}<br>
-                                    Assigned: {{ membership.assigned_date }}
-                                </small>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="cluster-card bg-gradient p-4 rounded-3 border border-primary h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h6 class="cluster-title text-primary mb-0">
+                                    <i class="fas fa-users me-2"></i>{{ membership.cluster.name }}
+                                </h6>
+                                <span class="similarity-score badge bg-primary">
+                                    {{ membership.similarity_score|floatformat:1 }}%
+                                </span>
+                            </div>
+                            
+                            <div class="cluster-description mb-3 text-muted">
+                                <i class="fas fa-info-circle me-2"></i>{{ membership.cluster.description }}
+                            </div>
+
+                            <div class="cluster-meta">
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <div class="meta-item">
+                                            <i class="fas fa-tag text-info me-1"></i>
+                                            <span class="badge bg-info">{{ membership.cluster.get_cluster_type_display }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="meta-item">
+                                            <i class="fas fa-calendar text-success me-1"></i>
+                                            <small class="text-muted">{{ membership.assigned_date }}</small>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

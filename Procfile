@@ -1,1 +1,0 @@
-web: gunicorn providerpulse.wsgi --log-file -
