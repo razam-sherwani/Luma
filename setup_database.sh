@@ -1,8 +1,8 @@
 #!/bin/bash
-# ProviderPulse Complete Setup Script for Main Branch
+# Pulse Complete Setup Script for Main Branch
 # Run this to get the exact same database as the main development environment
 
-echo "🚀 ProviderPulse Complete Setup Starting..."
+echo "🚀 Pulse Complete Setup Starting..."
 echo "================================================"
 
 # Check if on main branch

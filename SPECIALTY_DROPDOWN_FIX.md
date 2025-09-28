@@ -56,7 +56,7 @@ specialties = [item['specialty'] for item in specialty_data]
    python manage.py runserver
    ```
 
-2. **Login to ProviderPulse:**
+2. **Login to Pulse:**
    - URL: http://127.0.0.1:8000/accounts/login/
    - Use any HCP credentials from `hcp_credentials.txt`
    - Example: `melanie.medina` / `WIyXBWp4`

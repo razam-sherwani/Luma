@@ -1,5 +1,5 @@
 """
-WSGI config for providerpulse project.
+WSGI config for Pulse project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

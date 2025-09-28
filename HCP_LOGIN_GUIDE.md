@@ -1,4 +1,4 @@
-# 🔑 Quick Login Reference - ProviderPulse HCP Accounts
+# 🔑 Quick Login Reference - Pulse HCP Accounts
 
 ## Sample HCP Login Credentials
 

@@ -1,4 +1,4 @@
-# 🚀 ProviderPulse Database Setup Guide - Main Branch
+# 🚀 Pulse Database Setup Guide - Main Branch
 
 ## Complete Setup for Teammates
 

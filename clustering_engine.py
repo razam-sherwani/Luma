@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-AI-powered clustering and drug recommendation engine for ProviderPulse
+AI-powered clustering and drug recommendation engine for Pulse
 Uses scikit-learn for patient clustering and similarity analysis
 """
 

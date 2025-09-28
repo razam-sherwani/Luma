@@ -2,7 +2,7 @@
 
 ## 📖 Overview
 
-The **Medical Research Feature** in ProviderPulse automatically provides personalized, up-to-date medical research articles tailored to your medical specialty. It saves you time by delivering the most relevant studies, breakthroughs, and clinical findings directly to your dashboard.
+The **Medical Research Feature** in Pulse automatically provides personalized, up-to-date medical research articles tailored to your medical specialty. It saves you time by delivering the most relevant studies, breakthroughs, and clinical findings directly to your dashboard.
 
 ---
 
@@ -28,7 +28,7 @@ The **Medical Research Feature** in ProviderPulse automatically provides persona
 ## 🚀 How to Access the Research Feature
 
 ### **From HCP Dashboard**
-1. **Login** to your ProviderPulse account
+1. **Login** to your Pulse account
 2. Navigate to your **HCP Dashboard**
 3. Look for the **"🔬 Research Updates"** card on the right side
 4. Click the **"Research"** button in the top header for full access

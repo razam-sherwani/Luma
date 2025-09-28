@@ -3,7 +3,7 @@
 ## 🚀 Getting Started in 3 Steps
 
 ### **Step 1: Access the Feature**
-1. **Login** to ProviderPulse
+1. **Login** to Pulse
 2. Go to your **Dashboard**  
 3. Click the **"Research"** button in the header OR
 4. Look for the **"🔬 Research Updates"** card and click **"View All Research"**
@@ -25,7 +25,7 @@
 ## 📱 Navigation Map
 
 ```
-ProviderPulse Dashboard
+Pulse Dashboard
 ├── 🔬 Research Button (Header)
 │   └── Research Dashboard
 │       ├── Statistics Overview
