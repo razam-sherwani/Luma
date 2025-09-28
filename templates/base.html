@@ -91,8 +91,10 @@
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="{% url 'home' %}" class="flex items-center space-x-3 group">
-                        <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-all duration-300 shadow-xl">
-                            <i class="fas fa-heartbeat text-white text-xl"></i>
+                        <div class="w-12 h-12 gradient-primary rounded-full flex items-center justify-center transform group-hover:scale-110 transition-all duration-300 shadow-xl relative">
+                            <i class="fas fa-moon text-white text-2xl"></i>
+                            <i class="fas fa-cloud text-white text-xs absolute top-1 right-1 opacity-70"></i>
+                            <i class="fas fa-cloud text-white text-xs absolute bottom-1 left-1 opacity-60"></i>
                         </div>
                         <div>
                             <span class="text-2xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -207,8 +209,10 @@
                 <!-- Logo & Description -->
                 <div class="md:col-span-2">
                     <div class="flex items-center space-x-3 mb-4">
-                        <div class="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center">
-                            <i class="fas fa-heartbeat text-white"></i>
+                        <div class="w-10 h-10 gradient-primary rounded-full flex items-center justify-center relative">
+                            <i class="fas fa-moon text-white text-lg"></i>
+                            <i class="fas fa-cloud text-white opacity-70" style="font-size: 0.5rem; position: absolute; top: 0.25rem; right: 0.25rem;"></i>
+                            <i class="fas fa-cloud text-white opacity-60" style="font-size: 0.5rem; position: absolute; bottom: 0.25rem; left: 0.25rem;"></i>
                         </div>
                         <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                             Luma
