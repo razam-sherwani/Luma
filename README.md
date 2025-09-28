@@ -1,6 +1,6 @@
-# ProviderPulse - The Intelligent Engagement Platform
+# Luma - The Intelligent Engagement Platform
 
-ProviderPulse is an intelligent dashboard that acts as a co-pilot for healthcare engagement managers. By simulating insights from Electronic Medical Records (EMRs) and tracking the latest medical research, the platform generates prioritized, actionable alerts to help healthcare reps know exactly who to contact, what to talk about, and why it's critically relevant today.
+Luma is an intelligent dashboard that acts as a co-pilot for healthcare engagement managers. By simulating insights from Electronic Medical Records (EMRs) and tracking the latest medical research, the platform generates prioritized, actionable alerts to help healthcare reps know exactly who to contact, what to talk about, and why it's critically relevant today.
 
 ## Features
 
@@ -22,8 +22,8 @@ ProviderPulse is an intelligent dashboard that acts as a co-pilot for healthcare
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/razam-sherwani/ProviderPulse.git
-   cd ProviderPulse
+   git clone https://github.com/razam-sherwani/Luma.git
+   cd Luma
    ```
 
 2. **Install dependencies** (optional: use virtual environment)
@@ -139,7 +139,7 @@ The `seed.py` script creates the following sample data:
 
 ## Usage
 
-1. **Landing Page**: Visit the homepage to learn about ProviderPulse
+1. **Landing Page**: Visit the homepage to learn about Luma
 2. **Sign Up/Login**: Create an account or sign in to access your dashboard
 3. **Dashboard**: View three key sections:
    - **Overdue Engagements**: HCPs not contacted in 30+ days
@@ -159,7 +159,7 @@ The `seed.py` script creates the following sample data:
 
 ## UI & Styling
 
-ProviderPulse uses **Tailwind CSS 3.4.0** for modern, responsive design with beautiful glassmorphism effects and gradient styling.
+Luma uses **Tailwind CSS 3.4.0** for modern, responsive design with beautiful glassmorphism effects and gradient styling.
 
 ### Development Workflow
 
@@ -198,7 +198,7 @@ The platform includes custom CSS components defined in `static/css/input.css`:
 ### Tailwind Configuration
 
 Custom configuration in `tailwind.config.js` includes:
-- ProviderPulse brand colors
+- Luma brand colors
 - Custom gradient utilities
 - Enhanced animation keyframes
 - Typography scale optimization
@@ -206,14 +206,14 @@ Custom configuration in `tailwind.config.js` includes:
 ## Project Structure
 
 ```
-ProviderPulse/
+Luma/
 ├── core/                   # Main app with models and dashboard views
 ├── landing/                # Landing page app
 ├── accounts/               # User authentication app
 ├── templates/              # HTML templates
 ├── seed.py                 # Database seeding script
 ├── manage.py              # Django management script
-└── providerpulse/         # Project settings
+└── Luma/         # Project settings
 ```
 
 ## Resetting the Database

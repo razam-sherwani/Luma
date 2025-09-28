@@ -1,8 +1,8 @@
 @echo off
-REM ProviderPulse Complete Setup Script for Main Branch
+REM Pulse Complete Setup Script for Main Branch
 REM Run this to get the exact same database as the main development environment
 
-echo 🚀 ProviderPulse Complete Setup Starting...
+echo 🚀 Pulse Complete Setup Starting...
 echo ================================================
 echo.
 
@@ -71,7 +71,7 @@ echo ============================================
 echo 🎉 SETUP COMPLETE!
 echo ============================================
 echo.
-echo Your ProviderPulse database is now fully populated with:
+echo Your Pulse database is now fully populated with:
 echo - 50 Healthcare Providers with real specialties
 echo - 15,285+ Anonymized Patients
 echo - 227 AI-Generated Patient Clusters  

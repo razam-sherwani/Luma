@@ -52,7 +52,7 @@ class Command(BaseCommand):
         """Create a summary of the exported data"""
         summary = {
             'export_date': datetime.now().isoformat(),
-            'description': 'ProviderPulse sample database export',
+            'description': 'Pulse sample database export',
             'data_files': [
                 'users.json - User accounts',
                 'user_profiles.json - User role profiles',
@@ -78,7 +78,7 @@ class Command(BaseCommand):
         }
         
         with open(f'{data_dir}/README.md', 'w') as f:
-            f.write(f"# ProviderPulse Sample Data\n\n")
+            f.write(f"# Pulse Sample Data\n\n")
             f.write(f"Exported on: {summary['export_date']}\n\n")
             f.write("## Files Included\n\n")
             for file_desc in summary['data_files']:

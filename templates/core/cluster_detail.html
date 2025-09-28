@@ -43,7 +43,7 @@
                     <tr>
                         <td><strong>Success Rate:</strong></td>
                         <td>
-                            <span class="badge bg-success">{{ cluster.success_rate|floatformat:1 }}%</span>
+                            <span class="badge bg-success">{{ cluster.success_rate_percentage }}%</span>
                         </td>
                     </tr>
                     <tr>
@@ -144,7 +144,7 @@
                                 <div class="card-body">
                                     <p class="card-text">
                                         <strong>Indication:</strong> {{ rec.indication }}<br>
-                                        <strong>Success Rate:</strong> {{ rec.success_rate|floatformat:1 }}%<br>
+                                        <strong>Success Rate:</strong> {{ rec.success_rate_percentage }}%<br>
                                         <strong>Evidence Level:</strong> {{ rec.evidence_level }}<br>
                                         <strong>Patient Count:</strong> {{ rec.patient_count }} similar patients
                                     </p>

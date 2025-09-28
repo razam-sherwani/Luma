@@ -9,7 +9,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // ProviderPulse brand colors
+        // Luma brand colors
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}ProviderPulse - The Intelligent Engagement Platform{% endblock %}</title>
+    <title>{% block title %}Luma - The Intelligent Engagement Platform{% endblock %}</title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -91,12 +91,14 @@
                 <!-- Logo -->
                 <div class="flex items-center">
                     <a href="{% url 'home' %}" class="flex items-center space-x-3 group">
-                        <div class="w-12 h-12 gradient-primary rounded-xl flex items-center justify-center transform group-hover:scale-110 transition-all duration-300 shadow-xl">
-                            <i class="fas fa-heartbeat text-white text-xl"></i>
+                        <div class="w-12 h-12 gradient-primary rounded-full flex items-center justify-center transform group-hover:scale-110 transition-all duration-300 shadow-xl relative">
+                            <i class="fas fa-moon text-white text-2xl"></i>
+                            <i class="fas fa-cloud text-white text-xs absolute top-1 right-1 opacity-70"></i>
+                            <i class="fas fa-cloud text-white text-xs absolute bottom-1 left-1 opacity-60"></i>
                         </div>
                         <div>
                             <span class="text-2xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                ProviderPulse
+                                Luma
                             </span>
                             <div class="text-xs text-gray-500 font-medium -mt-1">Intelligence Platform</div>
                         </div>
@@ -106,6 +108,22 @@
                 <!-- Navigation Links -->
                 <div class="flex items-center space-x-2">
                     {% if user.is_authenticated %}
+                        <!-- Patient Database Button - Context Aware -->
+                        {% if request.resolver_match.url_name != 'home' %}
+                            {% if user.userprofile.role == 'HCR' %}
+                                <a href="{% url 'patient_database' %}" class="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium rounded-xl hover:bg-white/50 transition-all duration-200 flex items-center space-x-2">
+                                    <i class="fas fa-database"></i>
+                                    <span>Patient Database</span>
+                                </a>
+                            {% elif user.userprofile.role == 'HCP' %}
+                                <a href="{% url 'patient_database' %}" class="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium rounded-xl hover:bg-white/50 transition-all duration-200 flex items-center space-x-2">
+                                    <i class="fas fa-users"></i>
+                                    <span>My Patients</span>
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                        
+                        <!-- Dashboard Button -->
                         <a href="{% url 'dashboard' %}" class="px-4 py-2 text-gray-700 hover:text-blue-600 font-medium rounded-xl hover:bg-white/50 transition-all duration-200 flex items-center space-x-2">
                             <i class="fas fa-tachometer-alt"></i>
                             <span>Dashboard</span>
@@ -129,7 +147,7 @@
                             </div>
                         </div>
                     {% else %}
-                        <a href="{% url 'login' %}" class="px-6 py-2 text-gray-700 hover:text-blue-600 font-medium rounded-xl hover:bg-white/50 transition-all duration-200 flex items-center space-x-2">
+                        <a href="{% url 'login' %}" class="px-6 py-2 bg-white text-gray-700 font-semibold rounded-xl border-[1.5px] border-gray-300 hover:border-blue-500 hover:text-white hover:bg-blue-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Login</span>
                         </a>
@@ -191,11 +209,13 @@
                 <!-- Logo & Description -->
                 <div class="md:col-span-2">
                     <div class="flex items-center space-x-3 mb-4">
-                        <div class="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center">
-                            <i class="fas fa-heartbeat text-white"></i>
+                        <div class="w-10 h-10 gradient-primary rounded-full flex items-center justify-center relative">
+                            <i class="fas fa-moon text-white text-lg"></i>
+                            <i class="fas fa-cloud text-white opacity-70" style="font-size: 0.5rem; position: absolute; top: 0.25rem; right: 0.25rem;"></i>
+                            <i class="fas fa-cloud text-white opacity-60" style="font-size: 0.5rem; position: absolute; bottom: 0.25rem; left: 0.25rem;"></i>
                         </div>
                         <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                            ProviderPulse
+                            Luma
                         </span>
                     </div>
                     <p class="text-gray-600 mb-4 leading-relaxed">
@@ -238,7 +258,7 @@
             </div>
             
             <div class="border-t border-white/20 pt-8 text-center">
-                <p class="text-gray-600">&copy; 2025 ProviderPulse. All rights reserved.</p>
+                <p class="text-gray-600">&copy; 2025 Luma. All rights reserved.</p>
                 <p class="text-sm text-gray-500 mt-2">The Intelligent Healthcare Engagement Platform</p>
             </div>
         </div>

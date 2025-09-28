@@ -1,15 +1,15 @@
-# Tailwind CSS Setup for ProviderPulse
+# Tailwind CSS Setup for Pulse
 
-This document explains how Tailwind CSS is configured and how to work with it in the ProviderPulse Django application.
+This document explains how Tailwind CSS is configured and how to work with it in the Pulse Django application.
 
 ## 🎨 Overview
 
-ProviderPulse uses Tailwind CSS 3.4+ with custom configurations and components for a professional healthcare interface.
+Pulse uses Tailwind CSS 3.4+ with custom configurations and components for a professional healthcare interface.
 
 ## 📁 File Structure
 
 ```
-ProviderPulse/
+Pulse/
 ├── package.json              # Node.js dependencies and scripts
 ├── tailwind.config.js        # Tailwind configuration
 ├── static/css/

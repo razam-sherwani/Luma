@@ -3,12 +3,12 @@
 ## Windows Task Scheduler (Recommended for Windows)
 
 1. **Open Task Scheduler** (search "Task Scheduler" in Start menu)
-2. **Create Basic Task** > Name: "ProviderPulse Research Update"
+2. **Create Basic Task** > Name: "Pulse Research Update"
 3. **Trigger**: Daily at 6:00 AM
 4. **Action**: Start a program
    - **Program**: `C:\path\to\your\python.exe`
-   - **Arguments**: `C:\Users\Razam\Documents\GitHub\ProviderPulse\automated_research_update.py`
-   - **Start in**: `C:\Users\Razam\Documents\GitHub\ProviderPulse`
+   - **Arguments**: `C:\Users\Razam\Documents\GitHub\Pulse\automated_research_update.py`
+   - **Start in**: `C:\Users\Razam\Documents\GitHub\Pulse`
 
 ## PowerShell Script Alternative
 
@@ -16,7 +16,7 @@ Create a PowerShell script to run the update:
 
 ```powershell
 # research_update.ps1
-Set-Location "C:\Users\Razam\Documents\GitHub\ProviderPulse"
+Set-Location "C:\Users\Razam\Documents\GitHub\Pulse"
 python automated_research_update.py
 ```
 

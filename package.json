@@ -1,7 +1,7 @@
 {
-  "name": "providerpulse",
+  "name": "luma",
   "version": "1.0.0",
-  "description": "ProviderPulse - Django app with Tailwind CSS",
+  "description": "Luma - Django app with Tailwind CSS",
   "main": "index.js",
   "scripts": {
     "build-css": "tailwindcss -i ./static/css/input.css -o ./static/css/output.css --watch",

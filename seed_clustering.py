@@ -637,7 +637,7 @@ def main():
     print("💊 Drug Recommendations - Evidence-based therapy suggestions")
     print("🎯 Cohort-Cluster Network - Advanced visualization")
     
-    print(f"\nYour ProviderPulse platform now includes advanced AI clustering!")
+    print(f"\nYour Pulse platform now includes advanced AI clustering!")
     print("Visit http://127.0.0.1:8000/dashboard/patients/ to explore the new features.")
 
 if __name__ == '__main__':

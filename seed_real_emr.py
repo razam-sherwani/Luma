@@ -307,7 +307,7 @@ def create_actionable_insights(hcps, cohorts):
 
 def main():
     """Main function to populate database with real EMR data"""
-    print("Starting ProviderPulse database population with real EMR data...")
+    print("Starting Pulse database population with real EMR data...")
     
     # Load real EMR data
     data = load_real_emr_data()
@@ -338,7 +338,7 @@ def main():
     print(f"✅ Research Updates: {len(research_updates)}")
     print(f"✅ HCP-Cohort Relationships: {len(relationships)}")
     print(f"✅ Actionable Insights: {len(insights)}")
-    print("\nYour ProviderPulse platform is now populated with real EMR data!")
+    print("\nYour Pulse platform is now populated with real EMR data!")
     print("You can now test the network visualization with realistic healthcare data.")
 
 if __name__ == '__main__':

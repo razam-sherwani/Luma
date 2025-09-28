@@ -1,5 +1,5 @@
 """
-System Validation and Error Checking for ProviderPulse Research System
+System Validation and Error Checking for Pulse Research System
 """
 from django.core.management.base import BaseCommand
 from django.core.exceptions import ValidationError

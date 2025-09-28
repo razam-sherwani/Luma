@@ -119,7 +119,7 @@ class Command(BaseCommand):
         # 10. Show next steps
         self.stdout.write('\n🎯 HOW TO USE THIS FEATURE:')
         self.stdout.write('   1. Start Django server: python manage.py runserver')
-        self.stdout.write('   2. Login to ProviderPulse')
+        self.stdout.write('   2. Login to Pulse')
         self.stdout.write('   3. Navigate to Research Dashboard')
         self.stdout.write('   4. Explore personalized research articles')
         self.stdout.write('   5. Use filters to find specific content')

@@ -52,7 +52,7 @@ def create_hcp_user_accounts():
         user = User.objects.create_user(
             username=username,
             password=password,
-            email=f"{username}@providerpulse.demo",
+            email=f"{username}@Pulse.demo",
             first_name=hcp.name.replace('Dr. ', '').split()[0] if 'Dr. ' in hcp.name else hcp.name.split()[0],
             last_name=' '.join(hcp.name.replace('Dr. ', '').split()[1:]) if len(hcp.name.replace('Dr. ', '').split()) > 1 else ''
         )
@@ -84,7 +84,7 @@ def create_credentials_file(accounts):
     print("Creating credentials file...")
     
     with open('hcp_credentials.txt', 'w') as f:
-        f.write("ProviderPulse HCP Login Credentials\n")
+        f.write("Pulse HCP Login Credentials\n")
         f.write("=" * 50 + "\n\n")
         f.write("Use these credentials to log in as different HCPs:\n")
         f.write("URL: http://127.0.0.1:8000/accounts/login/\n\n")

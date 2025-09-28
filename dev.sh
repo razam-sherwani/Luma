@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# ProviderPulse Development Script
+# Pulse Development Script
 # This script starts both Django server and Tailwind CSS compiler in watch mode
 
-echo "🚀 Starting ProviderPulse Development Environment..."
+echo "🚀 Starting Pulse Development Environment..."
 
 # Colors for output
 GREEN='\033[0;32m'

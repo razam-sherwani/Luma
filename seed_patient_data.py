@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Comprehensive patient EMR data seeder for ProviderPulse
+Comprehensive patient EMR data seeder for Pulse
 Creates realistic patient data with EMR records for each HCP
 """
 
