@@ -43,7 +43,7 @@ Our database now contains authentic medical specialties from CMS data:
 
 ## Database Population Summary
 
-After running `python seed_real_emr.py`, your Pulse database contains:
+After running `python seed_real_emr.py`, your Luma database contains:
 
 ### Healthcare Providers (50 records)
 - Real names from CMS provider database
@@ -133,4 +133,4 @@ emr_data/
 └── summary.json       # Dataset summary and metadata
 ```
 
-This real EMR foundation makes Pulse a much more authentic and professional healthcare engagement platform for testing and demonstration purposes.
+This real EMR foundation makes Luma a much more authentic and professional healthcare engagement platform for testing and demonstration purposes.

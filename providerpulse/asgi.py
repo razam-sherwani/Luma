@@ -1,5 +1,5 @@
 """
-ASGI config for Pulse project.
+ASGI config for providerpulse project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
