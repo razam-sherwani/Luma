@@ -120,7 +120,7 @@
                             <div class="border-l-4 border-purple-500 pl-4 py-3 bg-purple-50 rounded-r-md">
                                 <h3 class="font-semibold text-gray-900 mb-2">🔬 Cluster Analysis</h3>
                                 <ul class="text-sm text-gray-700 space-y-1">
-                                    <li>{{ recommendation.cluster_evidence.success_rate|default:"N/A" }}% success rate</li>
+                                    <li>{{ recommendation.formatted_cluster_evidence.success_rate|default:"N/A" }}% success rate</li>
                                     <li>{{ recommendation.cluster_evidence.patient_count|default:"N/A" }} similar patients</li>
                                 </ul>
                             </div>

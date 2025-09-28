@@ -105,8 +105,19 @@ class TreatmentOutcome(models.Model):
     notes = models.TextField(blank=True)
     created_date = models.DateField(auto_now_add=True)
     
+    @property
+    def success_rate_percentage(self):
+        """Return success rate as a proper percentage (converts 0.7 to 70.0)"""
+        if self.success_rate is None:
+            return 0
+        # If the value is less than 1, assume it's a decimal that needs to be converted to percentage
+        if self.success_rate < 1.0:
+            return round(self.success_rate * 100, 1)
+        # Otherwise, assume it's already a percentage
+        return round(self.success_rate, 1)
+
     def __str__(self):
-        return f"{self.treatment_name} for {self.cohort.name} ({self.success_rate}% success)"
+        return f"{self.treatment_name} for {self.cohort.name} ({self.success_rate_percentage}% success)"
 
 class CohortRecommendation(models.Model):
     """Recommendations for HCPs based on patient cohort data"""
@@ -274,6 +285,17 @@ class PatientCluster(models.Model):
     created_date = models.DateField(auto_now_add=True)
     last_updated = models.DateField(auto_now=True)
     
+    @property
+    def success_rate_percentage(self):
+        """Return success rate as a proper percentage (converts 0.7 to 70.0)"""
+        if self.success_rate is None:
+            return 0
+        # If the value is less than 1, assume it's a decimal that needs to be converted to percentage
+        if self.success_rate < 1.0:
+            return round(self.success_rate * 100, 1)
+        # Otherwise, assume it's already a percentage
+        return round(self.success_rate, 1)
+    
     def __str__(self):
         return f"{self.name} ({self.patient_count} patients)"
 
@@ -336,8 +358,19 @@ class DrugRecommendation(models.Model):
     created_date = models.DateField(auto_now_add=True)
     is_reviewed = models.BooleanField(default=False)
     
+    @property
+    def success_rate_percentage(self):
+        """Return success rate as a proper percentage (converts 0.7 to 70.0)"""
+        if self.success_rate is None:
+            return 0
+        # If the value is less than 1, assume it's a decimal that needs to be converted to percentage
+        if self.success_rate < 1.0:
+            return round(self.success_rate * 100, 1)
+        # Otherwise, assume it's already a percentage
+        return round(self.success_rate, 1)
+
     def __str__(self):
-        return f"{self.drug_name} for {self.hcp.name} - {self.success_rate}% success"
+        return f"{self.drug_name} for {self.hcp.name} - {self.success_rate_percentage}% success"
 
 
 # New models for the research and messaging system
@@ -425,6 +458,23 @@ class IntelligentRecommendation(models.Model):
     response_date = models.DateTimeField(null=True, blank=True)
     hcp_response = models.TextField(blank=True)
     
+    @property
+    def formatted_cluster_evidence(self):
+        """Return cluster evidence with properly formatted success rate"""
+        if not self.cluster_evidence:
+            return self.cluster_evidence
+        
+        evidence = self.cluster_evidence.copy()
+        if 'success_rate' in evidence and evidence['success_rate'] is not None:
+            success_rate = evidence['success_rate']
+            # If the value is less than 1, assume it's a decimal that needs to be converted to percentage
+            if success_rate < 1.0:
+                evidence['success_rate'] = round(success_rate * 100, 1)
+            else:
+                evidence['success_rate'] = round(success_rate, 1)
+        
+        return evidence
+
     class Meta:
         ordering = ['-created_date']
     

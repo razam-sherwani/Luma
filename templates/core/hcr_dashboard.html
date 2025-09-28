@@ -37,9 +37,7 @@
             <a href="#research" class="btn btn-outline-secondary">
                 🔬 Research
             </a>
-            <a href="{% url 'patient_database' %}" class="btn btn-primary">
-                👥 Patient Database
-            </a>
+
         </div>
     </div>
 </div>
@@ -206,7 +204,7 @@
                                                 <span class="badge bg-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %}">
                                                     {{ rec.priority }}
                                                 </span>
-                                                <span class="badge bg-success">{{ rec.success_rate }}% Success</span>
+                                                <span class="badge bg-success">{{ rec.success_rate_percentage }}% Success</span>
                                                 <span class="badge bg-info">{{ rec.priority_score }} Score</span>
                                             </div>
                                         </div>
@@ -259,7 +257,7 @@
                                                 <span class="badge bg-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %}">
                                                     {{ rec.priority }}
                                                 </span>
-                                                <span class="badge bg-success">{{ rec.success_rate|floatformat:1 }}% Success</span>
+                                                <span class="badge bg-success">{{ rec.success_rate_percentage }}% Success</span>
                                             </div>
                                         </div>
                                         <div class="card-body">
@@ -316,7 +314,7 @@
                                 <small class="text-muted">{{ cluster.primary_diagnosis }} - {{ cluster.cluster_type }}</small>
                                 <div>
                                     <span class="badge bg-primary">{{ cluster.patient_count }} patients</span>
-                                    <span class="badge bg-success">{{ cluster.success_rate|floatformat:1 }}% success</span>
+                                    <span class="badge bg-success">{{ cluster.success_rate_percentage }}% success</span>
                                 </div>
                             </div>
                             {% if cluster.common_treatments %}

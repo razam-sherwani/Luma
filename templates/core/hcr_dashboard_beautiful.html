@@ -29,14 +29,6 @@
                             </h1>
                             <p class="text-lg text-gray-700 font-medium">Welcome back, {{ user.username }}!</p>
                             <p class="text-sm text-gray-600">Your intelligent co-pilot for HCP engagement and patient care optimization</p>
-                            
-                            <!-- Patient Database Button -->
-                            <div class="mt-4">
-                                <a href="{% url 'patient_database' %}" class="inline-flex items-center px-6 py-3 gradient-primary text-white font-semibold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300">
-                                    <i class="fas fa-database mr-2"></i>
-                                    👥 Patient Database
-                                </a>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -181,395 +173,6 @@
     </div>
 </div>
 
-<!-- Smart Recommendations Section - Full Width -->
-<div id="insights" class="bg-white/80 backdrop-blur-sm rounded-3xl border border-white/30 shadow-xl overflow-hidden mb-8">
-    <div class="bg-gradient-to-r from-red-500 to-pink-500 text-white p-4">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-brain text-white"></i>
-                </div>
-                <div>
-                    <h2 class="text-xl font-bold">Smart Recommendations</h2>
-                    <p class="text-red-100 text-sm">AI-generated insights for overdue HCPs and high-priority opportunities</p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <div class="px-2 py-1 bg-orange-500/80 rounded-full text-xs font-semibold">
-                    {{ overdue_hcps.count|default:3 }} Overdue
-                </div>
-                <div class="px-2 py-1 bg-white/20 rounded-full text-xs font-semibold">
-                    {{ actionable_insights.count|default:5 }} Active
-                </div>
-                <button onclick="toggleRecommendations()" class="px-3 py-1 bg-white/20 hover:bg-white/30 rounded-full text-xs font-semibold transition-colors duration-200">
-                    <i class="fas fa-chevron-up" id="recommendations-toggle"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-    <div class="p-4" id="recommendations-content">
-        <!-- Overdue HCP Recommendations Section -->
-        {% if overdue_hcps %}
-            <div class="mb-6">
-                <div class="flex items-center mb-4">
-                    <div class="w-2 h-6 bg-gradient-to-b from-orange-500 to-red-500 rounded-full mr-3"></div>
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-900">Overdue HCP Recommendations</h3>
-                        <p class="text-gray-600 text-xs">Auto-generated recommendations for HCPs not contacted in 30+ days</p>
-                    </div>
-                </div>
-                <div class="max-h-96 overflow-y-auto pr-2">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-                        {% for hcp in overdue_hcps %}
-                            <div class="group bg-gradient-to-br from-orange-50 to-red-50 rounded-xl border-l-3 border-orange-400 p-4 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
-                                <div class="flex items-start justify-between mb-3">
-                                    <div class="flex items-center space-x-2">
-                                        <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                                            <i class="fas fa-user-clock text-orange-600 text-sm"></i>
-                                        </div>
-                                        <div>
-                                            <h4 class="font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
-                                                {{ hcp.name|default:"Dr. Sarah Johnson" }}
-                                            </h4>
-                                            <p class="text-xs text-gray-600">{{ hcp.specialty|default:"Internal Medicine" }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex flex-col items-end space-y-1">
-                                        <span class="px-2 py-1 bg-orange-200 text-orange-800 text-xs font-bold rounded-full">
-                                            {{ hcp.days_overdue|default:45 }}d overdue
-                                        </span>
-                                        <span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full">
-                                            AUTO
-                                        </span>
-                                    </div>
-                                </div>
-                                
-                                <div class="bg-white/60 rounded-lg p-3 mb-3">
-                                    <h5 class="font-semibold text-gray-900 mb-1 flex items-center text-sm">
-                                        <i class="fas fa-lightbulb text-yellow-500 mr-1 text-xs"></i>
-                                        Recommended Action
-                                    </h5>
-                                    <p class="text-gray-700 text-xs leading-relaxed mb-2 line-clamp-3">
-                                        {{ hcp.auto_recommendation|default:"Schedule follow-up meeting to discuss recent treatment outcomes for diabetes patients. Review new SGLT-2 inhibitor data and potential patient candidates." }}
-                                    </p>
-                                    <div class="flex items-center text-xs text-gray-600">
-                                        <i class="fas fa-users mr-1"></i>
-                                        {{ hcp.patient_count|default:34 }} patients
-                                    </div>
-                                </div>
-                                
-                                <div class="flex items-center justify-between">
-                                    <div class="text-xs text-gray-600">
-                                        <span class="font-medium">Last:</span> {{ hcp.last_contact|default:"45d ago" }}
-                                    </div>
-                                    <div class="flex space-x-1">
-                                        <a href="{% url 'hcp_profile' hcp.id %}" 
-                                           class="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg text-xs transition-colors duration-200">
-                                            View
-                                        </a>
-                                        <a href="{% url 'generate_recommendation_page' %}?hcp_id={{ hcp.id }}" 
-                                           class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs transition-colors duration-200">
-                                            Create
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Divider -->
-            <div class="border-t border-gray-200 mb-4"></div>
-        {% endif %}
-        
-        <!-- Regular Actionable Insights Section -->
-        {% if actionable_insights %}
-            <div class="mb-4">
-                <div class="flex items-center mb-4">
-                    <div class="w-2 h-6 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full mr-3"></div>
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-900">Priority Insights</h3>
-                        <p class="text-gray-600 text-xs">High-value opportunities based on patient data analysis</p>
-                    </div>
-                </div>
-            </div>
-            <div class="max-h-96 overflow-y-auto pr-2">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {% for insight in actionable_insights %}
-                        <div class="group bg-gradient-to-br from-white/70 to-gray-50/70 rounded-xl border-l-3 border-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-400 p-4 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
-                            <div class="flex items-start justify-between mb-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 bg-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-100 rounded-lg flex items-center justify-center">
-                                        {% if insight.insight_type == 'MISSING_TREATMENT' %}
-                                            <i class="fas fa-pills text-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-600 text-sm"></i>
-                                        {% elif insight.insight_type == 'NEW_RESEARCH' %}
-                                            <i class="fas fa-microscope text-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-600 text-sm"></i>
-                                        {% elif insight.insight_type == 'PATIENT_COHORT' %}
-                                            <i class="fas fa-users text-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-600 text-sm"></i>
-                                        {% elif insight.insight_type == 'ENGAGEMENT_OVERDUE' %}
-                                            <i class="fas fa-clock text-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-600 text-sm"></i>
-                                        {% elif insight.insight_type == 'TREATMENT_GAP' %}
-                                            <i class="fas fa-exclamation-triangle text-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-600 text-sm"></i>
-                                        {% endif %}
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-gray-900 group-hover:text-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-600 transition-colors text-sm">
-                                            {{ insight.title|default:"High-Value Patient Cohort Identified" }}
-                                        </h4>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col items-end space-y-1">
-                                    <span class="px-2 py-1 bg-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-100 text-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-800 text-xs font-bold rounded-full">
-                                        {{ insight.priority_score|default:85 }}%
-                                    </span>
-                                    <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full">
-                                        {{ insight.patient_impact|default:23 }}p
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <p class="text-gray-700 mb-3 leading-relaxed text-xs line-clamp-3">
-                                {{ insight.description|default:"23 diabetes patients under Dr. Johnson's care show suboptimal HbA1c levels despite current treatment. Consider discussing SGLT-2 inhibitor addition based on recent cardiovascular outcome studies." }}
-                            </p>
-                            
-                            <div class="flex items-center justify-between">
-                                <div class="text-xs text-gray-600">
-                                    <span class="font-semibold">{{ insight.hcp.name|default:"Dr. Sarah Johnson" }}</span> - 
-                                    <span>{{ insight.hcp.specialty|default:"Endocrinology" }}</span>
-                                </div>
-                                <div class="flex space-x-1">
-                                    <a href="{% url 'hcp_profile' insight.hcp.id %}" 
-                                       class="px-3 py-1 text-white font-medium rounded-lg text-xs transition-colors duration-200 
-                                              {% if insight.priority_score >= 80 %}bg-red-500 hover:bg-red-600
-                                              {% elif insight.priority_score >= 60 %}bg-yellow-500 hover:bg-yellow-600
-                                              {% else %}bg-blue-500 hover:bg-blue-600{% endif %}">
-                                        View
-                                    </a>
-                                    <a href="{% url 'mark_insight_addressed' insight.id %}" 
-                                       class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg text-xs transition-colors duration-200">
-                                        Done
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-            </div>
-        {% else %}
-            <!-- Sample Overdue HCP Recommendations -->
-            <div class="mb-6">
-                <div class="flex items-center mb-4">
-                    <div class="w-2 h-6 bg-gradient-to-b from-orange-500 to-red-500 rounded-full mr-3"></div>
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-900">Overdue HCP Recommendations</h3>
-                        <p class="text-gray-600 text-xs">Auto-generated recommendations for HCPs not contacted in 30+ days</p>
-                    </div>
-                </div>
-                <div class="max-h-96 overflow-y-auto pr-2">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-                        <div class="group bg-gradient-to-br from-orange-50 to-red-50 rounded-xl border-l-3 border-orange-400 p-4 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
-                            <div class="flex items-start justify-between mb-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-user-clock text-orange-600 text-sm"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
-                                            Dr. Sarah Johnson
-                                        </h4>
-                                        <p class="text-xs text-gray-600">Endocrinology</p>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col items-end space-y-1">
-                                    <span class="px-2 py-1 bg-orange-200 text-orange-800 text-xs font-bold rounded-full">
-                                        45d overdue
-                                    </span>
-                                    <span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full">
-                                        AUTO
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <div class="bg-white/60 rounded-lg p-3 mb-3">
-                                <h5 class="font-semibold text-gray-900 mb-1 flex items-center text-sm">
-                                    <i class="fas fa-lightbulb text-yellow-500 mr-1 text-xs"></i>
-                                    Recommended Action
-                                </h5>
-                                <p class="text-gray-700 text-xs leading-relaxed mb-2 line-clamp-3">
-                                    Schedule follow-up meeting to discuss recent treatment outcomes for diabetes patients. Review new SGLT-2 inhibitor data and potential patient candidates.
-                                </p>
-                                <div class="flex items-center text-xs text-gray-600">
-                                    <i class="fas fa-users mr-1"></i>
-                                    34 patients
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center justify-between">
-                                <div class="text-xs text-gray-600">
-                                    <span class="font-medium">Last:</span> 45d ago
-                                </div>
-                                <div class="flex space-x-1">
-                                    <button class="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg text-xs transition-colors duration-200">
-                                        View
-                                    </button>
-                                    <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs transition-colors duration-200">
-                                        Create
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="group bg-gradient-to-br from-orange-50 to-red-50 rounded-xl border-l-3 border-orange-400 p-4 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
-                            <div class="flex items-start justify-between mb-3">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                                        <i class="fas fa-user-clock text-orange-600 text-sm"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
-                                            Dr. Michael Chen
-                                        </h4>
-                                        <p class="text-xs text-gray-600">Cardiology</p>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col items-end space-y-1">
-                                    <span class="px-2 py-1 bg-orange-200 text-orange-800 text-xs font-bold rounded-full">
-                                        38d overdue
-                                    </span>
-                                    <span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full">
-                                        AUTO
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <div class="bg-white/60 rounded-lg p-3 mb-3">
-                                <h5 class="font-semibold text-gray-900 mb-1 flex items-center text-sm">
-                                    <i class="fas fa-lightbulb text-yellow-500 mr-1 text-xs"></i>
-                                    Recommended Action
-                                </h5>
-                                <p class="text-gray-700 text-xs leading-relaxed mb-2 line-clamp-3">
-                                    Discuss recent cardiovascular outcome studies and their application to current patient population. Review lipid management protocols.
-                                </p>
-                                <div class="flex items-center text-xs text-gray-600">
-                                    <i class="fas fa-users mr-1"></i>
-                                    28 patients
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center justify-between">
-                                <div class="text-xs text-gray-600">
-                                    <span class="font-medium">Last:</span> 38d ago
-                                </div>
-                                <div class="flex space-x-1">
-                                    <button class="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg text-xs transition-colors duration-200">
-                                        View
-                                    </button>
-                                    <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs transition-colors duration-200">
-                                        Create
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Divider -->
-                <div class="border-t border-gray-200 mb-4"></div>
-            </div>
-            
-            <!-- Sample Priority Insights -->
-            <div class="mb-4">
-                <div class="flex items-center mb-4">
-                    <div class="w-2 h-6 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full mr-3"></div>
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-900">Priority Insights</h3>
-                        <p class="text-gray-600 text-xs">High-value opportunities based on patient data analysis</p>
-                    </div>
-                </div>
-            </div>
-            <div class="max-h-96 overflow-y-auto pr-2">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div class="group bg-gradient-to-br from-white/70 to-gray-50/70 rounded-xl border-l-3 border-red-400 p-4 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
-                        <div class="flex items-start justify-between mb-3">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-pills text-red-600 text-sm"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-gray-900 group-hover:text-red-600 transition-colors text-sm">
-                                        High-Value Patient Cohort Identified
-                                    </h4>
-                                </div>
-                            </div>
-                            <div class="flex flex-col items-end space-y-1">
-                                <span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-bold rounded-full">92%</span>
-                                <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full">23p</span>
-                            </div>
-                        </div>
-                        
-                        <p class="text-gray-700 mb-3 leading-relaxed text-xs line-clamp-3">
-                            23 diabetes patients under Dr. Rodriguez's care show suboptimal HbA1c levels despite current treatment. Consider discussing SGLT-2 inhibitor addition.
-                        </p>
-                        
-                        <div class="flex items-center justify-between">
-                            <div class="text-xs text-gray-600">
-                                <span class="font-semibold">Dr. Lisa Rodriguez</span> - <span>Endocrinology</span>
-                            </div>
-                            <div class="flex space-x-1">
-                                <button class="px-3 py-1 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg text-xs transition-colors duration-200">
-                                    View
-                                </button>
-                                <button class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg text-xs transition-colors duration-200">
-                                    Done
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="group bg-gradient-to-br from-white/70 to-gray-50/70 rounded-xl border-l-3 border-yellow-400 p-4 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
-                        <div class="flex items-start justify-between mb-3">
-                            <div class="flex items-center space-x-2">
-                                <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-microscope text-yellow-600 text-sm"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-gray-900 group-hover:text-yellow-600 transition-colors text-sm">
-                                        New Research Application Opportunity
-                                    </h4>
-                                </div>
-                            </div>
-                            <div class="flex flex-col items-end space-y-1">
-                                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded-full">78%</span>
-                                <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full">45p</span>
-                            </div>
-                        </div>
-                        
-                        <p class="text-gray-700 mb-3 leading-relaxed text-xs line-clamp-3">
-                            Recent study shows 40% reduction in cardiovascular events with new treatment protocol. Dr. Thompson's patient population matches study demographics perfectly.
-                        </p>
-                        
-                        <div class="flex items-center justify-between">
-                            <div class="text-xs text-gray-600">
-                                <span class="font-semibold">Dr. James Thompson</span> - <span>Cardiology</span>
-                            </div>
-                            <div class="flex space-x-1">
-                                <button class="px-3 py-1 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-lg text-xs transition-colors duration-200">
-                                    View
-                                </button>
-                                <button class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg text-xs transition-colors duration-200">
-                                    Done
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-    </div>
-</div>
-
-
-
 <!-- Intelligent Recommendations Section -->
 <div class="bg-white/80 backdrop-blur-sm rounded-3xl border border-white/30 shadow-xl overflow-hidden mb-8">
     <div class="bg-gradient-to-r from-green-600 to-blue-600 text-white p-6">
@@ -689,6 +292,382 @@
         </div>
     </div>
 </div>
+
+<!-- Priority Alerts & Insights Section - Full Width -->
+<div id="insights" class="bg-white/80 backdrop-blur-sm rounded-3xl border border-white/30 shadow-xl overflow-hidden mb-8">
+    <div class="bg-gradient-to-r from-red-500 to-pink-500 text-white p-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-brain text-white"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold">Priority Alerts & Insights</h2>
+                    <p class="text-red-100 text-sm">AI-generated insights for overdue HCPs and high-priority opportunities</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <div class="px-2 py-1 bg-orange-500/80 rounded-full text-xs font-semibold">
+                    {{ overdue_hcps.count|default:3 }} Overdue
+                </div>
+                <div class="px-2 py-1 bg-white/20 rounded-full text-xs font-semibold">
+                    {{ actionable_insights.count|default:5 }} Active
+                </div>
+                <button onclick="toggleRecommendations()" class="px-3 py-1 bg-white/20 hover:bg-white/30 rounded-full text-xs font-semibold transition-colors duration-200">
+                    <i class="fas fa-chevron-up" id="recommendations-toggle"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="p-4" id="recommendations-content">
+        <!-- Overdue HCP Recommendations Section -->
+        {% if overdue_hcps %}
+            <div class="mb-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-2 h-6 bg-gradient-to-b from-orange-500 to-red-500 rounded-full mr-3"></div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900">Overdue HCP Recommendations</h3>
+                        <p class="text-gray-600 text-xs">Auto-generated recommendations for HCPs not contacted in 30+ days</p>
+                    </div>
+                </div>
+                <div class="max-h-96 overflow-y-auto pr-2">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                        {% for hcp in overdue_hcps %}
+                            <div class="group bg-gradient-to-br from-orange-50 to-red-50 rounded-xl border-l-3 border-orange-400 p-4 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-user-clock text-orange-600 text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
+                                                {{ hcp.name|default:"Dr. Sarah Johnson" }}
+                                            </h4>
+                                            <p class="text-xs text-gray-600">{{ hcp.specialty|default:"Internal Medicine" }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col items-end space-y-1">
+                                        <span class="px-2 py-1 bg-orange-200 text-orange-800 text-xs font-bold rounded-full">
+                                            {{ hcp.days_overdue|default:45 }}d overdue
+                                        </span>
+                                        <span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full">
+                                            AUTO
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-white/60 rounded-lg p-3 mb-3">
+                                    <h5 class="font-semibold text-gray-900 mb-1 flex items-center text-sm">
+                                        <i class="fas fa-lightbulb text-yellow-500 mr-1 text-xs"></i>
+                                        Recommended Action
+                                    </h5>
+                                    <p class="text-gray-700 text-xs leading-relaxed mb-2 line-clamp-3">
+                                        {{ hcp.auto_recommendation|default:"Schedule follow-up meeting to discuss recent treatment outcomes for diabetes patients. Review new SGLT-2 inhibitor data and potential patient candidates." }}
+                                    </p>
+                                    <div class="flex items-center text-xs text-gray-600">
+                                        <i class="fas fa-users mr-1"></i>
+                                        {{ hcp.patient_count|default:34 }} patients
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between">
+                                    <div class="text-xs text-gray-600">
+                                        <span class="font-medium">Last:</span> {{ hcp.last_contact|default:"45d ago" }}
+                                    </div>
+                                    <div class="flex space-x-1">
+                                        <a href="{% url 'hcp_profile' hcp.id %}" 
+                                           class="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg text-xs transition-colors duration-200">
+                                            View
+                                        </a>
+                                        <a href="{% url 'create_recommendation' hcp.id %}" 
+                                           class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs transition-colors duration-200">
+                                            Create
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Divider -->
+            <div class="border-t border-gray-200 mb-4"></div>
+        {% endif %}
+        
+        <!-- Regular Actionable Insights Section -->
+        {% if actionable_insights %}
+            <div class="mb-4">
+                <div class="flex items-center mb-4">
+                    <div class="w-2 h-6 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full mr-3"></div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900">Priority Insights</h3>
+                        <p class="text-gray-600 text-xs">High-value opportunities based on patient data analysis</p>
+                    </div>
+                </div>
+            </div>
+            <div class="max-h-96 overflow-y-auto pr-2">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    {% for insight in actionable_insights %}
+                        <div class="group bg-gradient-to-br from-white/70 to-gray-50/70 rounded-xl border-l-3 border-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-400 p-4 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-8 h-8 bg-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-100 rounded-lg flex items-center justify-center">
+                                        {% if insight.insight_type == 'MISSING_TREATMENT' %}
+                                            <i class="fas fa-pills text-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-600 text-sm"></i>
+                                        {% elif insight.insight_type == 'NEW_RESEARCH' %}
+                                            <i class="fas fa-microscope text-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-600 text-sm"></i>
+                                        {% elif insight.insight_type == 'PATIENT_COHORT' %}
+                                            <i class="fas fa-users text-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-600 text-sm"></i>
+                                        {% elif insight.insight_type == 'ENGAGEMENT_OVERDUE' %}
+                                            <i class="fas fa-clock text-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-600 text-sm"></i>
+                                        {% elif insight.insight_type == 'TREATMENT_GAP' %}
+                                            <i class="fas fa-exclamation-triangle text-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-600 text-sm"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 group-hover:text-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-600 transition-colors text-sm">
+                                            {{ insight.title|default:"High-Value Patient Cohort Identified" }}
+                                        </h4>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-end space-y-1">
+                                    <span class="px-2 py-1 bg-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-100 text-{% if insight.priority_score >= 80 %}red{% elif insight.priority_score >= 60 %}yellow{% else %}blue{% endif %}-800 text-xs font-bold rounded-full">
+                                        {{ insight.priority_score|default:85 }}%
+                                    </span>
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full">
+                                        {{ insight.patient_impact|default:23 }}p
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <p class="text-gray-700 mb-3 leading-relaxed text-xs line-clamp-3">
+                                {{ insight.description|default:"23 diabetes patients under Dr. Johnson's care show suboptimal HbA1c levels despite current treatment. Consider discussing SGLT-2 inhibitor addition based on recent cardiovascular outcome studies." }}
+                            </p>
+                            
+                            <div class="flex items-center justify-between">
+                                <div class="text-xs text-gray-600">
+                                    <span class="font-semibold">{{ insight.hcp.name|default:"Dr. Sarah Johnson" }}</span> - 
+                                    <span>{{ insight.hcp.specialty|default:"Endocrinology" }}</span>
+                                </div>
+                                <div class="flex space-x-1">
+                                    <a href="{% url 'hcp_profile' insight.hcp.id %}" 
+                                       class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg text-xs transition-colors duration-200">
+                                        View
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+            </div>
+        {% else %}
+            <!-- Sample Overdue HCP Recommendations -->
+            <div class="mb-6">
+                <div class="flex items-center mb-4">
+                    <div class="w-2 h-6 bg-gradient-to-b from-orange-500 to-red-500 rounded-full mr-3"></div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900">Overdue HCP Recommendations</h3>
+                        <p class="text-gray-600 text-xs">Auto-generated recommendations for HCPs not contacted in 30+ days</p>
+                    </div>
+                </div>
+                <div class="max-h-96 overflow-y-auto pr-2">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                        <div class="group bg-gradient-to-br from-orange-50 to-red-50 rounded-xl border-l-3 border-orange-400 p-4 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-user-clock text-orange-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
+                                            Dr. Sarah Johnson
+                                        </h4>
+                                        <p class="text-xs text-gray-600">Endocrinology</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-end space-y-1">
+                                    <span class="px-2 py-1 bg-orange-200 text-orange-800 text-xs font-bold rounded-full">
+                                        45d overdue
+                                    </span>
+                                    <span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full">
+                                        AUTO
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white/60 rounded-lg p-3 mb-3">
+                                <h5 class="font-semibold text-gray-900 mb-1 flex items-center text-sm">
+                                    <i class="fas fa-lightbulb text-yellow-500 mr-1 text-xs"></i>
+                                    Recommended Action
+                                </h5>
+                                <p class="text-gray-700 text-xs leading-relaxed mb-2 line-clamp-3">
+                                    Schedule follow-up meeting to discuss recent treatment outcomes for diabetes patients. Review new SGLT-2 inhibitor data and potential patient candidates.
+                                </p>
+                                <div class="flex items-center text-xs text-gray-600">
+                                    <i class="fas fa-users mr-1"></i>
+                                    34 patients
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div class="text-xs text-gray-600">
+                                    <span class="font-medium">Last:</span> 45d ago
+                                </div>
+                                <div class="flex space-x-1">
+                                    <button class="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg text-xs transition-colors duration-200 opacity-75 cursor-default" title="Sample data - View not available">
+                                        View
+                                    </button>
+                                    <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs transition-colors duration-200 opacity-75 cursor-default" title="Sample data - Create not available">
+                                        Create
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="group bg-gradient-to-br from-orange-50 to-red-50 rounded-xl border-l-3 border-orange-400 p-4 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <i class="fas fa-user-clock text-orange-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-gray-900 group-hover:text-orange-600 transition-colors">
+                                            Dr. Michael Chen
+                                        </h4>
+                                        <p class="text-xs text-gray-600">Cardiology</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-end space-y-1">
+                                    <span class="px-2 py-1 bg-orange-200 text-orange-800 text-xs font-bold rounded-full">
+                                        38d overdue
+                                    </span>
+                                    <span class="px-2 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full">
+                                        AUTO
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white/60 rounded-lg p-3 mb-3">
+                                <h5 class="font-semibold text-gray-900 mb-1 flex items-center text-sm">
+                                    <i class="fas fa-lightbulb text-yellow-500 mr-1 text-xs"></i>
+                                    Recommended Action
+                                </h5>
+                                <p class="text-gray-700 text-xs leading-relaxed mb-2 line-clamp-3">
+                                    Discuss recent cardiovascular outcome studies and their application to current patient population. Review lipid management protocols.
+                                </p>
+                                <div class="flex items-center text-xs text-gray-600">
+                                    <i class="fas fa-users mr-1"></i>
+                                    28 patients
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <div class="text-xs text-gray-600">
+                                    <span class="font-medium">Last:</span> 38d ago
+                                </div>
+                                <div class="flex space-x-1">
+                                    <button class="px-3 py-1 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg text-xs transition-colors duration-200 opacity-75 cursor-default" title="Sample data - View not available">
+                                        View
+                                    </button>
+                                    <button class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-xs transition-colors duration-200 opacity-75 cursor-default" title="Sample data - Create not available">
+                                        Create
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Divider -->
+                <div class="border-t border-gray-200 mb-4"></div>
+            </div>
+            
+            <!-- Sample Priority Insights -->
+            <div class="mb-4">
+                <div class="flex items-center mb-4">
+                    <div class="w-2 h-6 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full mr-3"></div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900">Priority Insights</h3>
+                        <p class="text-gray-600 text-xs">High-value opportunities based on patient data analysis</p>
+                    </div>
+                </div>
+            </div>
+            <div class="max-h-96 overflow-y-auto pr-2">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div class="group bg-gradient-to-br from-white/70 to-gray-50/70 rounded-xl border-l-3 border-red-400 p-4 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-pills text-red-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900 group-hover:text-red-600 transition-colors text-sm">
+                                        High-Value Patient Cohort Identified
+                                    </h4>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-end space-y-1">
+                                <span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-bold rounded-full">92%</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full">23p</span>
+                            </div>
+                        </div>
+                        
+                        <p class="text-gray-700 mb-3 leading-relaxed text-xs line-clamp-3">
+                            23 diabetes patients under Dr. Rodriguez's care show suboptimal HbA1c levels despite current treatment. Consider discussing SGLT-2 inhibitor addition.
+                        </p>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="text-xs text-gray-600">
+                                <span class="font-semibold">Dr. Lisa Rodriguez</span> - <span>Endocrinology</span>
+                            </div>
+                            <div class="flex space-x-1">
+                                <button class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg text-xs transition-colors duration-200">
+                                    View
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="group bg-gradient-to-br from-white/70 to-gray-50/70 rounded-xl border-l-3 border-yellow-400 p-4 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-microscope text-yellow-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900 group-hover:text-yellow-600 transition-colors text-sm">
+                                        New Research Application Opportunity
+                                    </h4>
+                                </div>
+                            </div>
+                            <div class="flex flex-col items-end space-y-1">
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded-full">78%</span>
+                                <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full">45p</span>
+                            </div>
+                        </div>
+                        
+                        <p class="text-gray-700 mb-3 leading-relaxed text-xs line-clamp-3">
+                            Recent study shows 40% reduction in cardiovascular events with new treatment protocol. Dr. Thompson's patient population matches study demographics perfectly.
+                        </p>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="text-xs text-gray-600">
+                                <span class="font-semibold">Dr. James Thompson</span> - <span>Cardiology</span>
+                            </div>
+                            <div class="flex space-x-1">
+                                <button class="px-3 py-1 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg text-xs transition-colors duration-200">
+                                    View
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+
 
 <!-- Network Visualization Section -->
 <div class="bg-white/80 backdrop-blur-sm rounded-3xl border border-white/30 shadow-xl overflow-hidden mb-8">

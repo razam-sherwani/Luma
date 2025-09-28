@@ -151,8 +151,8 @@ def generate_cohort_recommendations():
                             cohort=cohort,
                             treatment_outcome=best_treatment,
                             title=f'Optimize Treatment for {cohort.condition}',
-                            message=f'Your {cohort.patient_count} patients with {cohort.condition} could benefit from {best_treatment.treatment_name}. Success rate: {best_treatment.success_rate}%. {best_treatment.notes}',
-                            priority='HIGH' if best_treatment.success_rate > 80 else 'MEDIUM'
+                            message=f'Your {cohort.patient_count} patients with {cohort.condition} could benefit from {best_treatment.treatment_name}. Success rate: {best_treatment.success_rate_percentage}%. {best_treatment.notes}',
+                            priority='HIGH' if best_treatment.success_rate_percentage > 80 else 'MEDIUM'
                         )
                         recommendations.append(recommendation)
     
@@ -665,8 +665,8 @@ def cohort_cluster_network(request):
         common_treatments = sorted(treatment_counts.items(), key=lambda x: x[1], reverse=True)[:5]
         common_treatment_names = [t[0] for t in common_treatments]
         
-        # Calculate success rate (simplified)
-        success_rate = 75.0 + (cluster.patient_count * 0.5)  # Mock calculation
+        # Use the cluster's actual success rate (properly formatted)
+        success_rate = cluster.success_rate_percentage
         
         # Apply risk filter (simplified - based on patient count)
         if current_risk:
@@ -1686,7 +1686,7 @@ def generate_intelligent_recommendation(hcp_id, hcr_user):
         {chr(10).join([f"- {research.title} (Relevance: {research.relevance_score:.2f})" for research in relevant_research[:3]])}
         
         Cluster Analysis:
-        - Similar patients in cluster show {cluster_insights.success_rate if cluster_insights else 'N/A'}% treatment success rate
+        - Similar patients in cluster show {cluster_insights.success_rate_percentage if cluster_insights else 'N/A'}% treatment success rate
         """
         
         # Create intelligent recommendation
@@ -1714,7 +1714,7 @@ def generate_intelligent_recommendation(hcp_id, hcr_user):
             ],
             cluster_evidence={
                 'cluster_id': cluster_insights.id if cluster_insights else None,
-                'success_rate': cluster_insights.success_rate if cluster_insights else None,
+                'success_rate': cluster_insights.success_rate_percentage if cluster_insights else None,
                 'patient_count': cluster_insights.patient_count if cluster_insights else None
             },
             priority='HIGH' if top_gap['percentage'] > 30 else 'MEDIUM'

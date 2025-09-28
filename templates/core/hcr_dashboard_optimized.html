@@ -29,7 +29,7 @@
         <div class="d-flex gap-2">
             <a href="#insights" class="btn btn-outline-secondary">Insights</a>
             <a href="#engagements" class="btn btn-outline-secondary">Engagements</a>
-            <a href="{% url 'patient_database' %}" class="btn btn-primary">Patient Database</a>
+
                 <a href="{% url 'cohort_cluster_network' %}" class="btn btn-info">Network View</a>
         </div>
     </div>
@@ -202,7 +202,7 @@
                                                     <span class="badge bg-{% if rec.priority == 'HIGH' %}danger{% elif rec.priority == 'MEDIUM' %}warning{% else %}info{% endif %}">
                                                         {{ rec.priority }}
                                                     </span>
-                                                    <span class="badge bg-success">{{ rec.success_rate }}% Success</span>
+                                                    <span class="badge bg-success">{{ rec.success_rate_percentage }}% Success</span>
                                                 </div>
                                             </div>
                                             <div class="card-body">
@@ -278,7 +278,7 @@
                                         <small class="text-muted">{{ cluster.hcp.specialty|default:"General" }}</small>
                                         <div>
                                             <span class="badge bg-primary">{{ cluster.patient_count }} patients</span>
-                                            <span class="badge bg-success">{{ cluster.success_rate|floatformat:1 }}% success</span>
+                                            <span class="badge bg-success">{{ cluster.success_rate_percentage }}% success</span>
                                         </div>
                                     </div>
                                     <!-- Treatment Insights -->
@@ -320,7 +320,7 @@
                                             {% for outcome in cohort.treatment_outcomes.all|slice:":2" %}
                                                 <div class="d-flex justify-content-between">
                                                     <span>{{ outcome.treatment|truncatechars:20 }}</span>
-                                                    <span class="badge bg-success">{{ outcome.success_rate }}%</span>
+                                                    <span class="badge bg-success">{{ outcome.success_rate_percentage }}%</span>
                                                 </div>
                                             {% endfor %}
                                         {% else %}
