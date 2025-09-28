@@ -20,4 +20,13 @@ urlpatterns = [
     path('research/<int:research_id>/', research_views.research_detail, name='research_detail'),
     path('api/research/by-specialty/', research_views.get_research_by_specialty, name='research_by_specialty'),
     path('api/research/update/', research_views.trigger_research_update, name='trigger_research_update'),
+    # Intelligent Recommendation URLs
+    path('hcp/<int:hcp_id>/create-recommendation/', views.create_recommendation, name='create_recommendation'),
+    path('recommendation/<int:recommendation_id>/', views.view_recommendation, name='view_recommendation'),
+    path('recommendation/<int:recommendation_id>/edit/', views.edit_recommendation, name='edit_recommendation'),
+    path('recommendation/<int:recommendation_id>/delete/', views.delete_recommendation, name='delete_recommendation'),
+    path('recommendation/<int:recommendation_id>/send/', views.send_recommendation_message, name='send_recommendation_message'),
+    # New recommendation generation URLs
+    path('generate-recommendation/', views.generate_recommendation_page, name='generate_recommendation_page'),
+    path('hcp/<int:hcp_id>/create-recommendation-ajax/', views.create_recommendation_ajax, name='create_recommendation_ajax'),
 ]

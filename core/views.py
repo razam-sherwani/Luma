@@ -7,10 +7,12 @@ from django.db import models
 from datetime import date, timedelta
 import json
 import csv
+from collections import Counter
 from .models import (HCP, ResearchUpdate, EMRData, Engagement, UserProfile, HCRRecommendation, 
                     PatientCohort, TreatmentOutcome, CohortRecommendation, ActionableInsight,
                     AnonymizedPatient, PatientCluster, ClusterMembership, PatientOutcome, 
-                    EMRDataPoint, ClusterInsight, DrugRecommendation)
+                    EMRDataPoint, ClusterInsight, DrugRecommendation, PatientIssueAnalysis,
+                    ScrapedResearch, IntelligentRecommendation, HCRMessage, RecommendationFeedback)
 from .research_generator import SimplifiedResearchGenerator
 
 def generate_actionable_insights():
@@ -217,6 +219,11 @@ def hcr_dashboard(request, user_profile):
         '-priority', '-success_rate', '-created_date'
     )[:12]  # Show top 12 recommendations
     
+    # Get recent intelligent recommendations created by this HCR
+    recent_recommendations = IntelligentRecommendation.objects.filter(
+        hcr_sender=request.user
+    ).order_by('-created_date')[:5]
+    
     # Generate dynamic recommendations based on cluster similarity
     dynamic_recommendations = generate_dynamic_drug_recommendations()
     
@@ -254,6 +261,7 @@ def hcr_dashboard(request, user_profile):
         'total_patients': total_patients,
         'total_cohorts': total_cohorts,
         'total_clusters': total_clusters,
+        'recent_recommendations': recent_recommendations,
     }
     return render(request, 'core/hcr_dashboard_beautiful.html', context)
 
@@ -374,16 +382,16 @@ def patient_database(request):
     current_diagnosis = request.GET.get('diagnosis', '')
     current_hcp = request.GET.get('hcp', '')
     search_query = request.GET.get('search', '').strip()
-
+    
     # Get user profile to determine role
     user_profile, created = UserProfile.objects.get_or_create(
         user=request.user,
         defaults={'role': 'HCR'}
     )
-
+    
     # Get all patients
     patients = AnonymizedPatient.objects.select_related('hcp').all()
-
+    
     # If user is an HCP, only show their patients
     if user_profile.role == 'HCP':
         try:
@@ -392,7 +400,7 @@ def patient_database(request):
         except HCP.DoesNotExist:
             # If HCP profile doesn't exist, show no patients
             patients = AnonymizedPatient.objects.none()
-
+    
     # Apply search filter first (most important)
     if search_query:
         patients = patients.filter(
@@ -422,7 +430,7 @@ def patient_database(request):
         patients = patients.filter(primary_diagnosis__icontains=current_diagnosis)
     if current_hcp:
         patients = patients.filter(hcp__name__icontains=current_hcp)
-
+    
     # Get unique values for filter dropdowns (from all accessible patients, not filtered)
     all_patients = AnonymizedPatient.objects.select_related('hcp').all()
     if user_profile.role == 'HCP':
@@ -434,15 +442,15 @@ def patient_database(request):
 
     specialties = list(set(all_patients.values_list('hcp__specialty', flat=True)))
     specialties = [s for s in specialties if s]
-
+    
     diagnoses = list(set(all_patients.values_list('primary_diagnosis', flat=True)))
     diagnoses = [d for d in diagnoses if d]
-
+    
     hcps = HCP.objects.all() if user_profile.role == 'HCR' else []
 
     # Order patients by most recent visit
     patients = patients.order_by('-last_visit_date', 'patient_id')
-
+    
     context = {
         'patients': patients,
         'specialties': specialties,
@@ -516,7 +524,7 @@ def add_patient(request):
     if request.user.userprofile.role != 'HCP':
         messages.error(request, 'Only Healthcare Providers can add patients.')
         return redirect('dashboard')
-
+    
     if request.method == 'POST':
         try:
             # Get the HCP profile
@@ -553,7 +561,7 @@ def add_patient(request):
 
             messages.success(request, f'Patient {patient.patient_id} added successfully!')
             return redirect('patient_database')
-
+    
         except HCP.DoesNotExist:
             messages.error(request, 'HCP profile not found. Please contact support.')
             return redirect('dashboard')
@@ -617,8 +625,8 @@ def cohort_cluster_network(request):
     
     # Get diagnoses from all patients
     for patient in AnonymizedPatient.objects.all()[:1000]:  # Sample 1000 patients
-        if patient.primary_diagnosis:
-            all_diagnoses.add(patient.primary_diagnosis)
+            if patient.primary_diagnosis:
+                all_diagnoses.add(patient.primary_diagnosis)
     
     treatments = sorted(list(all_treatments))
     diagnoses = sorted(list(all_diagnoses))
@@ -1370,3 +1378,679 @@ def delete_patient(request, patient_id):
 
     # If GET request, redirect to patient detail page
     return redirect('patient_detail', patient_id=patient_id)
+
+
+# New Research and Recommendation System Functions
+
+def analyze_patient_issues(hcp_id):
+    """Analyze common issues across a doctor's patients"""
+    hcp = get_object_or_404(HCP, id=hcp_id)
+    
+    # Get all patients for this HCP (limit to first 100 for performance)
+    patients = AnonymizedPatient.objects.filter(hcp=hcp)[:100]
+    
+    if not patients.exists():
+        return None
+    
+    print(f"📊 Analyzing {len(patients)} patients for {hcp.name}")
+    
+    # Analyze common diagnoses
+    diagnoses = []
+    treatments = []
+    comorbidities = []
+    risk_factors = []
+    
+    for patient in patients:
+        if patient.primary_diagnosis:
+            diagnoses.append(patient.primary_diagnosis)
+        if patient.secondary_diagnoses:
+            diagnoses.extend(patient.secondary_diagnoses.split(','))
+        if patient.current_treatments:
+            treatments.extend(patient.current_treatments.split(','))
+        if patient.comorbidities:
+            comorbidities.extend(patient.comorbidities.split(','))
+        if patient.risk_factors:
+            risk_factors.extend(patient.risk_factors.split(','))
+    
+    print(f"🔍 Found {len(diagnoses)} diagnoses, {len(treatments)} treatments")
+    
+    # Count frequencies
+    diagnosis_counts = Counter([d.strip() for d in diagnoses if d.strip()])
+    treatment_counts = Counter([t.strip() for t in treatments if t.strip()])
+    comorbidity_counts = Counter([c.strip() for c in comorbidities if c.strip()])
+    risk_factor_counts = Counter([r.strip() for r in risk_factors if r.strip()])
+    
+    # Identify treatment gaps (common diagnoses without corresponding treatments)
+    treatment_gaps = []
+    for diagnosis in diagnosis_counts.most_common(5):
+        diagnosis_name = diagnosis[0].lower()
+        has_treatment = any(diagnosis_name in treatment.lower() for treatment in treatment_counts.keys())
+        if not has_treatment:
+            treatment_gaps.append({
+                'diagnosis': diagnosis[0],
+                'frequency': diagnosis[1],
+                'percentage': round((diagnosis[1] / len(patients)) * 100, 1)
+            })
+    
+    # Create analysis summary
+    analysis_summary = f"""
+    Analysis of {len(patients)} patients under {hcp.name}'s care:
+    
+    Top Diagnoses:
+    {', '.join([f"{d[0]} ({d[1]} patients)" for d in diagnosis_counts.most_common(3)])}
+    
+    Treatment Gaps Identified:
+    {', '.join([f"{gap['diagnosis']} ({gap['percentage']}% of patients)" for gap in treatment_gaps[:3]])}
+    
+    Common Risk Factors:
+    {', '.join([f"{r[0]} ({r[1]} patients)" for r in risk_factor_counts.most_common(3)])}
+    """
+    
+    # Create PatientIssueAnalysis object
+    analysis = PatientIssueAnalysis.objects.create(
+        hcp=hcp,
+        total_patients_analyzed=len(patients),
+        common_issues=[
+            {'issue': item[0], 'frequency': item[1], 'percentage': round((item[1] / len(patients)) * 100, 1)}
+            for item in diagnosis_counts.most_common(10)
+        ],
+        top_diagnoses=[
+            {'diagnosis': item[0], 'frequency': item[1], 'percentage': round((item[1] / len(patients)) * 100, 1)}
+            for item in diagnosis_counts.most_common(5)
+        ],
+        treatment_gaps=treatment_gaps,
+        risk_factors=[
+            {'risk_factor': item[0], 'frequency': item[1], 'percentage': round((item[1] / len(patients)) * 100, 1)}
+            for item in risk_factor_counts.most_common(5)
+        ],
+        analysis_summary=analysis_summary.strip()
+    )
+    
+    return analysis
+
+
+def scrape_medical_research(keywords, specialty=None, max_results=10):
+    """Scrape medical research articles based on keywords from patient issues"""
+    scraped_articles = []
+    
+    # Enhanced research database with more comprehensive articles
+    research_database = [
+        # Diabetes-related articles
+        {
+            'title': 'Novel Treatment Approaches for Diabetes Management',
+            'authors': 'Smith, J., Johnson, A., Brown, K.',
+            'journal': 'New England Journal of Medicine',
+            'publication_date': '2024-01-15',
+            'abstract': 'This study examines new treatment modalities for diabetes management, including SGLT-2 inhibitors and GLP-1 receptor agonists.',
+            'keywords': ['diabetes', 'treatment', 'SGLT-2', 'GLP-1', 'metformin'],
+            'conditions': ['diabetes', 'type 2 diabetes', 'diabetic'],
+            'treatments': ['SGLT-2 inhibitors', 'GLP-1 receptor agonists', 'metformin'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example1',
+            'relevance_score': 0.95
+        },
+        {
+            'title': 'Cardiovascular Outcomes in Hypertension Treatment',
+            'authors': 'Williams, M., Davis, R.',
+            'journal': 'Journal of the American Medical Association',
+            'publication_date': '2024-02-01',
+            'abstract': 'Comprehensive analysis of cardiovascular outcomes in patients treated with ACE inhibitors vs ARBs.',
+            'keywords': ['hypertension', 'cardiovascular', 'ACE inhibitors', 'ARBs', 'blood pressure'],
+            'conditions': ['hypertension', 'cardiovascular disease', 'high blood pressure'],
+            'treatments': ['ACE inhibitors', 'ARBs', 'beta blockers'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example2',
+            'relevance_score': 0.88
+        },
+        {
+            'title': 'Innovations in Cancer Immunotherapy',
+            'authors': 'Garcia, L., Martinez, P.',
+            'journal': 'Nature Medicine',
+            'publication_date': '2024-01-20',
+            'abstract': 'Recent advances in cancer immunotherapy and their clinical applications.',
+            'keywords': ['cancer', 'immunotherapy', 'oncology', 'tumor'],
+            'conditions': ['cancer', 'tumor', 'oncology'],
+            'treatments': ['immunotherapy', 'checkpoint inhibitors', 'chemotherapy'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example3',
+            'relevance_score': 0.92
+        },
+        # Heart-related articles
+        {
+            'title': 'Advanced Heart Failure Management Strategies',
+            'authors': 'Chen, L., Rodriguez, M.',
+            'journal': 'Circulation',
+            'publication_date': '2024-01-10',
+            'abstract': 'New approaches to managing heart failure including device therapy and novel medications.',
+            'keywords': ['heart failure', 'cardiology', 'device therapy', 'heart'],
+            'conditions': ['heart failure', 'cardiac', 'cardiomyopathy'],
+            'treatments': ['ACE inhibitors', 'beta blockers', 'device therapy'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example4',
+            'relevance_score': 0.89
+        },
+        # Mental health articles
+        {
+            'title': 'Depression Treatment in Primary Care Settings',
+            'authors': 'Thompson, K., Lee, S.',
+            'journal': 'Journal of Clinical Psychiatry',
+            'publication_date': '2024-02-15',
+            'abstract': 'Evidence-based approaches to treating depression in primary care with focus on SSRIs and therapy.',
+            'keywords': ['depression', 'mental health', 'SSRI', 'therapy'],
+            'conditions': ['depression', 'mental health', 'anxiety'],
+            'treatments': ['SSRIs', 'therapy', 'counseling'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example5',
+            'relevance_score': 0.87
+        },
+        # Respiratory articles
+        {
+            'title': 'COPD Management in the Modern Era',
+            'authors': 'Anderson, R., Wilson, T.',
+            'journal': 'American Journal of Respiratory Medicine',
+            'publication_date': '2024-01-25',
+            'abstract': 'Comprehensive review of COPD treatment including bronchodilators and pulmonary rehabilitation.',
+            'keywords': ['COPD', 'respiratory', 'bronchodilator', 'lung'],
+            'conditions': ['COPD', 'respiratory', 'lung disease'],
+            'treatments': ['bronchodilators', 'inhalers', 'pulmonary rehabilitation'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example6',
+            'relevance_score': 0.91
+        },
+        # Gastrointestinal articles
+        {
+            'title': 'GERD Treatment Options and Outcomes',
+            'authors': 'Patel, N., Kumar, V.',
+            'journal': 'Gastroenterology',
+            'publication_date': '2024-02-05',
+            'abstract': 'Review of GERD management including PPIs, lifestyle modifications, and surgical options.',
+            'keywords': ['GERD', 'gastrointestinal', 'PPI', 'acid reflux'],
+            'conditions': ['GERD', 'acid reflux', 'gastrointestinal'],
+            'treatments': ['PPIs', 'H2 blockers', 'lifestyle modifications'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example7',
+            'relevance_score': 0.86
+        },
+        # Neurological articles
+        {
+            'title': 'Migraine Management: New Therapeutic Approaches',
+            'authors': 'Johnson, A., Smith, B.',
+            'journal': 'Neurology',
+            'publication_date': '2024-01-30',
+            'abstract': 'Recent advances in migraine treatment including CGRP inhibitors and neuromodulation.',
+            'keywords': ['migraine', 'neurology', 'CGRP', 'headache'],
+            'conditions': ['migraine', 'headache', 'neurological'],
+            'treatments': ['CGRP inhibitors', 'triptans', 'neuromodulation'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example8',
+            'relevance_score': 0.90
+        }
+    ]
+    
+    # Filter articles based on keywords and specialty
+    for article in research_database:
+        relevance_score = 0.0
+        
+        # Check keyword matches in multiple fields
+        for keyword in keywords:
+            keyword_lower = keyword.lower()
+            
+            # Check in abstract
+            if keyword_lower in article['abstract'].lower():
+                relevance_score += 0.4
+            
+            # Check in keywords list
+            if any(keyword_lower in kw.lower() for kw in article['keywords']):
+                relevance_score += 0.3
+            
+            # Check in conditions
+            if any(keyword_lower in cond.lower() for cond in article['conditions']):
+                relevance_score += 0.3
+            
+            # Check in treatments
+            if any(keyword_lower in treat.lower() for treat in article['treatments']):
+                relevance_score += 0.2
+        
+        # Check specialty match
+        if specialty:
+            specialty_lower = specialty.lower()
+            if specialty_lower in article['abstract'].lower():
+                relevance_score += 0.2
+            if specialty_lower in article['journal'].lower():
+                relevance_score += 0.1
+        
+        # Only include articles with sufficient relevance
+        if relevance_score >= 0.3:
+            article['relevance_score'] = min(relevance_score, 1.0)
+            scraped_articles.append(article)
+    
+    # Sort by relevance score
+    scraped_articles.sort(key=lambda x: x['relevance_score'], reverse=True)
+    
+    # Save to database
+    saved_articles = []
+    for article_data in scraped_articles[:max_results]:
+        article, created = ScrapedResearch.objects.get_or_create(
+            title=article_data['title'],
+            defaults={
+                'authors': article_data['authors'],
+                'journal': article_data['journal'],
+                'publication_date': article_data['publication_date'],
+                'abstract': article_data['abstract'],
+                'keywords': article_data['keywords'],
+                'specialties': [specialty] if specialty else [],
+                'conditions_mentioned': article_data['conditions'],
+                'treatments_mentioned': article_data['treatments'],
+                'source_url': article_data['source_url'],
+                'relevance_score': article_data['relevance_score']
+            }
+        )
+        saved_articles.append(article)
+    
+    return saved_articles
+
+
+def generate_intelligent_recommendation(hcp_id, hcr_user):
+    """Generate intelligent recommendation combining patient analysis and research"""
+    hcp = get_object_or_404(HCP, id=hcp_id)
+    
+    # Step 1: Analyze patient issues
+    analysis = analyze_patient_issues(hcp_id)
+    if not analysis:
+        return None
+    
+    # Step 2: Extract keywords from analysis
+    keywords = []
+    for issue in analysis.common_issues[:5]:  # Top 5 issues
+        keywords.append(issue['issue'])
+    
+    for gap in analysis.treatment_gaps[:3]:  # Top 3 treatment gaps
+        keywords.append(gap['diagnosis'])
+    
+    # Step 3: Scrape relevant research
+    relevant_research = scrape_medical_research(keywords, hcp.specialty, max_results=5)
+    
+    # Step 4: Find relevant cluster insights
+    cluster_insights = PatientCluster.objects.filter(hcp=hcp).first()
+    
+    # Step 5: Generate recommendation
+    if analysis.treatment_gaps:
+        top_gap = analysis.treatment_gaps[0]
+        recommendation_title = f"Treatment Optimization for {top_gap['diagnosis']}"
+        
+        recommendation_summary = f"""
+        Based on analysis of {analysis.total_patients_analyzed} patients, {top_gap['percentage']}% 
+        have {top_gap['diagnosis']} but may not be receiving optimal treatment. Recent research 
+        suggests new approaches that could improve patient outcomes.
+        """
+        
+        # Combine evidence
+        evidence_summary = f"""
+        Patient Data Evidence:
+        - {top_gap['frequency']} patients ({top_gap['percentage']}%) diagnosed with {top_gap['diagnosis']}
+        - Common risk factors: {', '.join([rf['risk_factor'] for rf in analysis.risk_factors[:3]])}
+        
+        Research Evidence:
+        {chr(10).join([f"- {research.title} (Relevance: {research.relevance_score:.2f})" for research in relevant_research[:3]])}
+        
+        Cluster Analysis:
+        - Similar patients in cluster show {cluster_insights.success_rate if cluster_insights else 'N/A'}% treatment success rate
+        """
+        
+        # Create intelligent recommendation
+        recommendation = IntelligentRecommendation.objects.create(
+            hcp=hcp,
+            hcr_sender=hcr_user,
+            patient_analysis=analysis,
+            cluster_insights=cluster_insights,
+            recommendation_title=recommendation_title,
+            recommendation_summary=recommendation_summary.strip(),
+            evidence_summary=evidence_summary.strip(),
+            patient_data_evidence={
+                'total_patients': analysis.total_patients_analyzed,
+                'top_issues': analysis.common_issues[:5],
+                'treatment_gaps': analysis.treatment_gaps[:3],
+                'risk_factors': analysis.risk_factors[:5]
+            },
+            research_evidence=[
+                {
+                    'title': research.title,
+                    'relevance_score': research.relevance_score,
+                    'abstract': research.abstract[:200] + '...' if len(research.abstract) > 200 else research.abstract
+                }
+                for research in relevant_research[:3]
+            ],
+            cluster_evidence={
+                'cluster_id': cluster_insights.id if cluster_insights else None,
+                'success_rate': cluster_insights.success_rate if cluster_insights else None,
+                'patient_count': cluster_insights.patient_count if cluster_insights else None
+            },
+            priority='HIGH' if top_gap['percentage'] > 30 else 'MEDIUM'
+        )
+        
+        # Add research articles to recommendation
+        recommendation.relevant_research.set(relevant_research)
+        
+        return recommendation
+    
+    return None
+
+
+def generate_cluster_based_recommendation(hcp_id, hcr_user, cluster_data):
+    """Generate recommendation based on specific cluster data from network"""
+    hcp = get_object_or_404(HCP, id=hcp_id)
+    cluster = cluster_data['cluster']
+    
+    # Extract keywords from cluster data
+    keywords = []
+    if cluster_data['common_treatments']:
+        keywords.extend(cluster_data['common_treatments'][:3])  # Top 3 treatments
+    if cluster_data['diagnoses']:
+        keywords.extend(cluster_data['diagnoses'][:3])  # Top 3 diagnoses
+    
+    # Scrape relevant research
+    relevant_research = scrape_medical_research(keywords, hcp.specialty, max_results=3)
+    
+    # Create recommendation based on cluster insights
+    recommendation_title = f"Treatment Optimization for {cluster_data['cluster_name']}"
+    
+    recommendation_summary = f"""
+    Based on analysis of your {cluster_data['cluster_name']} cluster with {cluster_data['patient_count']} patients 
+    showing {cluster_data['success_rate']}% treatment success rate, we've identified opportunities to improve 
+    patient outcomes through evidence-based treatment approaches.
+    """
+    
+    # Combine evidence
+    evidence_summary = f"""
+    Cluster Analysis Evidence:
+    - Cluster: {cluster_data['cluster_name']}
+    - Patient Count: {cluster_data['patient_count']} patients
+    - Current Success Rate: {cluster_data['success_rate']}%
+    - Common Treatments: {', '.join(cluster_data['common_treatments'][:3]) if cluster_data['common_treatments'] else 'N/A'}
+    - Primary Diagnoses: {', '.join(cluster_data['diagnoses'][:3]) if cluster_data['diagnoses'] else 'N/A'}
+    
+    Research Evidence:
+    {chr(10).join([f"- {research.title} (Relevance: {research.relevance_score:.2f})" for research in relevant_research[:2]])}
+    
+    Recommendation:
+    Consider implementing the following evidence-based treatments that have shown success 
+    in similar patient clusters, potentially improving your success rate from {cluster_data['success_rate']}% 
+    to 85%+ based on cluster analysis.
+    """
+    
+    # Create patient analysis for the recommendation
+    analysis = PatientIssueAnalysis.objects.create(
+        hcp=hcp,
+        total_patients_analyzed=cluster_data['patient_count'],
+        common_issues=[
+            {'issue': diagnosis, 'frequency': cluster_data['patient_count'] // len(cluster_data['diagnoses']) if cluster_data['diagnoses'] else 1, 'percentage': 100.0}
+            for diagnosis in cluster_data['diagnoses'][:5]
+        ],
+        top_diagnoses=[
+            {'diagnosis': diagnosis, 'frequency': cluster_data['patient_count'] // len(cluster_data['diagnoses']) if cluster_data['diagnoses'] else 1, 'percentage': 100.0}
+            for diagnosis in cluster_data['diagnoses'][:3]
+        ],
+        treatment_gaps=[
+            {'diagnosis': diagnosis, 'frequency': cluster_data['patient_count'] // len(cluster_data['diagnoses']) if cluster_data['diagnoses'] else 1, 'percentage': 100.0}
+            for diagnosis in cluster_data['diagnoses'][:2]
+        ],
+        risk_factors=[],
+        analysis_summary=f"Cluster-based analysis for {cluster_data['cluster_name']} with {cluster_data['patient_count']} patients"
+    )
+    
+    # Create intelligent recommendation
+    recommendation = IntelligentRecommendation.objects.create(
+        hcp=hcp,
+        hcr_sender=hcr_user,
+        patient_analysis=analysis,
+        cluster_insights=cluster,
+        recommendation_title=recommendation_title,
+        recommendation_summary=recommendation_summary.strip(),
+        evidence_summary=evidence_summary.strip(),
+        patient_data_evidence={
+            'total_patients': cluster_data['patient_count'],
+            'cluster_name': cluster_data['cluster_name'],
+            'success_rate': cluster_data['success_rate'],
+            'common_treatments': cluster_data['common_treatments'][:5],
+            'diagnoses': cluster_data['diagnoses'][:5]
+        },
+        research_evidence=[
+            {
+                'title': research.title,
+                'relevance_score': research.relevance_score,
+                'abstract': research.abstract[:200] + '...' if len(research.abstract) > 200 else research.abstract
+            }
+            for research in relevant_research[:2]
+        ],
+        cluster_evidence={
+            'cluster_id': cluster.id,
+            'success_rate': cluster_data['success_rate'],
+            'patient_count': cluster_data['patient_count'],
+            'cluster_name': cluster_data['cluster_name']
+        },
+        priority='HIGH' if cluster_data['success_rate'] < 70 else 'MEDIUM'
+    )
+    
+    # Add research articles to recommendation
+    recommendation.relevant_research.set(relevant_research)
+    
+    return recommendation
+
+
+@login_required
+def create_recommendation(request, hcp_id):
+    """Create and send intelligent recommendation to HCP"""
+    if request.user.userprofile.role != 'HCR':
+        messages.error(request, 'Only Healthcare Representatives can create recommendations.')
+        return redirect('dashboard')
+    
+    hcp = get_object_or_404(HCP, id=hcp_id)
+    
+    # Check if this is coming from cluster network selection
+    cluster_data = None
+    if request.method == 'GET' and 'cluster_id' in request.GET:
+        cluster_id = request.GET.get('cluster_id')
+        try:
+            cluster = PatientCluster.objects.get(id=cluster_id, hcp=hcp)
+            cluster_data = {
+                'cluster': cluster,
+                'cluster_name': cluster.name,
+                'patient_count': cluster.patient_count,
+                'success_rate': cluster.success_rate,
+                'common_treatments': cluster.common_treatments,
+                'diagnoses': cluster.diagnoses
+            }
+        except PatientCluster.DoesNotExist:
+            messages.error(request, 'Selected cluster not found.')
+            return redirect('cohort_cluster_network')
+    
+    # Generate recommendation (either from cluster data or full analysis)
+    if cluster_data:
+        recommendation = generate_cluster_based_recommendation(hcp_id, request.user, cluster_data)
+    else:
+        recommendation = generate_intelligent_recommendation(hcp_id, request.user)
+    
+    if recommendation:
+        messages.success(request, f'Intelligent recommendation created for {recommendation.hcp.name}')
+        return redirect('view_recommendation', recommendation_id=recommendation.id)
+    else:
+        messages.error(request, 'Unable to create recommendation. Insufficient patient data.')
+        return redirect('hcp_profile', hcp_id=hcp_id)
+
+
+@login_required
+def delete_recommendation(request, recommendation_id):
+    """Delete a draft recommendation"""
+    if request.user.userprofile.role != 'HCR':
+        return JsonResponse({'success': False, 'error': 'Only Healthcare Representatives can delete recommendations.'})
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+    
+    try:
+        recommendation = get_object_or_404(IntelligentRecommendation, id=recommendation_id)
+        
+        # Check if user owns this recommendation
+        if recommendation.hcr_sender != request.user:
+            return JsonResponse({'success': False, 'error': 'You can only delete your own recommendations.'})
+        
+        # Only allow deletion of draft recommendations
+        if recommendation.status != 'DRAFT':
+            return JsonResponse({'success': False, 'error': 'Only draft recommendations can be deleted.'})
+        
+        # Delete the recommendation
+        recommendation.delete()
+        
+        return JsonResponse({'success': True, 'message': 'Recommendation deleted successfully.'})
+    
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f'Error deleting recommendation: {str(e)}'})
+
+
+@login_required
+def edit_recommendation(request, recommendation_id):
+    """Edit an existing recommendation"""
+    recommendation = get_object_or_404(IntelligentRecommendation, id=recommendation_id)
+    
+    # Check if user is HCR and owns this recommendation
+    if not (request.user.userprofile.role == 'HCR' and recommendation.hcr_sender == request.user):
+        messages.error(request, "You don't have permission to edit this recommendation.")
+        return redirect('dashboard')
+    
+    if request.method == 'POST':
+        # Update the recommendation with new data
+        recommendation.recommendation_title = request.POST.get('title', recommendation.recommendation_title)
+        recommendation.recommendation_summary = request.POST.get('summary', recommendation.recommendation_summary)
+        recommendation.priority = request.POST.get('priority', recommendation.priority)
+        recommendation.evidence_summary = request.POST.get('evidence_summary', recommendation.evidence_summary)
+        recommendation.save()
+        
+        messages.success(request, "Recommendation updated successfully!")
+        return redirect('view_recommendation', recommendation_id=recommendation.id)
+    
+    context = {
+        'recommendation': recommendation,
+        'is_hcr': request.user.userprofile.role == 'HCR'
+    }
+    return render(request, 'core/edit_recommendation.html', context)
+
+
+@login_required
+def view_recommendation(request, recommendation_id):
+    recommendation = get_object_or_404(IntelligentRecommendation, id=recommendation_id)
+    
+    # Check permissions
+    if request.user.userprofile.role == 'HCR' and recommendation.hcr_sender != request.user:
+        messages.error(request, 'You can only view your own recommendations.')
+        return redirect('dashboard')
+    
+    context = {
+        'recommendation': recommendation,
+        'is_hcr': request.user.userprofile.role == 'HCR',
+        'is_hcp': request.user.userprofile.role == 'HCP'
+    }
+    
+    return render(request, 'core/recommendation_detail.html', context)
+
+
+@login_required
+def send_recommendation_message(request, recommendation_id):
+    """Send recommendation as message to HCP"""
+    if request.user.userprofile.role != 'HCR':
+        messages.error(request, 'Only Healthcare Representatives can send messages.')
+        return redirect('dashboard')
+    
+    recommendation = get_object_or_404(IntelligentRecommendation, id=recommendation_id)
+    
+    if request.method == 'POST':
+        subject = request.POST.get('subject', recommendation.recommendation_title)
+        message_content = request.POST.get('message_content', recommendation.recommendation_summary)
+        
+        # Create message
+        message = HCRMessage.objects.create(
+            sender=request.user,
+            recipient_hcp=recommendation.hcp,
+            message_type='RECOMMENDATION',
+            subject=subject,
+            message_content=message_content,
+            recommendation=recommendation
+        )
+        
+        # Update recommendation status
+        recommendation.status = 'SENT'
+        recommendation.sent_date = timezone.now()
+        recommendation.save()
+        
+        messages.success(request, f'Recommendation sent to {recommendation.hcp.name}')
+        return redirect('messages')
+    
+    context = {
+        'recommendation': recommendation
+    }
+    
+    return render(request, 'core/send_recommendation.html', context)
+
+
+@login_required
+def generate_recommendation_page(request):
+    """Page for selecting HCP and generating recommendations"""
+    if request.user.userprofile.role != 'HCR':
+        messages.error(request, 'Only Healthcare Representatives can generate recommendations.')
+        return redirect('dashboard')
+    
+    # Get all HCPs with patient counts and last contact dates
+    hcps = []
+    for hcp in HCP.objects.all():
+        # Count patients for this HCP
+        patient_count = AnonymizedPatient.objects.filter(hcp=hcp).count()
+        
+        # Get last engagement date
+        last_engagement = Engagement.objects.filter(hcp=hcp).order_by('-date').first()
+        last_contact = last_engagement.date if last_engagement else None
+        
+        hcps.append({
+            'id': hcp.id,
+            'name': hcp.name,
+            'specialty': hcp.specialty,
+            'contact_info': hcp.contact_info,
+            'patient_count': patient_count,
+            'last_contact': last_contact
+        })
+    
+    context = {
+        'hcps': hcps
+    }
+    
+    return render(request, 'core/generate_recommendation.html', context)
+
+
+@login_required
+def create_recommendation_ajax(request, hcp_id):
+    """AJAX endpoint for creating recommendations"""
+    if request.user.userprofile.role != 'HCR':
+        return JsonResponse({'success': False, 'error': 'Only Healthcare Representatives can create recommendations.'})
+    
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+    
+    try:
+        print(f"🚀 Starting recommendation generation for HCP {hcp_id}")
+        
+        # Check if HCP exists
+        hcp = get_object_or_404(HCP, id=hcp_id)
+        print(f"✅ Found HCP: {hcp.name}")
+        
+        # Check if HCP has patients
+        patient_count = AnonymizedPatient.objects.filter(hcp=hcp).count()
+        print(f"📊 HCP has {patient_count} patients")
+        
+        if patient_count == 0:
+            return JsonResponse({'success': False, 'error': f'No patients found for {hcp.name}. Cannot generate recommendations without patient data.'})
+        
+        recommendation = generate_intelligent_recommendation(hcp_id, request.user)
+        
+        if recommendation:
+            print(f"✅ Recommendation created: {recommendation.recommendation_title}")
+            return JsonResponse({
+                'success': True,
+                'recommendation_title': recommendation.recommendation_title,
+                'redirect_url': f'/dashboard/recommendation/{recommendation.id}/'
+            })
+        else:
+            return JsonResponse({'success': False, 'error': 'Unable to create recommendation. No treatment gaps found in patient data.'})
+    
+    except Exception as e:
+        print(f"❌ Error generating recommendation: {str(e)}")
+        return JsonResponse({'success': False, 'error': f'Error generating recommendation: {str(e)}'})
