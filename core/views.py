@@ -2,8 +2,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
+from django.views.decorators.http import require_http_methods
 from django.db.models import Q, Count, Avg
 from django.db import models
+from django.utils import timezone
 from datetime import date, timedelta
 import json
 import csv
@@ -1570,12 +1572,121 @@ def scrape_medical_research(keywords, specialty=None, max_results=10):
             'authors': 'Johnson, A., Smith, B.',
             'journal': 'Neurology',
             'publication_date': '2024-01-30',
-            'abstract': 'Recent advances in migraine treatment including CGRP inhibitors and neuromodulation.',
+            'abstract': 'Recent advances in migraine treatment including CGRP antagonists and neuromodulation techniques.',
             'keywords': ['migraine', 'neurology', 'CGRP', 'headache'],
             'conditions': ['migraine', 'headache', 'neurological'],
-            'treatments': ['CGRP inhibitors', 'triptans', 'neuromodulation'],
+            'treatments': ['CGRP antagonists', 'triptans', 'neuromodulation'],
             'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example8',
+            'relevance_score': 0.88
+        },
+        # Additional diverse articles for more variety
+        {
+            'title': 'Precision Medicine in Rheumatoid Arthritis',
+            'authors': 'Davis, M., Wilson, K.',
+            'journal': 'Arthritis & Rheumatism',
+            'publication_date': '2024-02-10',
+            'abstract': 'Personalized treatment approaches for rheumatoid arthritis using biomarkers and targeted therapies.',
+            'keywords': ['rheumatoid arthritis', 'precision medicine', 'biomarkers', 'DMARDs'],
+            'conditions': ['rheumatoid arthritis', 'autoimmune', 'joint disease'],
+            'treatments': ['DMARDs', 'biologics', 'methotrexate'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example9',
             'relevance_score': 0.90
+        },
+        {
+            'title': 'Chronic Kidney Disease: Early Detection and Management',
+            'authors': 'Brown, T., Garcia, L.',
+            'journal': 'Kidney International',
+            'publication_date': '2024-01-18',
+            'abstract': 'Strategies for early detection and management of chronic kidney disease progression.',
+            'keywords': ['kidney disease', 'CKD', 'nephrology', 'renal'],
+            'conditions': ['chronic kidney disease', 'renal failure', 'nephropathy'],
+            'treatments': ['ACE inhibitors', 'diet modification', 'dialysis'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example10',
+            'relevance_score': 0.85
+        },
+        {
+            'title': 'Obesity Management: Multidisciplinary Approaches',
+            'authors': 'Martinez, P., Lee, J.',
+            'journal': 'Obesity Reviews',
+            'publication_date': '2024-02-12',
+            'abstract': 'Comprehensive approaches to obesity management including lifestyle, pharmacotherapy, and surgery.',
+            'keywords': ['obesity', 'weight management', 'bariatric', 'metabolic'],
+            'conditions': ['obesity', 'metabolic syndrome', 'weight gain'],
+            'treatments': ['lifestyle modification', 'GLP-1 agonists', 'bariatric surgery'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example11',
+            'relevance_score': 0.87
+        },
+        {
+            'title': 'Thyroid Disorders: Diagnosis and Treatment Updates',
+            'authors': 'Chen, W., Rodriguez, S.',
+            'journal': 'Endocrine Reviews',
+            'publication_date': '2024-01-22',
+            'abstract': 'Updated guidelines for diagnosis and treatment of thyroid disorders including hypothyroidism and hyperthyroidism.',
+            'keywords': ['thyroid', 'hypothyroidism', 'hyperthyroidism', 'TSH'],
+            'conditions': ['hypothyroidism', 'hyperthyroidism', 'thyroid disease'],
+            'treatments': ['levothyroxine', 'methimazole', 'radioactive iodine'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example12',
+            'relevance_score': 0.89
+        },
+        {
+            'title': 'Infectious Disease Prevention in Healthcare Settings',
+            'authors': 'Thompson, R., Anderson, M.',
+            'journal': 'Infection Control & Hospital Epidemiology',
+            'publication_date': '2024-02-08',
+            'abstract': 'Best practices for preventing healthcare-associated infections and antimicrobial resistance.',
+            'keywords': ['infection control', 'antimicrobial resistance', 'healthcare', 'prevention'],
+            'conditions': ['healthcare-associated infections', 'antimicrobial resistance'],
+            'treatments': ['infection control', 'antimicrobial stewardship', 'vaccination'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example13',
+            'relevance_score': 0.84
+        },
+        {
+            'title': 'Dermatology: Advances in Skin Cancer Detection',
+            'authors': 'Wilson, A., Patel, K.',
+            'journal': 'Journal of the American Academy of Dermatology',
+            'publication_date': '2024-01-28',
+            'abstract': 'New technologies and approaches for early detection and treatment of skin cancer.',
+            'keywords': ['skin cancer', 'melanoma', 'dermatology', 'detection'],
+            'conditions': ['skin cancer', 'melanoma', 'basal cell carcinoma'],
+            'treatments': ['surgical excision', 'immunotherapy', 'targeted therapy'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example14',
+            'relevance_score': 0.86
+        },
+        {
+            'title': 'Pediatric Asthma: Management Strategies',
+            'authors': 'Lee, H., Kumar, R.',
+            'journal': 'Pediatrics',
+            'publication_date': '2024-02-14',
+            'abstract': 'Evidence-based approaches to managing asthma in pediatric populations.',
+            'keywords': ['pediatric asthma', 'children', 'respiratory', 'inhalers'],
+            'conditions': ['pediatric asthma', 'childhood respiratory disease'],
+            'treatments': ['inhaled corticosteroids', 'bronchodilators', 'education'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example15',
+            'relevance_score': 0.88
+        },
+        {
+            'title': 'Geriatric Medicine: Comprehensive Care Approaches',
+            'authors': 'Smith, D., Johnson, E.',
+            'journal': 'Journal of the American Geriatrics Society',
+            'publication_date': '2024-01-12',
+            'abstract': 'Holistic approaches to caring for elderly patients with multiple comorbidities.',
+            'keywords': ['geriatrics', 'elderly', 'comorbidities', 'polypharmacy'],
+            'conditions': ['multiple comorbidities', 'geriatric syndromes', 'frailty'],
+            'treatments': ['comprehensive assessment', 'medication review', 'functional support'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example16',
+            'relevance_score': 0.83
+        },
+        {
+            'title': 'Women\'s Health: Menopause Management Updates',
+            'authors': 'Garcia, M., Davis, L.',
+            'journal': 'Menopause',
+            'publication_date': '2024-02-18',
+            'abstract': 'Current approaches to managing menopausal symptoms and long-term health outcomes.',
+            'keywords': ['menopause', 'hormone therapy', 'women\'s health', 'osteoporosis'],
+            'conditions': ['menopause', 'hot flashes', 'osteoporosis'],
+            'treatments': ['hormone therapy', 'non-hormonal treatments', 'lifestyle modifications'],
+            'source_url': 'https://pubmed.ncbi.nlm.nih.gov/example17',
+            'relevance_score': 0.85
         }
     ]
     
@@ -1929,7 +2040,11 @@ def edit_recommendation(request, recommendation_id):
 
 @login_required
 def view_recommendation(request, recommendation_id):
-    recommendation = get_object_or_404(IntelligentRecommendation, id=recommendation_id)
+    try:
+        recommendation = IntelligentRecommendation.objects.get(id=recommendation_id)
+    except IntelligentRecommendation.DoesNotExist:
+        messages.error(request, f'Recommendation with ID {recommendation_id} not found.')
+        return redirect('dashboard')
     
     # Check permissions
     if request.user.userprofile.role == 'HCR' and recommendation.hcr_sender != request.user:
@@ -1958,7 +2073,16 @@ def send_recommendation_message(request, recommendation_id):
         subject = request.POST.get('subject', recommendation.recommendation_title)
         message_content = request.POST.get('message_content', recommendation.recommendation_summary)
         
-        # Create message
+        # Create HCRRecommendation for the HCP dashboard
+        hcr_recommendation = HCRRecommendation.objects.create(
+            hcp_user=recommendation.hcp.user,
+            title=subject,
+            message=message_content,
+            priority='HIGH' if recommendation.priority == 'HIGH' else 'MEDIUM',
+            research_update=None  # We can link this later if needed
+        )
+        
+        # Also create message for record keeping
         message = HCRMessage.objects.create(
             sender=request.user,
             recipient_hcp=recommendation.hcp,
@@ -1974,7 +2098,7 @@ def send_recommendation_message(request, recommendation_id):
         recommendation.save()
         
         messages.success(request, f'Recommendation sent to {recommendation.hcp.name}')
-        return redirect('messages')
+        return redirect('dashboard')
     
     context = {
         'recommendation': recommendation
@@ -2043,10 +2167,23 @@ def create_recommendation_ajax(request, hcp_id):
         
         if recommendation:
             print(f"✅ Recommendation created: {recommendation.recommendation_title}")
+            
+            # Get research articles for the modal
+            research_articles = []
+            for research in recommendation.relevant_research.all()[:3]:
+                research_articles.append({
+                    'title': research.title,
+                    'authors': research.authors,
+                    'journal': research.journal,
+                    'publication_date': research.publication_date,
+                    'source_url': research.source_url
+                })
+            
             return JsonResponse({
                 'success': True,
                 'recommendation_title': recommendation.recommendation_title,
-                'redirect_url': f'/dashboard/recommendation/{recommendation.id}/'
+                'redirect_url': f'/dashboard/recommendation/{recommendation.id}/',
+                'research_articles': research_articles
             })
         else:
             return JsonResponse({'success': False, 'error': 'Unable to create recommendation. No treatment gaps found in patient data.'})
@@ -2054,3 +2191,100 @@ def create_recommendation_ajax(request, hcp_id):
     except Exception as e:
         print(f"❌ Error generating recommendation: {str(e)}")
         return JsonResponse({'success': False, 'error': f'Error generating recommendation: {str(e)}'})
+
+@login_required
+def hcr_recommendations(request):
+    """Display HCR recommendations for the current HCP"""
+    try:
+        # Get all recommendations for the current user (HCP)
+        recommendations = HCRRecommendation.objects.filter(hcp_user=request.user).order_by('-created_date')
+        
+        # Get unread count
+        unread_count = recommendations.filter(is_read=False).count()
+        
+        # Pagination
+        from django.core.paginator import Paginator
+        paginator = Paginator(recommendations, 10)  # Show 10 per page
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+        context = {
+            'recommendations': page_obj,
+            'unread_count': unread_count,
+            'page_title': 'HCR Recommendations'
+        }
+        
+        return render(request, 'core/hcr_recommendations.html', context)
+        
+    except Exception as e:
+        print(f"❌ Error loading HCR recommendations: {str(e)}")
+        return render(request, 'core/hcr_recommendations.html', {
+            'recommendations': [],
+            'unread_count': 0,
+            'error': f'Error loading recommendations: {str(e)}'
+        })
+
+@require_http_methods(["POST"])
+@login_required
+def mark_recommendation_read(request, recommendation_id):
+    """Mark a recommendation as read"""
+    try:
+        recommendation = get_object_or_404(HCRRecommendation, id=recommendation_id, hcp_user=request.user)
+        recommendation.is_read = True
+        recommendation.save()
+        
+        return JsonResponse({'success': True, 'message': 'Recommendation marked as read'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+@require_http_methods(["POST"])
+@login_required
+def accept_recommendation(request, recommendation_id):
+    """Accept a recommendation"""
+    try:
+        recommendation = get_object_or_404(HCRRecommendation, id=recommendation_id, hcp_user=request.user)
+        recommendation.status = 'ACCEPTED'
+        recommendation.is_read = True
+        recommendation.save()
+        
+        return JsonResponse({'success': True, 'message': 'Recommendation accepted successfully'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+@require_http_methods(["POST"])
+@login_required
+def decline_recommendation(request, recommendation_id):
+    """Decline a recommendation"""
+    try:
+        recommendation = get_object_or_404(HCRRecommendation, id=recommendation_id, hcp_user=request.user)
+        recommendation.status = 'DECLINED'
+        recommendation.is_read = True
+        recommendation.save()
+        
+        return JsonResponse({'success': True, 'message': 'Recommendation declined'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+@login_required
+def get_recommendation_research(request, recommendation_id):
+    """Get research articles for a specific recommendation"""
+    try:
+        recommendation = get_object_or_404(HCRRecommendation, id=recommendation_id, hcp_user=request.user)
+        
+        # Get research articles associated with this recommendation
+        research_articles = []
+        for research in recommendation.relevant_research.all()[:3]:
+            research_articles.append({
+                'title': research.title,
+                'authors': research.authors,
+                'journal': research.journal,
+                'publication_date': research.publication_date,
+                'source_url': research.source_url
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'research_articles': research_articles
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})

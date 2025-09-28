@@ -72,11 +72,18 @@ class HCRRecommendation(models.Model):
         ('LOW', 'Low Priority'),
     ]
     
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('ACCEPTED', 'Accepted'),
+        ('DECLINED', 'Declined'),
+    ]
+    
     hcp_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='recommendations')
     title = models.CharField(max_length=200)
     message = models.TextField()
     research_update = models.ForeignKey(ResearchUpdate, on_delete=models.CASCADE, null=True, blank=True)
     priority = models.CharField(max_length=6, choices=PRIORITY_CHOICES, default='MEDIUM')
+    status = models.CharField(max_length=8, choices=STATUS_CHOICES, default='PENDING')
     created_date = models.DateField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
     

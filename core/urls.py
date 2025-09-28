@@ -26,7 +26,13 @@ urlpatterns = [
     path('recommendation/<int:recommendation_id>/edit/', views.edit_recommendation, name='edit_recommendation'),
     path('recommendation/<int:recommendation_id>/delete/', views.delete_recommendation, name='delete_recommendation'),
     path('recommendation/<int:recommendation_id>/send/', views.send_recommendation_message, name='send_recommendation_message'),
+    path('hcr-recommendations/', views.hcr_recommendations, name='hcr_recommendations'),
     # New recommendation generation URLs
     path('generate-recommendation/', views.generate_recommendation_page, name='generate_recommendation_page'),
     path('hcp/<int:hcp_id>/create-recommendation-ajax/', views.create_recommendation_ajax, name='create_recommendation_ajax'),
+    # Recommendation action URLs
+    path('mark-recommendation-read/<int:recommendation_id>/', views.mark_recommendation_read, name='mark_recommendation_read_ajax'),
+    path('accept-recommendation/<int:recommendation_id>/', views.accept_recommendation, name='accept_recommendation'),
+    path('decline-recommendation/<int:recommendation_id>/', views.decline_recommendation, name='decline_recommendation'),
+    path('get-recommendation-research/<int:recommendation_id>/', views.get_recommendation_research, name='get_recommendation_research'),
 ]

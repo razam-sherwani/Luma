@@ -3,10 +3,10 @@
 {% block title %}Patient Database - ProviderPulse{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="flex justify-between items-center mb-6">
     <div>
-        <h1>{{ page_title }}</h1>
-        <p class="text-muted mb-0">
+        <h1 class="text-3xl font-bold text-gray-900">{{ page_title }}</h1>
+        <p class="text-gray-600 mb-0">
             {% if user_role == 'HCP' %}
                 Your patient database - manage your patients and their EMR data
             {% else %}
@@ -14,121 +14,138 @@
             {% endif %}
         </p>
     </div>
-    <div class="text-end">
-        <div class="badge bg-primary fs-6">{{ patients|length }} Patients</div>
+    <div class="text-right">
+        <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">{{ patients|length }} Patients</div>
         {% if user_role == 'HCP' %}
-            <a href="{% url 'add_patient' %}" class="btn btn-success ms-2">+ Add Patient</a>
+            <a href="{% url 'add_patient' %}" class="ml-2 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">+ Add Patient</a>
         {% endif %}
     </div>
 </div>
 
 <!-- Search and Filters -->
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">🔍 Search & Filter Patients</h5>
-            </div>
-            <div class="card-body">
-                <!-- Search Bar -->
-                <div class="row mb-3">
-                    <div class="col-12">
-                        <form method="get" id="searchForm">
-                            <!-- Preserve existing filters when searching -->
-                            {% if current_specialty %}<input type="hidden" name="specialty" value="{{ current_specialty }}">{% endif %}
-                            {% if current_diagnosis %}<input type="hidden" name="diagnosis" value="{{ current_diagnosis }}">{% endif %}
-                            {% if current_hcp %}<input type="hidden" name="hcp" value="{{ current_hcp }}">{% endif %}
+<div class="mb-6">
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h5 class="text-lg font-medium text-gray-900">🔍 Search & Filter Patients</h5>
+        </div>
+        <div class="p-6">
+            <!-- Search Bar -->
+            <div class="mb-4">
+                <form method="get" id="searchForm">
+                    <!-- Preserve existing filters when searching -->
+                    {% if current_specialty %}<input type="hidden" name="specialty" value="{{ current_specialty }}">{% endif %}
+                    {% if current_diagnosis %}<input type="hidden" name="diagnosis" value="{{ current_diagnosis }}">{% endif %}
+                    {% if current_hcp %}<input type="hidden" name="hcp" value="{{ current_hcp }}">{% endif %}
 
-                            <div class="input-group input-group-lg">
-                                <span class="input-group-text">
-                                    <i class="fas fa-search"></i>
-                                </span>
-                                <input type="text"
-                                       name="search"
-                                       value="{{ search_query }}"
-                                       class="form-control"
-                                       placeholder="Search patients by ID, diagnosis, treatment, symptoms, HCP name, medications..."
-                                       id="searchInput">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-search"></i> Search
-                                </button>
-                                {% if search_query %}
-                                <a href="?" class="btn btn-outline-secondary">
-                                    <i class="fas fa-times"></i> Clear
-                                </a>
-                                {% endif %}
+                    <div class="flex">
+                        <div class="relative flex-1">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
                             </div>
-                            {% if search_query %}
-                            <div class="form-text text-success mt-2">
-                                <i class="fas fa-info-circle"></i>
-                                Showing results for "<strong>{{ search_query }}</strong>" - {{ patients|length }} patient{{ patients|length|pluralize }} found
-                            </div>
-                            {% endif %}
-                        </form>
+                            <input type="text"
+                                   name="search"
+                                   value="{{ search_query }}"
+                                   class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-l-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-lg"
+                                   placeholder="Search patients by ID, diagnosis, treatment, symptoms, HCP name, medications..."
+                                   id="searchInput">
+                        </div>
+                        <button type="submit" class="inline-flex items-center px-4 py-3 border border-transparent text-sm font-medium rounded-r-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            Search
+                        </button>
+                        {% if search_query %}
+                        <a href="?" class="ml-2 inline-flex items-center px-4 py-3 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            Clear
+                        </a>
+                        {% endif %}
                     </div>
+                    {% if search_query %}
+                    <div class="mt-2 text-sm text-green-600">
+                        <svg class="inline h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Showing results for "<strong>{{ search_query }}</strong>" - {{ patients|length }} patient{{ patients|length|pluralize }} found
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+
+            <!-- Advanced Filters (Collapsible) -->
+            <div class="border-t pt-4">
+                <div class="flex justify-between items-center mb-3">
+                    <h6 class="text-sm font-medium text-gray-900">Advanced Filters</h6>
+                    <button class="inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" type="button" onclick="toggleAdvancedFilters()">
+                        <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                        </svg>
+                        Toggle Filters
+                    </button>
                 </div>
 
-                <!-- Advanced Filters (Collapsible) -->
-                <div class="border-top pt-3">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="mb-0">Advanced Filters</h6>
-                        <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#advancedFilters" aria-expanded="false">
-                            <i class="fas fa-filter"></i> Toggle Filters
-                        </button>
-                    </div>
+                <div class="hidden" id="advancedFilters">
+                    <form method="get" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- Preserve search query when filtering -->
+                        {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
 
-                    <div class="collapse" id="advancedFilters">
-                        <form method="get" class="row g-3">
-                            <!-- Preserve search query when filtering -->
-                            {% if search_query %}<input type="hidden" name="search" value="{{ search_query }}">{% endif %}
-
-                            <div class="col-md-4">
-                                <label for="specialty" class="form-label">Specialty</label>
-                                <select name="specialty" id="specialty" class="form-select">
-                                    <option value="">All Specialties</option>
-                                    {% for specialty in specialties %}
-                                        <option value="{{ specialty }}" {% if current_specialty == specialty %}selected{% endif %}>
-                                            {{ specialty }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
+                        <div>
+                            <label for="specialty" class="block text-sm font-medium text-gray-700 mb-1">Specialty</label>
+                            <select name="specialty" id="specialty" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">All Specialties</option>
+                                {% for specialty in specialties %}
+                                    <option value="{{ specialty }}" {% if current_specialty == specialty %}selected{% endif %}>
+                                        {{ specialty }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="diagnosis" class="block text-sm font-medium text-gray-700 mb-1">Diagnosis</label>
+                            <select name="diagnosis" id="diagnosis" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">All Diagnoses</option>
+                                {% for diagnosis in diagnoses %}
+                                    <option value="{{ diagnosis }}" {% if current_diagnosis == diagnosis %}selected{% endif %}>
+                                        {{ diagnosis|truncatechars:50 }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% if show_hcp_column %}
+                        <div>
+                            <label for="hcp" class="block text-sm font-medium text-gray-700 mb-1">HCP</label>
+                            <select name="hcp" id="hcp" class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">All HCPs</option>
+                                {% for hcp in hcps %}
+                                    <option value="{{ hcp.name }}" {% if current_hcp == hcp.name %}selected{% endif %}>
+                                        {{ hcp.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+                        <div class="md:col-span-3">
+                            <div class="flex gap-2">
+                                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                                    </svg>
+                                    Apply Filters
+                                </button>
+                                <a href="?" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                    Reset All
+                                </a>
                             </div>
-                            <div class="col-md-4">
-                                <label for="diagnosis" class="form-label">Diagnosis</label>
-                                <select name="diagnosis" id="diagnosis" class="form-select">
-                                    <option value="">All Diagnoses</option>
-                                    {% for diagnosis in diagnoses %}
-                                        <option value="{{ diagnosis }}" {% if current_diagnosis == diagnosis %}selected{% endif %}>
-                                            {{ diagnosis|truncatechars:50 }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            {% if show_hcp_column %}
-                            <div class="col-md-4">
-                                <label for="hcp" class="form-label">HCP</label>
-                                <select name="hcp" id="hcp" class="form-select">
-                                    <option value="">All HCPs</option>
-                                    {% for hcp in hcps %}
-                                        <option value="{{ hcp.name }}" {% if current_hcp == hcp.name %}selected{% endif %}>
-                                            {{ hcp.name }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            {% endif %}
-                            <div class="col-12">
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-filter"></i> Apply Filters
-                                    </button>
-                                    <a href="?" class="btn btn-outline-secondary">
-                                        <i class="fas fa-undo"></i> Reset All
-                                    </a>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -136,65 +153,65 @@
 </div>
 
 <!-- Patient List -->
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">👥 Patient Records</h5>
-            </div>
-            <div class="card-body">
-                {% if patients %}
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
+<div>
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h5 class="text-lg font-medium text-gray-900">👥 Patient Records</h5>
+        </div>
+        <div class="p-6">
+            {% if patients %}
+                <div class="overflow-x-auto">
+                    <div class="min-w-full max-h-96 overflow-y-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50 sticky top-0 z-10">
                                 <tr>
-                                    <th>Patient ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient ID</th>
                                     {% if show_hcp_column %}
-                                    <th>HCP</th>
-                                    <th>Specialty</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">HCP</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Specialty</th>
                                     {% endif %}
-                                    <th>Primary Diagnosis</th>
-                                    <th>Current Treatments</th>
-                                    <th>Age Group</th>
-                                    <th>Gender</th>
-                                    <th>Last Visit</th>
-                                    <th>Actions</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Primary Diagnosis</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Current Treatments</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Age Group</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gender</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Visit</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody class="bg-white divide-y divide-gray-200">
                                 {% for patient in patients %}
-                                    <tr>
-                                        <td>
-                                            <strong>{{ patient.patient_id }}</strong>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm font-medium text-gray-900">{{ patient.patient_id }}</div>
                                         </td>
                                         {% if show_hcp_column %}
-                                        <td>
-                                            <a href="{% url 'hcp_profile' patient.hcp.id %}" class="text-decoration-none">
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <a href="{% url 'hcp_profile' patient.hcp.id %}" class="text-sm text-blue-600 hover:text-blue-900">
                                                 {{ patient.hcp.name }}
                                             </a>
                                         </td>
-                                        <td>
-                                            <span class="badge bg-secondary">{{ patient.hcp.specialty }}</span>
+                                        <td class="px-3 py-4 whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">{{ patient.hcp.specialty }}</span>
                                         </td>
                                         {% endif %}
-                                        <td>
-                                            <span class="fw-bold">{{ patient.primary_diagnosis }}</span>
+                                        <td class="px-3 py-4">
+                                            <div class="text-sm font-medium text-gray-900">{{ patient.primary_diagnosis }}</div>
                                             {% if patient.secondary_diagnoses %}
-                                                <br><small class="text-muted">{{ patient.secondary_diagnoses|truncatechars:60 }}</small>
+                                                <div class="text-sm text-gray-500">{{ patient.secondary_diagnoses|truncatechars:60 }}</div>
                                             {% endif %}
                                         </td>
-                                        <td>
+                                        <td class="px-6 py-4">
                                             {% if patient.current_treatments %}
-                                                <small class="text-primary">{{ patient.current_treatments|truncatechars:80 }}</small>
+                                                <div class="text-sm text-blue-600">{{ patient.current_treatments|truncatechars:80 }}</div>
                                             {% else %}
-                                                <span class="text-muted">No current treatments</span>
+                                                <span class="text-sm text-gray-500">No current treatments</span>
                                             {% endif %}
                                         </td>
-                                        <td>{{ patient.age_group }}</td>
-                                        <td>{{ patient.get_gender_display }}</td>
-                                        <td>{{ patient.last_visit_date|date:"M d, Y" }}</td>
-                                        <td>
-                                            <a href="{% url 'patient_detail' patient.patient_id %}" class="btn btn-sm btn-outline-primary">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ patient.age_group }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ patient.get_gender_display }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ patient.last_visit_date|date:"M d, Y" }}</td>
+                                        <td class="px-6 py-4 text-sm font-medium w-32">
+                                            <a href="{% url 'patient_detail' patient.patient_id %}" class="text-blue-600 hover:text-blue-900 whitespace-nowrap">
                                                 View Details
                                             </a>
                                         </td>
@@ -203,14 +220,21 @@
                             </tbody>
                         </table>
                     </div>
-                {% else %}
-                    <div class="text-center py-5">
-                        <h5 class="text-muted">No patients found</h5>
-                        <p class="text-muted">Try adjusting your filters or run the data seeder to populate patient data.</p>
-                        <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+                </div>
+            {% else %}
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No patients found</h3>
+                    <p class="mt-1 text-sm text-gray-500">Try adjusting your filters or run the data seeder to populate patient data.</p>
+                    <div class="mt-6">
+                        <a href="{% url 'dashboard' %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Back to Dashboard
+                        </a>
                     </div>
-                {% endif %}
-            </div>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -231,9 +255,9 @@ document.addEventListener('DOMContentLoaded', function() {
             searchTimeout = setTimeout(function() {
                 // Add visual feedback for active search
                 if (searchInput.value.length > 0) {
-                    searchInput.classList.add('border-primary');
+                    searchInput.classList.add('ring-2', 'ring-blue-500', 'border-blue-500');
                 } else {
-                    searchInput.classList.remove('border-primary');
+                    searchInput.classList.remove('ring-2', 'ring-blue-500', 'border-blue-500');
                 }
             }, 300);
         });
@@ -265,7 +289,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (currentSpecialty || currentDiagnosis || currentHcp) {
         const advancedFilters = document.getElementById('advancedFilters');
         if (advancedFilters) {
-            advancedFilters.classList.add('show');
+            advancedFilters.classList.remove('hidden');
         }
     }
 
@@ -275,6 +299,13 @@ document.addEventListener('DOMContentLoaded', function() {
         highlightSearchTerms(searchQuery);
     }
 });
+
+function toggleAdvancedFilters() {
+    const advancedFilters = document.getElementById('advancedFilters');
+    if (advancedFilters) {
+        advancedFilters.classList.toggle('hidden');
+    }
+}
 
 function highlightSearchTerms(query) {
     if (!query || query.length < 2) return;
@@ -303,7 +334,7 @@ function highlightSearchTerms(query) {
 
         textNodes.forEach(textNode => {
             const parent = textNode.parentNode;
-            const highlightedHTML = textNode.textContent.replace(regex, '<mark class="bg-warning">$1</mark>');
+            const highlightedHTML = textNode.textContent.replace(regex, '<mark class="bg-yellow-200 px-1 py-0.5 rounded">$1</mark>');
             const wrapper = document.createElement('span');
             wrapper.innerHTML = highlightedHTML;
             parent.replaceChild(wrapper, textNode);
@@ -311,45 +342,4 @@ function highlightSearchTerms(query) {
     });
 }
 </script>
-
-<style>
-.table-responsive {
-    max-height: 600px;
-    overflow-y: auto;
-}
-
-.table thead th {
-    position: sticky;
-    top: 0;
-    background-color: #fff;
-    z-index: 10;
-    border-bottom: 2px solid #dee2e6;
-}
-
-mark.bg-warning {
-    padding: 1px 2px;
-    border-radius: 2px;
-}
-
-#searchInput:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-.input-group-lg .form-control {
-    font-size: 1.1rem;
-}
-
-.btn-outline-secondary:hover {
-    color: #fff;
-    background-color: #6c757d;
-    border-color: #6c757d;
-}
-
-.search-hint {
-    font-size: 0.875rem;
-    color: #6c757d;
-    margin-top: 0.25rem;
-}
-</style>
 {% endblock %}
